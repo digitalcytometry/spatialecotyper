@@ -200,15 +200,11 @@ p1 + p2
 
 # Spatial EcoTyper analysis across multiple samples
 
-```{r workflow, out.width = '100%', echo=FALSE}
-knitr::include_graphics("images/MultiSpatialEcoTyper.png")
-```
-
 The [MultiSpatialEcoTyper](../reference/SpatialView.html) function enables the integration of single-cell spatial transcriptomics data across multiple samples, facilitating the identification of SEs shared across samples or cancer types. The analysis is performed in three stages:
   
 -   **Independent Spatial EcoTyper Analysis**: [Spatial EcoTyper](../reference/SpatialEcoTyper.html) is run on each sample independently to identify spatial clusters and construct cell-type-specific gene expression profiles for all spatial clusters.
--   **Integration via Similarity Network Fusion**: Spatial clusters from different samples are integrated to learn a unified embedding using Similarity Network Fusion (Wang et al., 2014).
--   **NMF Clustering**: Non-negative Matrix Factorization (NMF) is applied to the unified embedding to identify conserved SEs across samples.
+-   **Integration**: Spatial clusters from different samples are integrated to learn a unified embedding).
+-   **Clustering**: Clustering is applied to the unified embedding to identify conserved SEs across samples.
 
 <details open><summary><strong>Key arguments for `MultiSpatialEcoTyper`</strong></summary>
 
