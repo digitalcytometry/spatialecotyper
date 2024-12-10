@@ -253,18 +253,13 @@ negative distances denote cells within the stroma.</p>
 <div class="section level2">
 <h2 id="se-discovery-using-spatialecotyper">SE discovery using SpatialEcoTyper<a class="anchor" aria-label="anchor" href="#se-discovery-using-spatialecotyper"></a>
 </h2>
-<p><img src="images/SpatialEcoTyper_Workflow.png" width="100%"></p>
-<p><a href="../reference/SpatialEcoTyper.html">SpatialEcoTyper</a>
+<p>The <a href="../reference/SpatialEcoTyper.html">SpatialEcoTyper</a>
 function is designed to identify spatial ecotypes (SEs) from single-cell
 spatial transcriptomics data. The workflow begins by grouping spatially
 co-localized single cells into microregions, where cell-type-specific
 gene expression profiles (GEPs) are constructed for each microregion.
-Following this, similarity networks of these microregions are
-constructed based on their cell type-specific GEPs. To integrate these
-networks, SpatialEcoTyper utilizes the Similarity Network Fusion (SNF)
-method, originally developed for multi-omics data integration (<a href="https://www.nature.com/articles/nmeth.2810" class="external-link">Wang et al.,
-2014</a>). The fused similarity network enables the identification of
-SEs by clustering.</p>
+Spatial networks of these microregions are constructed based on their 
+cell type-specific GEPs, merged, and clustered for identification of SEs.</p>
 <details open><summary><strong>Key arguments for SpatialEcoTyper</strong>
 </summary><ul>
 <li>
