@@ -83,7 +83,7 @@ install.packages("SpatialEcoTyper.tar.gz", repos = NULL)
 If you encounter any bugs or have suggestions for improvements, please feel free to open an [issue](https://github.com/digitalcytometry/spatialecotyper/issues) or submit a pull request. Your feedback and contributions help us make the tool better for everyone.
 
 ## License
-Please see the <a href="LICENSE.html" target="_blank">LICENSE</a> file.
+Please see the <a href="LICENSE" target="_blank">LICENSE</a> file.
 
 ## Authors
 
