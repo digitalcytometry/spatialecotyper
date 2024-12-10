@@ -339,7 +339,6 @@ while negative distances denote cells within the stroma.</p>
 <div class="section level2">
 <h2 id="spatial-ecotyper-analysis-across-multiple-samples">Spatial EcoTyper analysis across multiple samples<a class="anchor" aria-label="anchor" href="#spatial-ecotyper-analysis-across-multiple-samples"></a>
 </h2>
-<p><img src="images/MultiSpatialEcoTyper.png" width="100%"></p>
 <p>The <a href="../reference/SpatialView.html">MultiSpatialEcoTyper</a>
 function enables the integration of single-cell spatial transcriptomics
 data across multiple samples, facilitating the identification of SEs
@@ -352,12 +351,11 @@ each sample independently to identify spatial clusters and construct
 cell-type-specific gene expression profiles for all spatial
 clusters.</li>
 <li>
-<strong>Integration via Similarity Network Fusion</strong>: Spatial
+<strong>Integration</strong>: Spatial
 clusters from different samples are integrated to learn a unified
-embedding using Similarity Network Fusion (Wang et al., 2014).</li>
+embedding.</li>
 <li>
-<strong>NMF Clustering</strong>: Non-negative Matrix Factorization
-(NMF) is applied to the unified embedding to identify conserved SEs
+<strong>Clustering</strong>: Clustering is applied to the unified embedding to identify conserved SEs
 across samples.</li>
 </ul>
 <details open><summary><strong>Key arguments for <code>MultiSpatialEcoTyper</code></strong>
