@@ -24,6 +24,14 @@ We provide 6 comprehensive tutorials illustrating the functionalities included i
 
 **Note**: __Spatial EcoTyper__ depends extensively on Seurat for key processes like dimensionality reduction, UMAP embedding, clustering, and visualization. Initially developed using Seurat v4.3, the tool has been thoroughly tested and validated with Seurat v5. Although UMAP embeddings and clustering results show slight differences between Seurat v4 and v5, the overall consistency remains strong, ensuring that core biological insights are preserved across both versions.
 
+## System requirements
+
+This package is compatible with all operating systems and has been tested on the following platforms:
+
+macOS: Big Sur, Monterey, Ventura, Sonoma, Sequoia (15.2)
+Linux: CentOS 7.2 and High-Performance Computing (HPC) clusters
+
+
 ## Installation
 
 **Spatial EcoTyper** is available as an R package and can be installed via the `BiocManager` package directly from the R console.
