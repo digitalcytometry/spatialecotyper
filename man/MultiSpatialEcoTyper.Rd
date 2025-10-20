@@ -53,7 +53,7 @@ select the optimal number, which takes time.}
 \item{radius}{Numeric specifying the radius (in the same units as spatial coordinates)
 for defining spatial neighborhoods around each cell. Default is 50.}
 
-\item{min.cts.per.region}{Integer specifying the minimum number of cell types required for a microregion.}
+\item{min.cts.per.region}{Integer specifying the minimum number of cell types required for a spatial neighborhood.}
 
 \item{nfeatures}{An integer specifying the maximum number of top variable genes to select for each cell type.}
 
@@ -72,8 +72,8 @@ Default is 5000. This option splits the matrix into smaller chunks (minibatch), 
 \item{seed}{An integer used to seed the random number generator for NMF analysis.}
 
 \item{filter.region.by.celltypes}{A character vector specifying the cell types to include in the analysis.
-Only spatial microregions that contain at least one of the specified cell types will be analyzed, while regions
-lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial microregions will
+Only spatial neighborhoods that contain at least one of the specified cell types will be analyzed, while regions
+lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial neighborhoods will
 be included, regardless of cell type composition.}
 
 \item{...}{Additional arguments passed to the `SpatialEcoTyper` function.}

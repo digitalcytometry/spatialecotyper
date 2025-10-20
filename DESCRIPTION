@@ -1,7 +1,7 @@
 Package: SpatialEcoTyper
 Type: Package
 Title: Spatial ecotype analaysis
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Wubing", "Zhang",  , "wzhang39@stanford.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2233-299X"))

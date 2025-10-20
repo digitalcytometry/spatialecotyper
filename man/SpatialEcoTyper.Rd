@@ -10,18 +10,19 @@ SpatialEcoTyper(
   outprefix = "SE",
   radius = 50,
   resolution = 0.5,
-  nfeatures = 3000,
-  min.cts.per.region = 1,
+  nfeatures = 500,
+  min.cts.per.region = 2,
   npcs = 20,
-  k.sn = 50,
-  k = 20,
   min.cells = 5,
   min.features = 10,
-  iterations = 5,
+  iterations = 10,
   minibatch = 5000,
   ncores = 1,
   grid.size = round(radius * 1.4),
-  filter.region.by.celltypes = NULL
+  filter.region.by.celltypes = NULL,
+  k = 20,
+  k.sn = 50,
+  dropcell = TRUE
 )
 }
 \arguments{
@@ -39,21 +40,17 @@ for defining spatial neighborhoods around each cell. Default is 50.}
 
 \item{resolution}{Numeric specifying the resolution for Louvain clustering (default: 0.5).}
 
-\item{nfeatures}{Integer specifying the number of top variable features (default: 3000) used for PCA.}
+\item{nfeatures}{Integer specifying the number of top variable features (default: 500) used for the analysis.}
 
-\item{min.cts.per.region}{Integer specifying the minimum number of cell types required for a microregion.}
+\item{min.cts.per.region}{Integer specifying the minimum number of cell types required for a spatial neighborhood.}
 
 \item{npcs}{Integer specifying the number of principal components (PCs) (default: 20).}
-
-\item{k.sn}{Integer specifying the number of spatial nearest neighbors (default: 50) for constructing similarity network.}
-
-\item{k}{Integer specifying the number of spatial nearest neighbors (default: 20) used to construct spatial meta-cells.}
 
 \item{min.cells}{Minimum number of cells / spatial-meta-cells (default: 5)  expressing a feature/gene.}
 
 \item{min.features}{Minimum number of features (default: 10) detected in a cell / spatial-meta-cell.}
 
-\item{iterations}{Integer specifying the number of iterations (default: 5) for SNF analysis.}
+\item{iterations}{Integer specifying the number of iterations (default: 10) for SNF analysis.}
 
 \item{minibatch}{Integer specifying the number of columns to process in each minibatch in the SNF analysis.
 Default is 5000. This option splits the matrix into smaller chunks (minibatch), thus reducing memory usage.}
@@ -61,18 +58,25 @@ Default is 5000. This option splits the matrix into smaller chunks (minibatch), 
 \item{ncores}{Integer specifying the number of CPU cores to use for parallel processing.}
 
 \item{grid.size}{Numeric specifying the grid size for spatial discretization of coordinates. By default,
-this size is determined based on the specified radius (radius*1.4 µm). Increasing the grid.size will
-downsample microregions and expedite the analysis, while it might eliminate cells located between bins
+this size is determined based on the specified radius round(radius*1.4 µm). Increasing the grid.size will
+downsample spatial neighborhoods and expedite the analysis, while it might eliminate cells located between bins
 from the SE discovery analysis.}
 
 \item{filter.region.by.celltypes}{A character vector specifying the cell types to include in the analysis.
-Only spatial microregions that contain at least one of the specified cell types will be analyzed, while regions
-lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial microregions will
-be included, regardless of cell type composition.
+Only spatial neighborhoods that contain at least one of the specified cell types will be analyzed, while regions
+lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial neighborhoods will
+be included, regardless of cell type composition.}
+
+\item{k}{Integer specifying the number of spatial nearest neighbors (default: 20) used to construct spatial meta-cells.}
+
+\item{k.sn}{Integer specifying the number of nearest neighbors (default: 20) for constructing similarity network.}
+
+\item{dropcell}{Logical. If TRUE, cells that cannot be assigned to any spatial
+ecotype (outside the radius) will be removed from the returned metadata. Default is TRUE.
 
 #' @return A list containing two elements:
 \describe{
-  \item{obj}{A seurat object constructed from fused similarity network of sptial microregions}
+  \item{obj}{A seurat object constructed from fused similarity network of sptial neighborhoods}
   \item{metadata}{Updated \code{metadata}, with a new column (`SE`) added}
 }}
 }

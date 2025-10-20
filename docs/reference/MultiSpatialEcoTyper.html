@@ -11,7 +11,7 @@ and integrates the results across samples."><meta property="og:image" content="h
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,7 +24,6 @@ and integrates the results across samples."><meta property="og:image" content="h
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul></li>
@@ -41,7 +40,7 @@ and integrates the results across samples."><meta property="og:image" content="h
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Integrate Multiple Spatial Transcriptomics Datasets to Identify Conserved Spatial Ecotypes</h1>
-      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/R/MultiSpatialEcoTyper.R" class="external-link"><code>R/MultiSpatialEcoTyper.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/R/MultiSpatialEcoTyper.R" class="external-link"><code>R/MultiSpatialEcoTyper.R</code></a></small>
       <div class="d-none name"><code>MultiSpatialEcoTyper.Rd</code></div>
     </div>
 
@@ -123,7 +122,7 @@ for defining spatial neighborhoods around each cell. Default is 50.</p></dd>
 
 
 <dt id="arg-min-cts-per-region">min.cts.per.region<a class="anchor" aria-label="anchor" href="#arg-min-cts-per-region"></a></dt>
-<dd><p>Integer specifying the minimum number of cell types required for a microregion.</p></dd>
+<dd><p>Integer specifying the minimum number of cell types required for a spatial neighborhood.</p></dd>
 
 
 <dt id="arg-nfeatures">nfeatures<a class="anchor" aria-label="anchor" href="#arg-nfeatures"></a></dt>
@@ -158,8 +157,8 @@ Default is 5000. This option splits the matrix into smaller chunks (minibatch), 
 
 <dt id="arg-filter-region-by-celltypes">filter.region.by.celltypes<a class="anchor" aria-label="anchor" href="#arg-filter-region-by-celltypes"></a></dt>
 <dd><p>A character vector specifying the cell types to include in the analysis.
-Only spatial microregions that contain at least one of the specified cell types will be analyzed, while regions
-lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial microregions will
+Only spatial neighborhoods that contain at least one of the specified cell types will be analyzed, while regions
+lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial neighborhoods will
 be included, regardless of cell type composition.</p></dd>
 
 

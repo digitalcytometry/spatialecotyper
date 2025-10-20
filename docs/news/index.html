@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,6 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul></li>
@@ -37,9 +36,13 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/digitalcytometry/spatialecotyper/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.2" id="spatialecotyper-002">SpatialEcoTyper 0.0.2<a class="anchor" aria-label="anchor" href="#spatialecotyper-002"></a></h2>
+<ul><li>NMFpredict: warning when there are limited genes overlap with the model.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.1" id="spatialecotyper-001">SpatialEcoTyper 0.0.1<a class="anchor" aria-label="anchor" href="#spatialecotyper-001"></a></h2>
 <ul><li>First release of SpatialEcoTyper.
@@ -56,7 +59,7 @@
 </ul></li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.2" id="spatialecotyper-002">SpatialEcoTyper 0.0.2<a class="anchor" aria-label="anchor" href="#spatialecotyper-002"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.2" id="spatialecotyper-002-1">SpatialEcoTyper 0.0.2<a class="anchor" aria-label="anchor" href="#spatialecotyper-002-1"></a></h2>
 <ul><li>Reduce memory usage by computing distance of spatial neighbors and not all pairwise distances</li>
 </ul></div>
     <div class="section level2">
@@ -80,7 +83,10 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.0" id="spatialecotyper-100">SpatialEcoTyper 1.0.0<a class="anchor" aria-label="anchor" href="#spatialecotyper-100"></a></h2>
-<ul><li>First release</li>
+<ul><li>First release # SpatialEcoTyper 1.0.1</li>
+<li>Second release</li>
+<li>Update SE recovery from Visium data</li>
+<li>Add option <code>dropcell</code> to SpatialEcoTyper function to drop NA regions</li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

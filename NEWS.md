@@ -1,3 +1,6 @@
+# SpatialEcoTyper 0.0.2
+* NMFpredict: warning when there are limited genes overlap with the model.
+
 # SpatialEcoTyper 0.0.1
 
 * First release of SpatialEcoTyper.
@@ -33,3 +36,8 @@
 
 # SpatialEcoTyper 1.0.0
   * First release
+# SpatialEcoTyper 1.0.1
+  * Second release
+  * Update SE recovery from Visium data
+  * Add option `dropcell` to SpatialEcoTyper function to drop NA regions
+

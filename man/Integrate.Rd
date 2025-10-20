@@ -7,14 +7,15 @@
 Integrate(
   avgexprs,
   Region = NULL,
-  nfeatures = 3000,
+  nfeatures = 200,
   min.features = 5,
   minibatch = 5000,
   ncores = 1
 )
 }
 \arguments{
-\item{avgexprs}{Gene expression signature of spatial clusters, where each column represents a spatial cluster.}
+\item{avgexprs}{Gene expression signature of spatial clusters, where each
+column represents a spatial cluster (celltype..gene x spatial cluster matrix).}
 
 \item{Region}{A character vector specifying the region annotations for all spatial clusters.}
 

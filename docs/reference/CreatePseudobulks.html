@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,6 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul></li>
@@ -37,7 +36,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Create Pseudo-bulk Mixtures</h1>
-      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/R/CreatePseudobulks.R" class="external-link"><code>R/CreatePseudobulks.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/R/CreatePseudobulks.R" class="external-link"><code>R/CreatePseudobulks.R</code></a></small>
       <div class="d-none name"><code>CreatePseudobulks.Rd</code></div>
     </div>
 
@@ -100,37 +99,27 @@ The names should correspond to the column names of the data matrix.</p></dd>
 <span class="r-in"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_deauth.html" class="external-link">drive_deauth</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># no Google sign-in is required</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_download.html" class="external-link">drive_download</a></span><span class="op">(</span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_id.html" class="external-link">as_id</a></span><span class="op">(</span><span class="st">"15n9zlXed74oeGaO1pythOOM_iWIfuMn2"</span><span class="op">)</span>, <span class="st">"Melanoma_WU2161_counts.rds"</span>,</span></span>
 <span class="r-in"><span>                    overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> File downloaded:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • <span style="color: #00BBBB;">Melanoma_WU2161_counts.rds</span> <span style="color: #555555;">&lt;id: 15n9zlXed74oeGaO1pythOOM_iWIfuMn2&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saved locally as:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • <a href="file:///Users/wzhang39/Library/CloudStorage/Box-Box/WZ/EcoSystem/0_Script/SpatialEcoTyper/docs/reference/Melanoma_WU2161_counts.rds"><span style="color: #0000BB;">Melanoma_WU2161_counts.rds</span></a></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in map(as_id(id), get_one_file_id):</span> <span style="color: #00BBBB;">ℹ</span> In index: 1.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error in `.f()`:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Client error: (404) Not Found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> File not found: 15n9zlXed74oeGaO1pythOOM_iWIfuMn2.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> message: File not found: 15n9zlXed74oeGaO1pythOOM_iWIfuMn2.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> domain: global</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> reason: notFound</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> location: fileId</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> locationType: parameter</span>
 <span class="r-in"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"Melanoma_WU2161_counts.rds"</span><span class="op">)</span> <span class="co">## raw counts of scRNA-seq data</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>cannot open compressed file 'Melanoma_WU2161_counts.rds', probable reason 'No such file or directory'</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in gzfile(file, "rb"):</span> cannot open the connection</span>
 <span class="r-in"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"SE"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in sample.int(length(x), size, replace, prob):</span> invalid 'size' argument</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">groups</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">=</span> <span class="fu">CreatePseudobulks</span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span>, groups <span class="op">=</span> <span class="va">groups</span>, n_mixtures <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 't': argument is not a matrix</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">Mixtures</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Gene expression matrix of pseudobulks</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            Pseudobulk1 Pseudobulk2  Pseudobulk3  Pseudobulk4  Pseudobulk5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AL627309.1 0.010074937 0.026466048 0.0171018497 0.0171069227 0.0255710058</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AL627309.5 0.028185407 0.028121530 0.0440359686 0.0470177161 0.0566584344</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AP006222.2 0.005813013 0.002907824 0.0051710095 0.0088178291 0.0068326888</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AC114498.1 0.014872736 0.014857974 0.0069979292 0.0069840099 0.0069909626</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AL669831.2 0.001482140 0.000000000 0.0003703704 0.0007391259 0.0003700004</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LINC01409  0.038924808 0.030773482 0.0406855932 0.0485869241 0.0419149703</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'head': object 'result' not found</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">Fracs</span><span class="op">)</span> <span class="co">## SE fractions in pseudobulks</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                     SE1       SE10        SE2        SE3        SE4        SE5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk1 0.148299599 0.04084198 0.13605238 0.04812145 0.07334537 0.16468016</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk2 0.180245105 0.03591520 0.03277197 0.16672719 0.17952414 0.11634038</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk3 0.078572940 0.08653050 0.12737995 0.10409351 0.08368176 0.06809299</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk4 0.073579654 0.20107738 0.10550911 0.11484678 0.07561444 0.11455294</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk5 0.003943657 0.15120503 0.09552227 0.05698550 0.14124883 0.10354736</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk6 0.067123736 0.11070905 0.15959928 0.07370885 0.15368544 0.06388965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    SE6        SE7        SE8        SE9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk1 0.00000000 0.16123196 0.02122383 0.20620327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk2 0.03504460 0.11745721 0.00000000 0.13597421</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk3 0.16320454 0.09041136 0.07594698 0.12208546</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk4 0.04802129 0.16669192 0.05996442 0.04014206</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk5 0.07907159 0.13299510 0.08381708 0.15166359</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Pseudobulk6 0.16595165 0.01566788 0.13811904 0.05154544</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'head': object 'result' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

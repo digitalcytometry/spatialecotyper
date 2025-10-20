@@ -6,7 +6,7 @@ development:
 repo:
   url:
     home: https://github.com/digitalcytometry/spatialecotyper
-    source: https://github.com/digitalcytometry/spatialecotyper
+    source: https://github.com/digitalcytometry/spatialecotyper/blob/main/
     issue: https://github.com/digitalcytometry/spatialecotyper/issues
   branch: main
 
@@ -36,8 +36,6 @@ navbar:
         href: articles/Integration.html
       - text: Development of NMF Models for Spatial Ecotype Recovery
         href: articles/TrainRecoveryModels.html
-      - text: Recovery of Spatial Ecotypes from Spatial Transcriptomics Data
-        href: articles/Recovery_Spatial.html
       - text: Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data
         href: articles/Recovery_scRNA.html
       - text: Recovery of Spatial Ecotypes from Bulk Gene Expression Data
@@ -55,7 +53,7 @@ reference:
   - MultiSpatialEcoTyper
   - IntegrateSpatialEcoTyper
   - GetSpatialMetacells
-  - ComputeAvgs
+  - ComputeFCs
   - SNF2
   - GetPCList
   - GetSNList
@@ -69,7 +67,7 @@ reference:
   - NMFGenerateWList
 
 - title: SE recovery
-  desc:  Recovering spatial ecotypes from single-cell spatial data, scRNA-seq data, Visium spatial data, or bulk tumor expression data.
+  desc:  Recovering spatial ecotypes from single-cell spatial transcriptomics, scRNA-seq, Visium, or bulk tumor expression data.
   contents:
   - RecoverSE
   - DeconvoluteSE
@@ -99,6 +97,6 @@ reference:
 
 news:
   releases:
-  - text: "Version 1.0.0"
+  - text: "Version 1.0.1"
     href:
 

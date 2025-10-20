@@ -100,7 +100,11 @@ IntegrateSpatialEcoTyper <- function(SpatialEcoTyper_list,
 
   metadata_list <- lapply(sample_names, function(s){
     scmeta = metadata_list[[s]]
-    scmeta = cbind(CID = rownames(scmeta), scmeta)
+    if(!"CID" %in% colnames(scmeta)){
+      scmeta = cbind(CID = rownames(scmeta), scmeta)
+    }else{
+      scmeta$CID = rownames(scmeta)
+    }
     scmeta$Sample = s
     scmeta$InitSE = paste0(scmeta$Sample, "..", scmeta$InitSE)
     scmeta[match(colnames(data_list[[s]]), rownames(scmeta)), ]
@@ -108,6 +112,7 @@ IntegrateSpatialEcoTyper <- function(SpatialEcoTyper_list,
   ## Merge meta data from all samples
   commoncols <- table(unlist(lapply(metadata_list, colnames)))
   commoncols <- names(commoncols)[commoncols==max(commoncols)]
+  commoncols <- unique(c("CID", "Sample", "InitSE", "CellType", commoncols))
   commoncols <- intersect(colnames(metadata_list[[1]]), commoncols)
   commoncols <- setdiff(commoncols, c("SpotID", "Spot.X", "Spot.Y"))
   metadatas <- do.call(rbind, lapply(metadata_list, function(x){ x[, commoncols] }))
@@ -116,9 +121,9 @@ IntegrateSpatialEcoTyper <- function(SpatialEcoTyper_list,
 
   message(Sys.time(), " Construct cell-type-specific gene expression signatures of spatial clusters")
   avgexpr_list <- mclapply(sample_names, function(ss){
-    avgexprs = ComputeAvgs(data_list[[ss]], metadata_list[[ss]],
-                           cluster = "InitSE", Region = Region,
-                           scale = TRUE, ncores = ncores)
+    avgexprs = ComputeFCs(data_list[[ss]], metadata_list[[ss]],
+                          cluster = "InitSE", Region = Region,
+                          scale = TRUE, ncores = ncores)
     return(avgexprs)
   }, mc.cores = ncores)
   #### Select common genes ####

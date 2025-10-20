@@ -12,15 +12,15 @@
 
 **Spatial EcoTyper** is available as an R package, with comprehensive documentation accessible at https://digitalcytometry.github.io/spatialecotyper. Additionally, Spatial EcoTyper can be used via the web platform at <a href="https://spatialecotyper.stanford.edu/">https://spatialecotyper.stanford.edu/</a> (will be available soon), a user-friendly interface for recovering spatial ecotypes from various data sources, including spatial transcriptomics (e.g. MERSCOPE, Visium, etc), single-cell RNA-seq, and bulk gene expression datasets.
 
-We provide 6 comprehensive tutorials illustrating the functionalities included in the SpatialEcoTyper R package. The first tutorial demonstrates how to identify spatial ecotypes from a single-cell spatial transcriptomics data. The second demonstrates how to identified conserved spatial ecotypes across multiple samples. The third demonstrates how to develop NMF models for recovery of spatial ecotypes from unseen data. The remaining tutorials introduce how to recover spatial ecotypes from spatial transcriptomics, scRNA-seq, and bulk RNA-seq datasets.
+We provide five comprehensive tutorials illustrating the functionalities included in the SpatialEcoTyper R package. The first tutorial demonstrates how to identify spatial ecotypes from a single-cell spatial transcriptomics data. The second demonstrates how to identified conserved spatial ecotypes across multiple samples. The third demonstrates how to develop NMF models for recovery of spatial ecotypes from unseen data. The remaining tutorials introduce how to recover spatial ecotypes from single-cell (scRNA-seq or single-cell spatial transcriptomics) and bulk (bulk RNA-seq or Visium) gene expression profiles.
 
 -   **Tutorial 1:** [Discovery of Spatial Ecotypes from A Single Sample](https://digitalcytometry.github.io/spatialecotyper/articles/SingleSample.html)
 -   **Tutorial 2:** [Discovery of Spatial Ecotypes from Multiple Samples](https://digitalcytometry.github.io/spatialecotyper/articles/Integration.html)
 -   **Tutorial 3:** [Development of NMF Models for Spatial Ecotype Recovery](https://digitalcytometry.github.io/spatialecotyper/articles/TrainRecoveryModels.html)
--   **Tutorial 4:** [Recovery of Spatial Ecotypes from Spatial Transcriptomics Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Spatial.html)
--   **Tutorial 5:** [Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html)
--   **Tutorial 6:** [Recovery of Spatial Ecotypes from Bulk Gene Expression Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Bulk.html)
+-   **Tutorial 4:** [Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html)
+-   **Tutorial 5:** [Recovery of Spatial Ecotypes from Bulk Gene Expression Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Bulk.html)
 
+Data used in the tutorials can be obtained from https://drive.google.com/open?id=1En0pgY6_3_u8XK2hTSTbrA9Iouhvc4TD&usp=drive_fs.
 
 **Note**: __Spatial EcoTyper__ depends extensively on Seurat for key processes like dimensionality reduction, UMAP embedding, clustering, and visualization. Initially developed using Seurat v4.3, the tool has been thoroughly tested and validated with Seurat v5. Although UMAP embeddings and clustering results show slight differences between Seurat v4 and v5, the overall consistency remains strong, ensuring that core biological insights are preserved across both versions.
 
@@ -91,7 +91,7 @@ install.packages("SpatialEcoTyper.tar.gz", repos = NULL)
 If you encounter any bugs or have suggestions for improvements, please feel free to open an [issue](https://github.com/digitalcytometry/spatialecotyper/issues) or submit a pull request. Your feedback and contributions help us make the tool better for everyone.
 
 ## License
-Please see the <a href="LICENSE" target="_blank">LICENSE</a> file.
+Please see the <a href="LICENSE.html" target="_blank">LICENSE</a> file.
 
 ## Authors
 

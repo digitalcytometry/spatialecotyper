@@ -13,7 +13,7 @@ and generate metacell expression profiles for each cell type."><meta property="o
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,6 @@ and generate metacell expression profiles for each cell type."><meta property="o
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul></li>
@@ -43,7 +42,7 @@ and generate metacell expression profiles for each cell type."><meta property="o
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Construct Spatial Metacells from Single-Cell Spatial Data</h1>
-      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/R/GetSpatialMetacells.R" class="external-link"><code>R/GetSpatialMetacells.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/R/GetSpatialMetacells.R" class="external-link"><code>R/GetSpatialMetacells.R</code></a></small>
       <div class="d-none name"><code>GetSpatialMetacells.Rd</code></div>
     </div>
 
@@ -108,19 +107,19 @@ annotations. The row names of the <code>metadata</code> must match the column na
 
 
 <dt id="arg-bin">bin<a class="anchor" aria-label="anchor" href="#arg-bin"></a></dt>
-<dd><p>Character string specifying the column name in <code>metadata</code> containing the microregion identifier.</p></dd>
+<dd><p>Character string specifying the column name in <code>metadata</code> containing the spatial neighborhood identifier.</p></dd>
 
 
 <dt id="arg-bin-x">bin.X<a class="anchor" aria-label="anchor" href="#arg-bin-x"></a></dt>
-<dd><p>Character string specifying the column name in <code>metadata</code> containing the X spatial coordinates of microregions.</p></dd>
+<dd><p>Character string specifying the column name in <code>metadata</code> containing the X spatial coordinates of spatial neighborhoods.</p></dd>
 
 
 <dt id="arg-bin-y">bin.Y<a class="anchor" aria-label="anchor" href="#arg-bin-y"></a></dt>
-<dd><p>Character string specifying the column name in <code>metadata</code> containing the Y spatial coordinates of microregions.</p></dd>
+<dd><p>Character string specifying the column name in <code>metadata</code> containing the Y spatial coordinates of spatial neighborhoods.</p></dd>
 
 
 <dt id="arg-min-cells-per-region">min.cells.per.region<a class="anchor" aria-label="anchor" href="#arg-min-cells-per-region"></a></dt>
-<dd><p>Integer specifying the minimum number of cells required in each spatial microregion to compute metacells.</p></dd>
+<dd><p>Integer specifying the minimum number of cells required in each spatial neighborhood to compute metacells.</p></dd>
 
 
 <dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>

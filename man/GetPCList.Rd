@@ -2,7 +2,7 @@
 % Please edit documentation in R/GetPCList.R
 \name{GetPCList}
 \alias{GetPCList}
-\title{Generate Principal Component (PC) List for Spatial Microregions}
+\title{Generate Principal Component (PC) List for Spatial Neighborhoods}
 \usage{
 GetPCList(
   mergedncem,
@@ -15,12 +15,12 @@ GetPCList(
 }
 \arguments{
 \item{mergedncem}{A matrix of cell-type-specific gene expression data, with rows
-representing genes and columns representing spatial microregions by cell type.}
+representing genes and columns representing spatial neighborhoods by cell type.}
 
 \item{min.cells}{Integer, minimum number of non-zero counts required per gene to retain the gene in the analysis. Default is 3.}
 
 \item{min.features}{Integer, minimum number of features (genes) required per
-spatial microregion to retain the microregion in the analysis. Default is 5.}
+spatial neighborhood to retain the neighborhood in the analysis. Default is 5.}
 
 \item{nfeatures}{Integer, number of variable features to select for PCA. Default is 3000.}
 
@@ -34,7 +34,7 @@ cell type. Cell types with insufficient data are excluded from the result.
 }
 \description{
 This function performs principal component analysis based on cell-type-specific
-gene expression of spatial microregions.
+gene expression of spatial neighborhoods.
 }
 \details{
 The function first filters the input matrix based on the specified minimum number

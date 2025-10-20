@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,6 @@
 <li><a class="dropdown-item" href="articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul>
@@ -76,7 +75,7 @@
 <h2 id="overview-of-spatial-ecotyper">Overview of Spatial EcoTyper<a class="anchor" aria-label="anchor" href="#overview-of-spatial-ecotyper"></a>
 </h2>
 <p><strong>Spatial EcoTyper</strong> is available as an R package, with comprehensive documentation accessible at <a href="https://digitalcytometry.github.io/spatialecotyper" class="uri">https://digitalcytometry.github.io/spatialecotyper</a>. Additionally, Spatial EcoTyper can be used via the web platform at <a href="https://spatialecotyper.stanford.edu/" class="external-link">https://spatialecotyper.stanford.edu/</a> (will be available soon), a user-friendly interface for recovering spatial ecotypes from various data sources, including spatial transcriptomics (e.g. MERSCOPE, Visium, etc), single-cell RNA-seq, and bulk gene expression datasets.</p>
-<p>We provide 6 comprehensive tutorials illustrating the functionalities included in the SpatialEcoTyper R package. The first tutorial demonstrates how to identify spatial ecotypes from a single-cell spatial transcriptomics data. The second demonstrates how to identified conserved spatial ecotypes across multiple samples. The third demonstrates how to develop NMF models for recovery of spatial ecotypes from unseen data. The remaining tutorials introduce how to recover spatial ecotypes from spatial transcriptomics, scRNA-seq, and bulk RNA-seq datasets.</p>
+<p>We provide five comprehensive tutorials illustrating the functionalities included in the SpatialEcoTyper R package. The first tutorial demonstrates how to identify spatial ecotypes from a single-cell spatial transcriptomics data. The second demonstrates how to identified conserved spatial ecotypes across multiple samples. The third demonstrates how to develop NMF models for recovery of spatial ecotypes from unseen data. The remaining tutorials introduce how to recover spatial ecotypes from single-cell (scRNA-seq or single-cell spatial transcriptomics) and bulk (bulk RNA-seq or Visium) gene expression profiles.</p>
 <ul>
 <li>
 <strong>Tutorial 1:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/SingleSample.html">Discovery of Spatial Ecotypes from A Single Sample</a>
@@ -88,16 +87,20 @@
 <strong>Tutorial 3:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a>
 </li>
 <li>
-<strong>Tutorial 4:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a>
+<strong>Tutorial 4:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a>
 </li>
 <li>
-<strong>Tutorial 5:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a>
-</li>
-<li>
-<strong>Tutorial 6:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a>
+<strong>Tutorial 5:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a>
 </li>
 </ul>
+<p>Data used in the tutorials can be obtained from <a href="https://drive.google.com/open?id=1En0pgY6_3_u8XK2hTSTbrA9Iouhvc4TD&amp;usp=drive_fs" class="external-link uri">https://drive.google.com/open?id=1En0pgY6_3_u8XK2hTSTbrA9Iouhvc4TD&amp;usp=drive_fs</a>.</p>
 <p><strong>Note</strong>: <strong>Spatial EcoTyper</strong> depends extensively on Seurat for key processes like dimensionality reduction, UMAP embedding, clustering, and visualization. Initially developed using Seurat v4.3, the tool has been thoroughly tested and validated with Seurat v5. Although UMAP embeddings and clustering results show slight differences between Seurat v4 and v5, the overall consistency remains strong, ensuring that core biological insights are preserved across both versions.</p>
+</div>
+<div class="section level2">
+<h2 id="system-requirements">System requirements<a class="anchor" aria-label="anchor" href="#system-requirements"></a>
+</h2>
+<p>This package is compatible with all operating systems and has been tested on the following platforms:</p>
+<p>macOS: Big Sur, Monterey, Ventura, Sonoma, Sequoia (15.2) Linux: CentOS 7.2 and High-Performance Computing (HPC) clusters</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>

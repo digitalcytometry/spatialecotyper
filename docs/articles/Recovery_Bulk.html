@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,6 @@
 <li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul>
@@ -69,7 +68,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Recovery of Spatial Ecotypes from Bulk Gene Expression Data</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/vignettes/Recovery_Bulk.Rmd" class="external-link"><code>vignettes/Recovery_Bulk.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/vignettes/Recovery_Bulk.Rmd" class="external-link"><code>vignettes/Recovery_Bulk.Rmd</code></a></small>
       <div class="d-none name"><code>Recovery_Bulk.Rmd</code></div>
     </div>
 
@@ -79,10 +78,8 @@
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>In this tutorial, we will demonstrate how to infer spatial ecotype
-(SE) abundances from bulk RNA-seq data. Specifically, we will infer SE
-abundances from RNA-seq data of TCGA melanoma samples. The gene
-expression matrix is available at <a href="https://drive.google.com/open?id=14RwnoxhIkGeLp6GXehmAXLvy8Ii2_COU&amp;usp=drive_fs" class="external-link">SKCM_RNASeqV2.geneExp.tsv</a>,
-which is a Transcripts Per Million (TPM) matrix obtained from the <a href="https://gdc.cancer.gov/about-data/publications/pancanatlas" class="external-link">PanCanAtlas</a>.</p>
+(SE) abundances from bulk gene expression profiles, including bulk
+RNA-seq and Visium spatial transcriptomics.</p>
 <p><strong>First load required packages for this vignette</strong></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://googledrive.tidyverse.org" class="external-link">googledrive</a></span><span class="op">)</span><span class="op">)</span></span>
@@ -91,8 +88,15 @@ which is a Transcripts Per Million (TPM) matrix obtained from the <a href="https
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://digitalcytometry.github/spatialecotyper" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="loading-bulk-expression-of-tcga-melanoma-samples">Loading bulk expression of TCGA melanoma samples<a class="anchor" aria-label="anchor" href="#loading-bulk-expression-of-tcga-melanoma-samples"></a>
+<h2 id="deconvolution-of-bulk-rna-seq-data-to-infer-se-levels">Deconvolution of bulk RNA-seq data to infer SE levels<a class="anchor" aria-label="anchor" href="#deconvolution-of-bulk-rna-seq-data-to-infer-se-levels"></a>
 </h2>
+<p>We will start with the SE deconvolution from bulk RNA-seq. We will
+use bulk RNA-seq data from TCGA melanoma (SKCM) samples for
+demonstration. The gene expression matrix is available at <a href="https://drive.google.com/open?id=14RwnoxhIkGeLp6GXehmAXLvy8Ii2_COU&amp;usp=drive_fs" class="external-link">SKCM_RNASeqV2.geneExp.tsv</a>,
+which is a Transcripts Per Million (TPM) matrix obtained from the <a href="https://gdc.cancer.gov/about-data/publications/pancanatlas" class="external-link">PanCanAtlas</a>.</p>
+<div class="section level3">
+<h3 id="loading-bulk-expression-of-tcga-melanoma-samples">Loading bulk expression of TCGA melanoma samples<a class="anchor" aria-label="anchor" href="#loading-bulk-expression-of-tcga-melanoma-samples"></a>
+</h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_deauth.html" class="external-link">drive_deauth</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># Disable Google sign-in requirement</span></span>
 <span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_download.html" class="external-link">drive_download</a></span><span class="op">(</span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_id.html" class="external-link">as_id</a></span><span class="op">(</span><span class="st">"14RwnoxhIkGeLp6GXehmAXLvy8Ii2_COU"</span><span class="op">)</span>, <span class="st">"SKCM_RNASeqV2.geneExp.tsv"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># download data from googledrive</span></span></code></pre></div>
@@ -116,20 +120,19 @@ which is a Transcripts Per Million (TPM) matrix obtained from the <a href="https
 <span><span class="co">## A2M         1740.5800</span></span>
 <span><span class="co">## A2ML1          0.5977</span></span></code></pre>
 </div>
-<div class="section level2">
-<h2 id="se-deconvolution">SE deconvolution<a class="anchor" aria-label="anchor" href="#se-deconvolution"></a>
-</h2>
+<div class="section level3">
+<h3 id="se-deconvolution">SE deconvolution<a class="anchor" aria-label="anchor" href="#se-deconvolution"></a>
+</h3>
 <p>The <a href="../reference/DeconvoluteSE.html">DeconvoluteSE</a>
-function infers SE abundances in bulk tissues. Users can choose to
-either use the default model, which estimates the abundance of
-predefined SEs, or apply a custom model to infer the abundance of newly
-defined SEs based on bulk gene expression data. Before prediction, the
-gene expression data will be log2-transformed (if the max value exceeds
-80), followed by normalization to have a mean of 0 and unit variance for
-each gene. To ensure accurate univariance normalization, a minimum
-sample size of 20 is recommended. For dataset with fewer samples, we
-would recommend to use public datasets as reference to estimate the mean
-and standard deviation</p>
+function infers SE abundances in bulk tissue samples. Users can either
+use the default model, which estimates the abundances of predefined SEs,
+or apply a custom model to infer the abundance of newly defined SEs from
+bulk gene expression data. Before prediction, <a href="../reference/DeconvoluteSE.html">DeconvoluteSE</a> automatically
+applies a log₂ transformation (if the maximum value exceeds 80) and
+standardizes the data so that each gene has a mean of 0 and a unit
+variance. To ensure reliable standardization, we recommend a minimum of
+20 samples. For smaller datasets, we recommend to combine them with a
+larger dataset for normalization prior to running <a href="../reference/DeconvoluteSE.html">DeconvoluteSE</a>.</p>
 <p>The default model is trained on pseudobulk gene expression data and
 predicts the abundances of nine predefined SEs along with a nonSE group,
 which primarily includes cancer cells and cells not associated with any
@@ -142,13 +145,13 @@ SEs, direct abundance comparisons between different SEs or with the
 nonSE group may not be meaningful. SEs represent distinct spatial
 multicellular communities, each defined by a unique combination of cell
 states.</p>
-<div class="section level3">
-<h3 id="using-default-model">Using default model<a class="anchor" aria-label="anchor" href="#using-default-model"></a>
-</h3>
+<div class="section level4">
+<h4 id="using-default-model">Using default model<a class="anchor" aria-label="anchor" href="#using-default-model"></a>
+</h4>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sefracs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DeconvoluteSE.html">DeconvoluteSE</a></span><span class="op">(</span><span class="va">bulkdata</span>, scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sefracs</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                      nonSE        SE1        SE2        SE3        SE4</span></span>
+<pre><code><span><span class="co">##                      NonSE        SE1        SE2        SE3        SE4</span></span>
 <span><span class="co">## TCGA.3N.A9WB.06 0.19380234 0.05372667 0.16735600 0.12581663 0.07216666</span></span>
 <span><span class="co">## TCGA.3N.A9WC.06 0.05293689 0.13901340 0.08427617 0.08372047 0.04243859</span></span>
 <span><span class="co">## TCGA.3N.A9WD.06 0.27200075 0.17114795 0.06288761 0.05641549 0.10166721</span></span>
@@ -162,10 +165,13 @@ states.</p>
 <span><span class="co">## TCGA.BF.A1PU.01 0.13404194 3.330034e-16 3.330034e-16 0.02543647 0.20449461</span></span>
 <span><span class="co">## TCGA.BF.A1PV.01 0.14669963 1.677658e-01 1.260194e-03 0.06961553 0.08622790</span></span>
 <span><span class="co">## TCGA.BF.A1PX.01 0.09930790 7.771710e-02 1.239738e-01 0.12590726 0.09923685</span></span></code></pre>
+<p><strong>Note</strong>: If your data are already standardized to have
+zero mean and unit variance per gene, set
+<code>scale = FALSE</code>.</p>
 </div>
-<div class="section level3">
-<h3 id="using-custom-model">Using custom model<a class="anchor" aria-label="anchor" href="#using-custom-model"></a>
-</h3>
+<div class="section level4">
+<h4 id="using-custom-model">Using custom model<a class="anchor" aria-label="anchor" href="#using-custom-model"></a>
+</h4>
 <p>After identifying SEs using <a href="../reference/SpatialEcoTyper.html">SpatialEcoTyper</a> or <a href="../reference/MultiSpatialEcoTyper.html">MultiSpatialEcoTyper</a>,
 users can develop a Non-Negative Matrix Factorization (NMF) model to
 deconvolve SEs from bulk tissue samples, following the tutorial
@@ -243,14 +249,97 @@ gene expression profiles by using the <a href="../reference/DeconvoluteSE.html">
 <code class="sourceCode R"><span><span class="va">sefracs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DeconvoluteSE.html">DeconvoluteSE</a></span><span class="op">(</span><span class="va">bulkdata</span>, W <span class="op">=</span> <span class="va">W</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
-<div class="section level2">
-<h2 id="visualization-of-se-abundances">Visualization of SE abundances<a class="anchor" aria-label="anchor" href="#visualization-of-se-abundances"></a>
-</h2>
+<div class="section level3">
+<h3 id="visualizing-se-abundances-across-samples">Visualizing SE abundances across samples<a class="anchor" aria-label="anchor" href="#visualizing-se-abundances-across-samples"></a>
+</h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">grid</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/HeatmapView.html">HeatmapView</a></span><span class="op">(</span><span class="va">sefracs</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.15</span>, <span class="fl">0.3</span><span class="op">)</span>, </span>
 <span>            show_row_names <span class="op">=</span> <span class="cn">FALSE</span>, cluster_rows <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Recovery_Bulk_files/figure-html/visualse-1.png" width="700"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="deconvolution-of-visium-data-to-infer-se-levels">Deconvolution of Visium data to infer SE levels<a class="anchor" aria-label="anchor" href="#deconvolution-of-visium-data-to-infer-se-levels"></a>
+</h2>
+<p>In this tutorial, we will demonstrate how to infer SE levels in
+Visium spots using a breast cancer sample. The expression data can be
+accessed from: <a href="https://drive.google.com/open?id=15D9LgvZmCZUfsL62cD67JMf8Jcq_UyuB&amp;usp=drive_fs" class="external-link">V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5</a>,
+which was obtained from <a href="https://www.10xgenomics.com/datasets" class="external-link">10x Genomics
+datasets</a>.</p>
+<div class="section level3">
+<h3 id="loading-data">Loading data<a class="anchor" aria-label="anchor" href="#loading-data"></a>
+</h3>
+<p>First, download the data from Google Drive</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_download.html" class="external-link">drive_download</a></span><span class="op">(</span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_id.html" class="external-link">as_id</a></span><span class="op">(</span><span class="st">"15D9LgvZmCZUfsL62cD67JMf8Jcq_UyuB"</span><span class="op">)</span>, <span class="st">"V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_download.html" class="external-link">drive_download</a></span><span class="op">(</span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_id.html" class="external-link">as_id</a></span><span class="op">(</span><span class="st">"15NTZc1HrW_gLS_pmi1ckYLw30kNarf4w"</span><span class="op">)</span>, <span class="st">"V1_Breast_Cancer_Block_A_Section_1_tissue_positions_list.csv"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">## This download should be done within 1 min.</span></span></code></pre></div>
+<p>Load the expression data into R using the <code>Read10X_h5</code>
+function from the Seurat package.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="st">"hdf5r"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"hdf5r"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://hhoeflin.github.io/hdf5r/" class="external-link">"hdf5r"</a></span><span class="op">)</span></span>
+<span><span class="co"># Load Visium gene expression matrix. Rows are genes, columns are spots.</span></span>
+<span><span class="va">visiumdat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/Read10X_h5.html" class="external-link">Read10X_h5</a></span><span class="op">(</span><span class="st">"V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5"</span><span class="op">)</span></span>
+<span><span class="co"># normalize the expression data</span></span>
+<span><span class="va">visiumdat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">visiumdat</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"V1_Breast_Cancer_Block_A_Section_1_tissue_positions_list.csv"</span>, </span>
+<span>                 header <span class="op">=</span> <span class="cn">FALSE</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">meta</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tissue"</span>, <span class="st">"row"</span>, <span class="st">"col"</span>, <span class="st">"imagerow"</span>, <span class="st">"imagecol"</span><span class="op">)</span></span>
+<span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="va">meta</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">visiumdat</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">meta</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##                    tissue row col imagerow imagecol</span></span>
+<span><span class="co">## AAACAAGTATCTCCCA-1      1  50 102    15632    17782</span></span>
+<span><span class="co">## AAACACCAATAACTGC-1      1  59  19    17734     6447</span></span>
+<span><span class="co">## AAACAGAGCGACTCCT-1      1  14  94     7079    16716</span></span>
+<span><span class="co">## AAACAGGGTCTATATT-1      1  47  13    14882     5637</span></span>
+<span><span class="co">## AAACAGTGTTCCTGGG-1      1  73  43    21069     9712</span></span>
+<span><span class="co">## AAACATTTCCCGGATT-1      1  61  97    18242    17091</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="se-deconvolution-1">SE deconvolution<a class="anchor" aria-label="anchor" href="#se-deconvolution-1"></a>
+</h3>
+<p>The process of SE deconvolution for Visium data is the same as for
+bulk RNA-seq data described above. We will use the same <a href="../reference/DeconvoluteSE.html">DeconvoluteSE</a> function. Here
+we’ll run SE deconvolution using the default model. For additional
+details on parameters and options, please refer to
+<code>Deconvolution of bulk RNA-seq data to infer SE levels</code>
+above.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sefracs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DeconvoluteSE.html">DeconvoluteSE</a></span><span class="op">(</span><span class="va">visiumdat</span>, scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sefracs</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##                         NonSE        SE1        SE2        SE3        SE4</span></span>
+<span><span class="co">## AAACAAGTATCTCCCA-1 0.05232099 0.05041149 0.10012837 0.07571055 0.12156545</span></span>
+<span><span class="co">## AAACACCAATAACTGC-1 0.18364314 0.09826717 0.09954508 0.15312700 0.17172335</span></span>
+<span><span class="co">## AAACAGAGCGACTCCT-1 0.07892363 0.18628624 0.05614935 0.14666072 0.08793592</span></span>
+<span><span class="co">## AAACAGGGTCTATATT-1 0.01745807 0.10309868 0.06961478 0.17559241 0.05575361</span></span>
+<span><span class="co">## AAACAGTGTTCCTGGG-1 0.15862994 0.02678254 0.23718907 0.01112368 0.08659772</span></span>
+<span><span class="co">## AAACATTTCCCGGATT-1 0.23539977 0.08190824 0.10742201 0.10051098 0.04179825</span></span>
+<span><span class="co">##                           SE5        SE6         SE7        SE8        SE9</span></span>
+<span><span class="co">## AAACAAGTATCTCCCA-1 0.23954159 0.03325773 0.094210882 0.12824410 0.10460885</span></span>
+<span><span class="co">## AAACACCAATAACTGC-1 0.04421240 0.03536673 0.032214566 0.07797078 0.10392979</span></span>
+<span><span class="co">## AAACAGAGCGACTCCT-1 0.05905418 0.08619887 0.191601732 0.02817472 0.07901464</span></span>
+<span><span class="co">## AAACAGGGTCTATATT-1 0.06850337 0.10667711 0.160825782 0.19010269 0.05237349</span></span>
+<span><span class="co">## AAACAGTGTTCCTGGG-1 0.24190862 0.07533104 0.007060598 0.06890341 0.08647337</span></span>
+<span><span class="co">## AAACATTTCCCGGATT-1 0.06918666 0.17898566 0.041112012 0.06446834 0.07920809</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="visualizing-se-abundances-across-visium-spots">Visualizing SE abundances across Visium spots<a class="anchor" aria-label="anchor" href="#visualizing-se-abundances-across-visium-spots"></a>
+</h3>
+<p>The <a href="../reference/SpatialView.html">SpatialView</a> function
+can be used to visualize SE levels across Visium spots.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="co">## attach the spatial coordinates to the matrix for visualization</span></span>
+<span><span class="va">gg</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">sefracs</span>, <span class="va">meta</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">sefracs</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">meta</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">gg</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">gg</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialView.html">SpatialView</a></span><span class="op">(</span><span class="va">gg</span>, by <span class="op">=</span> <span class="st">"SE7"</span>, X <span class="op">=</span> <span class="st">"imagerow"</span>, Y <span class="op">=</span> <span class="st">"imagecol"</span>, pt.size <span class="op">=</span> <span class="fl">3.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu">RColorBrewer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html" class="external-link">brewer.pal</a></span><span class="op">(</span><span class="fl">11</span>, <span class="st">"Spectral"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_fixed</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Recovery_Bulk_files/figure-html/DeconvoluteSE4-1.png" width="700"></p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
@@ -258,11 +347,11 @@ gene expression profiles by using the <a href="../reference/DeconvoluteSE.html">
 <p>The session info allows users to replicate the exact environment and
 identify potential discrepancies in package versions or configurations
 that might be causing problems.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">## Running under: macOS 15.1</span></span>
+<span><span class="co">## Running under: macOS 15.6.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>
@@ -279,58 +368,60 @@ that might be causing problems.</p>
 <span><span class="co">## [8] methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] SpatialEcoTyper_1.0.0 NMF_0.28              Biobase_2.64.0       </span></span>
-<span><span class="co">##  [4] BiocGenerics_0.50.0   cluster_2.1.6         rngtools_1.5.2       </span></span>
-<span><span class="co">##  [7] registry_0.5-1        dplyr_1.1.4           RANN_2.6.2           </span></span>
-<span><span class="co">## [10] Matrix_1.7-0          data.table_1.16.0     Seurat_5.1.0         </span></span>
-<span><span class="co">## [13] SeuratObject_5.0.2    sp_2.1-4              googledrive_2.1.1    </span></span>
+<span><span class="co">##  [1] ggplot2_3.5.1         hdf5r_1.3.11          SpatialEcoTyper_1.0.1</span></span>
+<span><span class="co">##  [4] NMF_0.28              Biobase_2.64.0        BiocGenerics_0.50.0  </span></span>
+<span><span class="co">##  [7] cluster_2.1.6         rngtools_1.5.2        registry_0.5-1       </span></span>
+<span><span class="co">## [10] dplyr_1.1.4           RANN_2.6.2            Matrix_1.7-0         </span></span>
+<span><span class="co">## [13] data.table_1.16.0     Seurat_5.1.0          SeuratObject_5.0.2   </span></span>
+<span><span class="co">## [16] sp_2.1-4              googledrive_2.1.1    </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] RColorBrewer_1.1-3     shape_1.4.6.1          rstudioapi_0.16.0     </span></span>
-<span><span class="co">##   [4] jsonlite_1.8.8         magrittr_2.0.3         magick_2.8.5          </span></span>
-<span><span class="co">##   [7] spatstat.utils_3.1-0   rmarkdown_2.28         GlobalOptions_0.1.2   </span></span>
-<span><span class="co">##  [10] fs_1.6.4               ragg_1.3.2             vctrs_0.6.5           </span></span>
-<span><span class="co">##  [13] ROCR_1.0-11            spatstat.explore_3.3-2 htmltools_0.5.8.1     </span></span>
-<span><span class="co">##  [16] curl_5.2.2             sass_0.4.9             sctransform_0.4.1     </span></span>
-<span><span class="co">##  [19] parallelly_1.38.0      KernSmooth_2.23-24     bslib_0.8.0           </span></span>
-<span><span class="co">##  [22] htmlwidgets_1.6.4      desc_1.4.3             ica_1.0-3             </span></span>
-<span><span class="co">##  [25] plyr_1.8.9             plotly_4.10.4          zoo_1.8-12            </span></span>
-<span><span class="co">##  [28] cachem_1.1.0           igraph_2.0.3           iterators_1.0.14      </span></span>
-<span><span class="co">##  [31] mime_0.12              lifecycle_1.0.4        pkgconfig_2.0.3       </span></span>
-<span><span class="co">##  [34] R6_2.5.1               fastmap_1.2.0          clue_0.3-65           </span></span>
-<span><span class="co">##  [37] fitdistrplus_1.2-1     future_1.34.0          shiny_1.9.1           </span></span>
-<span><span class="co">##  [40] digest_0.6.37          colorspace_2.1-1       S4Vectors_0.42.1      </span></span>
-<span><span class="co">##  [43] patchwork_1.2.0        tensor_1.5             RSpectra_0.16-2       </span></span>
-<span><span class="co">##  [46] irlba_2.3.5.1          textshaping_0.4.0      progressr_0.14.0      </span></span>
-<span><span class="co">##  [49] fansi_1.0.6            spatstat.sparse_3.1-0  httr_1.4.7            </span></span>
-<span><span class="co">##  [52] polyclip_1.10-7        abind_1.4-5            compiler_4.4.1        </span></span>
-<span><span class="co">##  [55] gargle_1.5.2           doParallel_1.0.17      fastDummies_1.7.4     </span></span>
-<span><span class="co">##  [58] highr_0.11             MASS_7.3-60.2          rjson_0.2.22          </span></span>
-<span><span class="co">##  [61] tools_4.4.1            lmtest_0.9-40          httpuv_1.6.15         </span></span>
-<span><span class="co">##  [64] future.apply_1.11.2    goftest_1.2-3          glue_1.7.0            </span></span>
-<span><span class="co">##  [67] nlme_3.1-164           promises_1.3.0         gridBase_0.4-7        </span></span>
-<span><span class="co">##  [70] Rtsne_0.17             reshape2_1.4.4         generics_0.1.3        </span></span>
-<span><span class="co">##  [73] gtable_0.3.5           spatstat.data_3.1-2    tidyr_1.3.1           </span></span>
-<span><span class="co">##  [76] utf8_1.2.4             spatstat.geom_3.3-2    RcppAnnoy_0.0.22      </span></span>
-<span><span class="co">##  [79] foreach_1.5.2          ggrepel_0.9.6          pillar_1.9.0          </span></span>
-<span><span class="co">##  [82] stringr_1.5.1          spam_2.10-0            RcppHNSW_0.6.0        </span></span>
-<span><span class="co">##  [85] later_1.3.2            circlize_0.4.16        splines_4.4.1         </span></span>
-<span><span class="co">##  [88] lattice_0.22-6         survival_3.6-4         deldir_2.0-4          </span></span>
-<span><span class="co">##  [91] tidyselect_1.2.1       ComplexHeatmap_2.20.0  miniUI_0.1.1.1        </span></span>
-<span><span class="co">##  [94] pbapply_1.7-2          knitr_1.48             gridExtra_2.3         </span></span>
-<span><span class="co">##  [97] IRanges_2.38.1         scattermore_1.2        stats4_4.4.1          </span></span>
-<span><span class="co">## [100] xfun_0.47              matrixStats_1.4.1      stringi_1.8.4         </span></span>
-<span><span class="co">## [103] lazyeval_0.2.2         yaml_2.3.10            evaluate_0.24.0       </span></span>
-<span><span class="co">## [106] codetools_0.2-20       tibble_3.2.1           BiocManager_1.30.25   </span></span>
-<span><span class="co">## [109] cli_3.6.3              uwot_0.2.2             xtable_1.8-4          </span></span>
-<span><span class="co">## [112] reticulate_1.39.0      systemfonts_1.1.0      munsell_0.5.1         </span></span>
-<span><span class="co">## [115] jquerylib_0.1.4        Rcpp_1.0.13            globals_0.16.3        </span></span>
-<span><span class="co">## [118] spatstat.random_3.3-1  png_0.1-8              spatstat.univar_3.0-1 </span></span>
-<span><span class="co">## [121] pkgdown_2.1.0          ggplot2_3.5.1          dotCall64_1.1-1       </span></span>
-<span><span class="co">## [124] listenv_0.9.1          viridisLite_0.4.2      scales_1.3.0          </span></span>
-<span><span class="co">## [127] ggridges_0.5.6         crayon_1.5.3           leiden_0.4.3.1        </span></span>
-<span><span class="co">## [130] purrr_1.0.2            GetoptLong_1.0.5       rlang_1.1.4           </span></span>
-<span><span class="co">## [133] cowplot_1.1.3</span></span></code></pre>
+<span><span class="co">##   [1] RcppAnnoy_0.0.22       splines_4.4.1          later_1.3.2           </span></span>
+<span><span class="co">##   [4] tibble_3.2.1           polyclip_1.10-7        fastDummies_1.7.4     </span></span>
+<span><span class="co">##   [7] lifecycle_1.0.4        doParallel_1.0.17      globals_0.16.3        </span></span>
+<span><span class="co">##  [10] lattice_0.22-6         MASS_7.3-60.2          magrittr_2.0.3        </span></span>
+<span><span class="co">##  [13] plotly_4.10.4          sass_0.4.9             rmarkdown_2.28        </span></span>
+<span><span class="co">##  [16] jquerylib_0.1.4        yaml_2.3.10            httpuv_1.6.15         </span></span>
+<span><span class="co">##  [19] sctransform_0.4.1      spam_2.10-0            spatstat.sparse_3.1-0 </span></span>
+<span><span class="co">##  [22] reticulate_1.39.0      cowplot_1.1.3          pbapply_1.7-2         </span></span>
+<span><span class="co">##  [25] RColorBrewer_1.1-3     abind_1.4-5            Rtsne_0.17            </span></span>
+<span><span class="co">##  [28] purrr_1.0.2            circlize_0.4.16        IRanges_2.38.1        </span></span>
+<span><span class="co">##  [31] S4Vectors_0.42.1       ggrepel_0.9.6          irlba_2.3.5.1         </span></span>
+<span><span class="co">##  [34] listenv_0.9.1          spatstat.utils_3.1-0   goftest_1.2-3         </span></span>
+<span><span class="co">##  [37] RSpectra_0.16-2        spatstat.random_3.3-1  fitdistrplus_1.2-1    </span></span>
+<span><span class="co">##  [40] parallelly_1.38.0      pkgdown_2.1.0          leiden_0.4.3.1        </span></span>
+<span><span class="co">##  [43] codetools_0.2-20       tidyselect_1.2.1       shape_1.4.6.1         </span></span>
+<span><span class="co">##  [46] farver_2.1.2           matrixStats_1.4.1      stats4_4.4.1          </span></span>
+<span><span class="co">##  [49] spatstat.explore_3.3-2 jsonlite_1.8.8         GetoptLong_1.0.5      </span></span>
+<span><span class="co">##  [52] progressr_0.14.0       ggridges_0.5.6         survival_3.6-4        </span></span>
+<span><span class="co">##  [55] iterators_1.0.14       systemfonts_1.1.0      foreach_1.5.2         </span></span>
+<span><span class="co">##  [58] tools_4.4.1            ragg_1.3.2             ica_1.0-3             </span></span>
+<span><span class="co">##  [61] Rcpp_1.0.13            glue_1.7.0             gridExtra_2.3         </span></span>
+<span><span class="co">##  [64] xfun_0.52              withr_3.0.1            BiocManager_1.30.25   </span></span>
+<span><span class="co">##  [67] fastmap_1.2.0          fansi_1.0.6            digest_0.6.37         </span></span>
+<span><span class="co">##  [70] R6_2.5.1               mime_0.12              textshaping_0.4.0     </span></span>
+<span><span class="co">##  [73] colorspace_2.1-1       scattermore_1.2        tensor_1.5            </span></span>
+<span><span class="co">##  [76] spatstat.data_3.1-2    utf8_1.2.4             tidyr_1.3.1           </span></span>
+<span><span class="co">##  [79] generics_0.1.3         httr_1.4.7             htmlwidgets_1.6.4     </span></span>
+<span><span class="co">##  [82] uwot_0.2.2             pkgconfig_2.0.3        gtable_0.3.5          </span></span>
+<span><span class="co">##  [85] ComplexHeatmap_2.20.0  lmtest_0.9-40          htmltools_0.5.8.1     </span></span>
+<span><span class="co">##  [88] dotCall64_1.1-1        clue_0.3-65            scales_1.3.0          </span></span>
+<span><span class="co">##  [91] png_0.1-8              spatstat.univar_3.0-1  knitr_1.48            </span></span>
+<span><span class="co">##  [94] rstudioapi_0.16.0      reshape2_1.4.4         rjson_0.2.22          </span></span>
+<span><span class="co">##  [97] nlme_3.1-164           curl_5.2.2             cachem_1.1.0          </span></span>
+<span><span class="co">## [100] zoo_1.8-12             GlobalOptions_0.1.2    stringr_1.5.1         </span></span>
+<span><span class="co">## [103] KernSmooth_2.23-24     miniUI_0.1.1.1         desc_1.4.3            </span></span>
+<span><span class="co">## [106] pillar_1.9.0           vctrs_0.6.5            promises_1.3.0        </span></span>
+<span><span class="co">## [109] xtable_1.8-4           evaluate_0.24.0        magick_2.8.5          </span></span>
+<span><span class="co">## [112] cli_3.6.3              compiler_4.4.1         rlang_1.1.4           </span></span>
+<span><span class="co">## [115] crayon_1.5.3           future.apply_1.11.2    labeling_0.4.3        </span></span>
+<span><span class="co">## [118] plyr_1.8.9             fs_1.6.4               stringi_1.8.4         </span></span>
+<span><span class="co">## [121] viridisLite_0.4.2      deldir_2.0-4           gridBase_0.4-7        </span></span>
+<span><span class="co">## [124] munsell_0.5.1          lazyeval_0.2.2         spatstat.geom_3.3-2   </span></span>
+<span><span class="co">## [127] RcppHNSW_0.6.0         patchwork_1.2.0        bit64_4.5.2           </span></span>
+<span><span class="co">## [130] future_1.34.0          shiny_1.9.1            highr_0.11            </span></span>
+<span><span class="co">## [133] ROCR_1.0-11            gargle_1.5.2           igraph_2.0.3          </span></span>
+<span><span class="co">## [136] bslib_0.8.0            bit_4.5.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

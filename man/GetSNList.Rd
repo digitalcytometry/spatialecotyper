@@ -27,7 +27,7 @@ The rows and columns of each matrix correspond to spatial regions, and the value
 }
 \description{
 This function generates a list of similarity networks (SNs) for a given list of embeddings.
-The embeddings represent spatial microregions, and the function computes K-nearest neighbor (KNN)
+The embeddings represent spatial neighborhoods, and the function computes K-nearest neighbor (KNN)
 graphs based on the provided embeddings to create similarity matrices.
 }
 \details{

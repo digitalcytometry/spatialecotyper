@@ -4,7 +4,7 @@
 \alias{SNF2}
 \title{Enhanced Similarity Network Fusion}
 \usage{
-SNF2(Wall, K = 50, t = 5, minibatch = 5000, ncores = 1, verbose = FALSE)
+SNF2(Wall, K = 10, t = 10, minibatch = 5000, ncores = 4, verbose = FALSE)
 }
 \arguments{
 \item{Wall}{List of similarity matrices. Each element of the list is a square,

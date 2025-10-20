@@ -9,7 +9,7 @@ It takes a factorization matrix W representing a pretrained NMF model and a nume
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,6 @@ It takes a factorization matrix W representing a pretrained NMF model and a nume
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul></li>
@@ -39,7 +38,7 @@ It takes a factorization matrix W representing a pretrained NMF model and a nume
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Prediction Using Pretrained NMF Model</h1>
-      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/R/NMFpredict.R" class="external-link"><code>R/NMFpredict.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/R/NMFpredict.R" class="external-link"><code>R/NMFpredict.R</code></a></small>
       <div class="d-none name"><code>NMFpredict.Rd</code></div>
     </div>
 
@@ -50,7 +49,14 @@ It takes a factorization matrix W representing a pretrained NMF model and a nume
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">NMFpredict</span><span class="op">(</span><span class="va">W</span>, <span class="va">testdat</span>, scale <span class="op">=</span> <span class="cn">FALSE</span>, ncell.per.run <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">NMFpredict</span><span class="op">(</span></span>
+<span>  <span class="va">W</span>,</span>
+<span>  <span class="va">testdat</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  ncell.per.run <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  sum2one <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ncores <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -72,10 +78,19 @@ It takes a factorization matrix W representing a pretrained NMF model and a nume
 <dt id="arg-ncell-per-run">ncell.per.run<a class="anchor" aria-label="anchor" href="#arg-ncell-per-run"></a></dt>
 <dd><p>Integer specifying the maximum number of cells per NMF prediction run to avoid memory issues.</p></dd>
 
+
+<dt id="arg-sum-one">sum2one<a class="anchor" aria-label="anchor" href="#arg-sum-one"></a></dt>
+<dd><p>Logical. If `TRUE`, normalizes the predicted scores so that
+they sum to 1 for each sample.</p></dd>
+
+
+<dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
+<dd><p>Integer specifying the number of CPU cores to use for parallel processing.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A matrix representing the NMF prediction scores.</p>
+    <p>A matrix representing the NMF prediction scores, with rows as samples/cells and columns as SE groups.</p>
     </div>
 
     <div class="section level2">
@@ -94,20 +109,13 @@ It takes a factorization matrix W representing a pretrained NMF model and a nume
 <span class="r-in"><span><span class="co"># Predict SE abundances in bulk tumors</span></span></span>
 <span class="r-in"><span><span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu">NMFpredict</span><span class="op">(</span>W <span class="op">=</span> <span class="va">W</span>, <span class="va">bulkdata</span>, scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">preds</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       TCGA-3N-A9WB-06 TCGA-3N-A9WC-06 TCGA-3N-A9WD-06 TCGA-BF-A1PU-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> nonSE      0.10378493     0.031103139     0.469932888      0.12913097</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE1        0.08326065     0.063022079     0.151414386      0.18470256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE2        0.25368726     0.051110136     0.068248720      0.09710288</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE3        0.09417615     0.173416088     0.004969678      0.06966202</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE4        0.07931696     0.028829349     0.056418588      0.16008800</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE5        0.05088193     0.003203951     0.056310297      0.05303787</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       TCGA-BF-A1PV-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> nonSE      0.10221472</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE1        0.05277487</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE2        0.05740510</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE3        0.15960054</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE4        0.12876903</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SE5        0.12002292</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      NonSE        SE1        SE2         SE3        SE4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA-3N-A9WB-06 0.10378493 0.08326065 0.25368726 0.094176154 0.07931696</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA-3N-A9WC-06 0.03110314 0.06302208 0.05111014 0.173416088 0.02882935</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA-3N-A9WD-06 0.46412765 0.15760965 0.07094936 0.007223942 0.05750158</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA-BF-A1PU-01 0.12913097 0.18470256 0.09710288 0.069662022 0.16008800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA-BF-A1PV-01 0.10221472 0.05277487 0.05740510 0.159600536 0.12876903</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA-BF-A1PX-01 0.28552813 0.01531421 0.07115704 0.010845747 0.07130197</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -13,7 +13,7 @@ The new function supports sparse matrix and missing data in the input matrices."
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,6 @@ The new function supports sparse matrix and missing data in the input matrices."
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul></li>
@@ -43,7 +42,7 @@ The new function supports sparse matrix and missing data in the input matrices."
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Enhanced Similarity Network Fusion</h1>
-      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/R/SNF2.R" class="external-link"><code>R/SNF2.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/R/SNF2.R" class="external-link"><code>R/SNF2.R</code></a></small>
       <div class="d-none name"><code>SNF2.Rd</code></div>
     </div>
 
@@ -56,7 +55,7 @@ The new function supports sparse matrix and missing data in the input matrices.<
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">SNF2</span><span class="op">(</span><span class="va">Wall</span>, K <span class="op">=</span> <span class="fl">50</span>, t <span class="op">=</span> <span class="fl">5</span>, minibatch <span class="op">=</span> <span class="fl">5000</span>, ncores <span class="op">=</span> <span class="fl">1</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">SNF2</span><span class="op">(</span><span class="va">Wall</span>, K <span class="op">=</span> <span class="fl">10</span>, t <span class="op">=</span> <span class="fl">10</span>, minibatch <span class="op">=</span> <span class="fl">5000</span>, ncores <span class="op">=</span> <span class="fl">4</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">

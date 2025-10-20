@@ -4,7 +4,7 @@
 \alias{drawRectangleAnnotation}
 \title{Draw Rectangle Annotations}
 \usage{
-drawRectangleAnnotation(rows, columns)
+drawRectangleAnnotation(rows, columns, col = "black")
 }
 \arguments{
 \item{rows}{A vector of row identifiers.}

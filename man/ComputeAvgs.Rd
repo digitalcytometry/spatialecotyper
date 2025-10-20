@@ -66,3 +66,4 @@ avgexprs <- ComputeAvgs(normdata = normdata, scmeta = metadata)
 head(avgexprs)
 
 }
+\keyword{internal}

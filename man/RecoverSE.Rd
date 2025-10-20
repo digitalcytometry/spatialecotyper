@@ -4,32 +4,43 @@
 \alias{RecoverSE}
 \title{Recovery of SEs Using Pretrained NMF Models}
 \usage{
-RecoverSE(dat, scale = TRUE, Ws = NULL, celltypes = NULL, se_results = NULL)
+RecoverSE(
+  dat,
+  celltypes = NULL,
+  scale = TRUE,
+  ncell.per.run = 500,
+  Ws = NULL,
+  ncores = 1,
+  se_results = NULL
+)
 }
 \arguments{
-\item{dat}{A numeric matrix of gene expression data, from single-cell spatial
-transcriptomics, scRNA-seq or spot-resolution spatial transcriptomics data.}
+\item{dat}{A numeric (sparse) matrix of gene expression data, from single-cell spatial
+transcriptomics or scRNA-seq data.}
 
-\item{scale}{Logical indicating whether to scale the input data for predictions.}
+\item{celltypes}{Character vector specifying the cell type annotations for cells included in the gene expression `dat`.
+If you're using the default model, cell types like B, CD4T, CD8T, NK, Plasma, Macrophage, DC, Fibroblast, Endothelial are expected.}
+
+\item{scale}{Logical indicating whether to perform unit-variance normalization (default: TRUE). Change it with caution.}
+
+\item{ncell.per.run}{Integer specifying the maximum number of cells per NMF prediction run to avoid memory issues.}
 
 \item{Ws}{A list of cell-type-specific W matrices used to recover SE-specific
 cell states. Each element in the list should be named after the corresponding
 cell type and contain a W matrix from an NMF model.}
 
-\item{celltypes}{Character string specifying the cell type annotations, which
-is required for scRNA-seq or single-cell spatial data.}
+\item{ncores}{Integer specifying the number of CPU cores to use for parallel processing (default: 1).}
 
 \item{se_results}{A list including a seurat object and a metadata with spatial
 cluster annotations (SE column) returned by SpatialEcoTyper. When supplied, the `dat`
 should be single cell gene expression data used for the SpatialEcoTyper analysis.}
 }
 \value{
-Depending on the input data:
-- For single-cell data: A vector of predicted SEs for each cell.
-- For spot-resolution data (e.g., Visium): A matrix of SE abundances across spots.
+A data frame with four columns, including CID (cell id), CellType (cell type),
+SE (spatial ecotype), and PredScore (prediction probability for the assigned SE).
 }
 \description{
-This function can recover SEs from Visium, scRNA-seq data or single-cell spatial data.
+This function can recover SEs from scRNA-seq data or single-cell spatial data by assigning each single cell to an SE or NonSE.
 }
 \examples{
 # see https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html

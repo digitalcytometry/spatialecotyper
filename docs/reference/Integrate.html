@@ -9,7 +9,7 @@ gene expression signature of spatial clusters from all samples."><meta property=
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,6 @@ gene expression signature of spatial clusters from all samples."><meta property=
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul></li>
@@ -39,7 +38,7 @@ gene expression signature of spatial clusters from all samples."><meta property=
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Integrate Spatial Clusters From Multiple Samples Via Similarity Network Fusion</h1>
-      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/R/Integrate.R" class="external-link"><code>R/Integrate.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/R/Integrate.R" class="external-link"><code>R/Integrate.R</code></a></small>
       <div class="d-none name"><code>Integrate.Rd</code></div>
     </div>
 
@@ -53,7 +52,7 @@ gene expression signature of spatial clusters from all samples.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">Integrate</span><span class="op">(</span></span>
 <span>  <span class="va">avgexprs</span>,</span>
 <span>  Region <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  nfeatures <span class="op">=</span> <span class="fl">3000</span>,</span>
+<span>  nfeatures <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  min.features <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  minibatch <span class="op">=</span> <span class="fl">5000</span>,</span>
 <span>  ncores <span class="op">=</span> <span class="fl">1</span></span>
@@ -65,7 +64,8 @@ gene expression signature of spatial clusters from all samples.</p>
 
 
 <dl><dt id="arg-avgexprs">avgexprs<a class="anchor" aria-label="anchor" href="#arg-avgexprs"></a></dt>
-<dd><p>Gene expression signature of spatial clusters, where each column represents a spatial cluster.</p></dd>
+<dd><p>Gene expression signature of spatial clusters, where each
+column represents a spatial cluster (celltype..gene x spatial cluster matrix).</p></dd>
 
 
 <dt id="arg-region">Region<a class="anchor" aria-label="anchor" href="#arg-region"></a></dt>

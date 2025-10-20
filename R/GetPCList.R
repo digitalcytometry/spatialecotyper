@@ -1,13 +1,13 @@
-#' Generate Principal Component (PC) List for Spatial Microregions
+#' Generate Principal Component (PC) List for Spatial Neighborhoods
 #'
 #' This function performs principal component analysis based on cell-type-specific
-#' gene expression of spatial microregions.
+#' gene expression of spatial neighborhoods.
 #'
 #' @param mergedncem A matrix of cell-type-specific gene expression data, with rows
-#' representing genes and columns representing spatial microregions by cell type.
+#' representing genes and columns representing spatial neighborhoods by cell type.
 #' @param min.cells Integer, minimum number of non-zero counts required per gene to retain the gene in the analysis. Default is 3.
 #' @param min.features Integer, minimum number of features (genes) required per
-#' spatial microregion to retain the microregion in the analysis. Default is 5.
+#' spatial neighborhood to retain the neighborhood in the analysis. Default is 5.
 #' @param nfeatures Integer, number of variable features to select for PCA. Default is 3000.
 #' @param ncores Integer, number of cores to use for parallel processing. Default is 1.
 #' @param do.scale Logical, whether to scale data before performing PCA. Default is TRUE.
@@ -31,7 +31,7 @@ GetPCList <- function(mergedncem,
                       ncores = 1, do.scale = TRUE){
   celltypes <- gsub(".*\\.+", "", colnames(mergedncem))
   emb_list <- parallel::mclapply(unique(celltypes), function(ct){
-    ncem = mergedncem[, which(celltypes==ct)]
+    ncem = mergedncem[, which(celltypes==ct), drop = FALSE]
     colnames(ncem) = gsub("\\.+.*", "", colnames(ncem))
     if(sum(rowSums(ncem>0)>=min.cells)<min.features) return(NULL)
     ncem = ncem[rowSums(ncem>0)>=min.cells, ]
@@ -51,7 +51,8 @@ GetPCList <- function(mergedncem,
 
   idx <- unlist(lapply(emb_list, is.null))
   if(sum(idx)>0){
-    warning("\t\tExclude ", paste0(unique(celltypes)[idx], collapse = ", "), " due to limited number of spatial metacells\n")
+    warning("\t\tExclude ", paste0(unique(celltypes)[idx], collapse = ", "),
+            " due to limited number of spatial metacells\n")
     emb_list <- emb_list[!idx]
   }
   emb_list

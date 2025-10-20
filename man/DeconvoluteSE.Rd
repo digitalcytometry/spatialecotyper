@@ -2,22 +2,38 @@
 % Please edit documentation in R/DeconvoluteSE.R
 \name{DeconvoluteSE}
 \alias{DeconvoluteSE}
-\title{Infer SE Abundances Using Pretrained NMF Model}
+\title{Infer SE Abundances Using a Pretrained NMF Model}
 \usage{
-DeconvoluteSE(dat, scale = TRUE, W = NULL)
+DeconvoluteSE(
+  dat,
+  scale = TRUE,
+  W = NULL,
+  nsample.per.run = 500,
+  sum2one = TRUE,
+  ncores = 1
+)
 }
 \arguments{
-\item{dat}{A numeric matrix of bulk gene expression data.}
+\item{dat}{A numeric matrix of gene expression data, e.g. TPM matrix for bulk RNA-seq data, logCPM matrix for Visium data etc.}
 
-\item{scale}{Logical indicating whether to scale the input data for predictions.}
+\item{scale}{Logical. If `TRUE`, the input data is scaled before making predictions.}
 
-\item{W}{A W matrix for inferring SE abundances from bulk expression data.}
+\item{W}{A numeric matrix representing the basis matrix (`W`) from a pretrained NMF model.}
+
+\item{nsample.per.run}{Integer specifying the maximum number of samples to process per
+prediction run to manage memory usage efficiently.}
+
+\item{sum2one}{Logical. If `TRUE`, normalizes the predicted SE abundances so that
+they sum to 1 for each sample.}
+
+\item{ncores}{Integer specifying the number of CPU cores to use for parallel processing.}
 }
 \value{
 A matrix of SE abundances in bulk tumors.
 }
 \description{
-This function predicts SE abundances in each mixture.
+This function estimates the abundances of SEs in bulk tumor gene expression data
+using a provided basis matrix (`W`) from NMF model.
 }
 \examples{
 library(googledrive)

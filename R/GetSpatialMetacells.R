@@ -15,10 +15,10 @@
 #' @param CellType Character string specifying the column name in \code{metadata} containing the cell type annotations.
 #' @param k Integer specifying the number of nearest spatial neighbors for constructing metacells.
 #' @param radius Numeric value specifying the radius (in units of spatial coordinates) within which neighboring cells are considered.
-#' @param bin Character string specifying the column name in \code{metadata} containing the microregion identifier.
-#' @param bin.X Character string specifying the column name in \code{metadata} containing the X spatial coordinates of microregions.
-#' @param bin.Y Character string specifying the column name in \code{metadata} containing the Y spatial coordinates of microregions.
-#' @param min.cells.per.region Integer specifying the minimum number of cells required in each spatial microregion to compute metacells.
+#' @param bin Character string specifying the column name in \code{metadata} containing the spatial neighborhood identifier.
+#' @param bin.X Character string specifying the column name in \code{metadata} containing the X spatial coordinates of spatial neighborhoods.
+#' @param bin.Y Character string specifying the column name in \code{metadata} containing the Y spatial coordinates of spatial neighborhoods.
+#' @param min.cells.per.region Integer specifying the minimum number of cells required in each spatial neighborhood to compute metacells.
 #' @param ncores Integer specifying the number of CPU cores to use for parallel processing (default: 1).
 #'
 #' @return A matrix containing the spatial metacell expression profiles, with rows representing individual genes
@@ -81,8 +81,8 @@ GetSpatialMetacells <- function(normdata, metadata,
     bin = "SpotID"
   }
   metadata$SpotID <- metadata[, bin]
-  celltypes <- metadata %>% count(CellType, SpotID) %>%
-    count(CellType) %>% filter(n>4) %>% pull(CellType)
+  celltypes <- metadata %>% dplyr::count(CellType, SpotID) %>%
+    dplyr::count(CellType) %>% filter(n>4) %>% pull(CellType)
   exclude <- setdiff(unique(metadata$CellType), celltypes)
   if(length(exclude)>0) message("\t\tExclude ", paste0(exclude, collapse = ", "), " due to limited number of spatial metacells")
 

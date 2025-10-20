@@ -3,7 +3,8 @@
 #' This function identifies conserved spatial ecotypes based on cell type specific
 #' gene expression signature of spatial clusters from all samples.
 #'
-#' @param avgexprs Gene expression signature of spatial clusters, where each column represents a spatial cluster.
+#' @param avgexprs Gene expression signature of spatial clusters, where each
+#' column represents a spatial cluster (celltype..gene x spatial cluster matrix).
 #' @param Region A character vector specifying the region annotations for all spatial clusters.
 #' @param nfeatures Integer specifying the maximum number of top variable genes to select for each cell type.
 #' @param min.features Integer specifying the minimum number of shared features (genes) required across samples.
@@ -12,9 +13,10 @@
 #' @param ncores Integer specifying the number of cores for parallel processing. Default is 1.
 #'
 #' @return Integrated similarity matrix of spatial clusters across all samples.
+#' @export
 #'
 Integrate <- function(avgexprs, Region = NULL,
-                      nfeatures = 3000,
+                      nfeatures = 200,
                       min.features = 5,
                       minibatch = 5000,
                       ncores = 1){
@@ -23,6 +25,7 @@ Integrate <- function(avgexprs, Region = NULL,
   if(!is.null(Region)) names(Region) <- colnames(avgexprs)
   cors_rank = mclapply(unique(celltypes), function(ct){
     tmpdat = avgexprs[celltypes==ct, ]
+    if(nrow(tmpdat)<=min.features) return(NULL)
     tmpdat = tmpdat[, colSums(!is.na(tmpdat))>min.features]
     tmpdat = tmpdat[, colSums(tmpdat!=0, na.rm = TRUE)>min.features]
     # Select variable genes
@@ -38,9 +41,9 @@ Integrate <- function(avgexprs, Region = NULL,
     vars = vars[1:min(length(vars), nfeatures)]
     if(length(vars) < min.features) return(NULL)
     tmpdat = tmpdat[vars, ]
-    tmpcor = suppressWarnings(cor(as.matrix(tmpdat), method = "spearman"))
+    tmpcor = suppressWarnings(cor(as.matrix(tmpdat), method = "pearson"))
     tmpcor[is.na(tmpcor)] = 0
-    tmpcor[tmpcor<0] = 0
+    # tmpcor[tmpcor<0] = 0
 
     if(!is.null(Region)){ # Add weights to spatial clusters in the same region
       tmpregion = Region[rownames(tmpcor)]

@@ -9,8 +9,15 @@
   }else{
     trainig_gene_set = intersect(rownames(W), rownames(testdat))
   }
+  if(length(trainig_gene_set)<5){
+    H0 = matrix(NA, nrow = ncol(testdat), ncol = ncol(W))
+    rownames(H0) = colnames(testdat)
+    colnames(H0) = colnames(W)
+    warning("Too few genes (<5) overlap with the model. Return NA predictions. ")
+    return(t(H0))
+  }
   testdat = testdat[match(trainig_gene_set, rownames(testdat)), ]
-  if(scale){ testdat <- t(scale(t(testdat))) }
+  if(scale){ testdat <- Seurat::ScaleData(testdat, verbose = FALSE) }
   testdat[is.na(testdat)] = 0
   rownames(testdat) = trainig_gene_set
   testdat <- as.matrix(testdat)
@@ -76,8 +83,11 @@
 #' @param testdat Numeric matrix containing the new data for which NMF scores are to be predicted.
 #' @param scale Logical indicating whether to scale the input data.
 #' @param ncell.per.run Integer specifying the maximum number of cells per NMF prediction run to avoid memory issues.
+#' @param sum2one Logical. If `TRUE`, normalizes the predicted scores so that
+#' they sum to 1 for each sample.
+#' @param ncores Integer specifying the number of CPU cores to use for parallel processing.
 #'
-#' @return A matrix representing the NMF prediction scores.
+#' @return A matrix representing the NMF prediction scores, with rows as samples/cells and columns as SE groups.
 #'
 #' @examples
 #' library(googledrive)
@@ -96,19 +106,32 @@
 
 NMFpredict <- function(W, testdat,
                        scale = FALSE,
-                       ncell.per.run = 500){
+                       ncell.per.run = 500,
+                       sum2one = TRUE,
+                       ncores = 1){
   ## Prediction
+  if(!scale) warning("Unit-variance normalization is essential for the prediction.")
+  testdat = testdat[rownames(testdat) %in% gsub("_.*", "", rownames(W)), ]
+
+  ngenes = colSums(testdat>0)
+  cantpred = colnames(testdat)[ngenes<3]
+  if(length(cantpred)>0){
+    warning(length(cantpred), " samples are omitted due to lack of model gene expression")
+  }
+  testdat = testdat[, ngenes>=3, drop = FALSE]
+
+  if(scale) testdat = Seurat::ScaleData(testdat, verbose = FALSE)
   if(ncol(testdat)>ncell.per.run){
     nfold <- round(ncol(testdat)/ncell.per.run)
     ncells <- ceiling(ncol(testdat)/nfold)
     H <- mclapply(1:nfold, function(x){
       idx <- ((x-1)*ncells+1):min(ncol(testdat), x*ncells)
       tmpdat2 <- testdat[, idx]
-      .nmf.predict(W, tmpdat2, scale = scale, normalize = TRUE)
-    })
+      .nmf.predict(W, tmpdat2, scale = FALSE, normalize = sum2one)
+    }, mc.cores = ncores)
     H <- do.call(cbind, H)
   }else{
-    H = .nmf.predict(W, testdat, scale = scale, normalize = TRUE)
+    H = .nmf.predict(W, testdat, scale = FALSE, normalize = sum2one)
   }
-  return(H)
+  return(t(H))
 }

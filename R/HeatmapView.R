@@ -228,7 +228,7 @@ heatmap_annotation <- function(df, palettes = NULL,
 #' drawRectangleAnnotation(rowann$Group, colann$Group)
 #'
 #' @export
-drawRectangleAnnotation <- function(rows, columns){
+drawRectangleAnnotation <- function(rows, columns, col = "black"){
   levels = union(unique(rows), levels(columns))
   rows = factor(as.character(rows), levels = levels)
   columns = factor(as.character(columns), levels = levels)
@@ -282,13 +282,13 @@ drawRectangleAnnotation <- function(rows, columns){
   for(i in 1:(length(rect$x)-1)){
     decorate_heatmap_body("hmap", {
       grid.lines(x = unit(rep(rect$x[i], 2), "native"), y = unit(rect$y[i:(i+1)], "native"),
-                 gp = gpar(col = "black", lty = 1, lwd = 2))
+                 gp = gpar(col = col, lty = 1, lwd = 2))
       grid.lines(x = unit(rep(rect$x[i+1], 2), "native"), y = unit(rect$y[i:(i+1)], "native"),
-                 gp = gpar(col = "black", lty = 1, lwd = 2))
+                 gp = gpar(col = col, lty = 1, lwd = 2))
       grid.lines(x = unit(rect$x[i:(i+1)], "native"), y = unit(rep(rect$y[i],2), "native"),
-                 gp = gpar(col = "black", lty = 1, lwd = 2))
+                 gp = gpar(col = col, lty = 1, lwd = 2))
       grid.lines(x = unit(rect$x[i:(i+1)], "native"), y = unit(rep(rect$y[i+1], 2), "native"),
-                 gp = gpar(col = "black", lty = 1, lwd = 2))
+                 gp = gpar(col = col, lty = 1, lwd = 2))
     })
   }
 }

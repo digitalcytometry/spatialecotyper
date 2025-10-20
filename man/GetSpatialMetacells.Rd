@@ -37,13 +37,13 @@ annotations. The row names of the \code{metadata} must match the column names of
 
 \item{radius}{Numeric value specifying the radius (in units of spatial coordinates) within which neighboring cells are considered.}
 
-\item{bin}{Character string specifying the column name in \code{metadata} containing the microregion identifier.}
+\item{bin}{Character string specifying the column name in \code{metadata} containing the spatial neighborhood identifier.}
 
-\item{bin.X}{Character string specifying the column name in \code{metadata} containing the X spatial coordinates of microregions.}
+\item{bin.X}{Character string specifying the column name in \code{metadata} containing the X spatial coordinates of spatial neighborhoods.}
 
-\item{bin.Y}{Character string specifying the column name in \code{metadata} containing the Y spatial coordinates of microregions.}
+\item{bin.Y}{Character string specifying the column name in \code{metadata} containing the Y spatial coordinates of spatial neighborhoods.}
 
-\item{min.cells.per.region}{Integer specifying the minimum number of cells required in each spatial microregion to compute metacells.}
+\item{min.cells.per.region}{Integer specifying the minimum number of cells required in each spatial neighborhood to compute metacells.}
 
 \item{ncores}{Integer specifying the number of CPU cores to use for parallel processing (default: 1).}
 }

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,6 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul></li>
@@ -37,7 +36,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Extract Spatial Ecotype Annotations for Single Cells</h1>
-      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/R/AnnotateCells.R" class="external-link"><code>R/AnnotateCells.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/R/AnnotateCells.R" class="external-link"><code>R/AnnotateCells.R</code></a></small>
       <div class="d-none name"><code>AnnotateCells.Rd</code></div>
     </div>
 
@@ -47,7 +46,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">AnnotateCells</span><span class="op">(</span><span class="va">scmeta</span>, <span class="va">obj</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">AnnotateCells</span><span class="op">(</span><span class="va">scmeta</span>, <span class="va">obj</span>, col <span class="op">=</span> <span class="st">"SE"</span>, dropcell <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -61,10 +60,20 @@
 <dt id="arg-obj">obj<a class="anchor" aria-label="anchor" href="#arg-obj"></a></dt>
 <dd><p>A Seurat object returned from SpatialEcoTyper function.</p></dd>
 
+
+<dt id="arg-col">col<a class="anchor" aria-label="anchor" href="#arg-col"></a></dt>
+<dd><p>Character string specifying the name of the column in `obj@meta.data`
+containing the spatial ecotype annotations. Default is `"SE"`.</p></dd>
+
+
+<dt id="arg-dropcell">dropcell<a class="anchor" aria-label="anchor" href="#arg-dropcell"></a></dt>
+<dd><p>Logical. If TRUE, cells that cannot be assigned to any spatial
+ecotype (outside the radius) will be removed from the returned metadata. Default is TRUE.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A modified version of `scmeta` with spatial ecotype annotations added.</p>
+    <p>An updated version of `scmeta` with spatial ecotype annotations added.</p>
     </div>
 
     <div class="section level2">
@@ -121,7 +130,7 @@
 <span class="r-in"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"Melanoma1_subset_SpatialEcoTyper_results.rds"</span><span class="op">)</span><span class="op">$</span><span class="va">obj</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Transfer SE annotations to single cells</span></span></span>
-<span class="r-in"><span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="fu">AnnotateCells</span><span class="op">(</span>scmeta <span class="op">=</span> <span class="va">scmeta</span>, obj <span class="op">=</span> <span class="va">obj</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="fu">AnnotateCells</span><span class="op">(</span>scmeta <span class="op">=</span> <span class="va">scmeta</span>, obj <span class="op">=</span> <span class="va">obj</span>, dropcell <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                         X         Y   CellType CellTypeName</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3655 1894.706 -6367.766 Fibroblast  Fibroblasts</span>
@@ -131,12 +140,12 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3661 1742.939 -6374.851 Fibroblast  Fibroblasts</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3663 1921.683 -6383.309 Fibroblast  Fibroblasts</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                  Region Dist2Interface  SE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3655 Stroma      -883.1752 SE5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3657 Stroma      -894.8463 SE7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3658 Stroma      -904.1115 SE7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3660 Stroma      -907.8909 SE7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3655 Stroma      -883.1752 SE0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3657 Stroma      -894.8463 SE6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3658 Stroma      -904.1115 SE6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3660 Stroma      -907.8909 SE6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3661 Stroma      -874.2712 SE0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3663 Stroma      -903.6559 SE5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3663 Stroma      -903.6559 SE0</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

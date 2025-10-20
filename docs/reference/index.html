@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,7 +20,6 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Spatial.html">Recovery of Spatial Ecotypes from Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
   </ul></li>
@@ -76,10 +75,10 @@
         <dd>Construct Spatial Metacells from Single-Cell Spatial Data</dd>
       </dl><dl><dt>
 
-          <code><a href="ComputeAvgs.html">ComputeAvgs()</a></code>
+          <code><a href="ComputeFCs.html">ComputeFCs()</a></code>
 
         </dt>
-        <dd>Compute Cell-Type-Specific Average Expression of Spatial Clusters</dd>
+        <dd>Compute Cell-Type-Specific Fold Changes (FCs) for Spatial Clusters</dd>
       </dl><dl><dt>
 
           <code><a href="SNF2.html">SNF2()</a></code>
@@ -91,7 +90,7 @@
           <code><a href="GetPCList.html">GetPCList()</a></code>
 
         </dt>
-        <dd>Generate Principal Component (PC) List for Spatial Microregions</dd>
+        <dd>Generate Principal Component (PC) List for Spatial Neighborhoods</dd>
       </dl><dl><dt>
 
           <code><a href="GetSNList.html">GetSNList()</a></code>
@@ -136,7 +135,7 @@
       </dl></div><div class="section level2">
       <h2 id="se-recovery">SE recovery<a class="anchor" aria-label="anchor" href="#se-recovery"></a></h2>
 
-      <div class="section-desc"><p>Recovering spatial ecotypes from single-cell spatial data, scRNA-seq data, Visium spatial data, or bulk tumor expression data.</p></div>
+      <div class="section-desc"><p>Recovering spatial ecotypes from single-cell spatial transcriptomics, scRNA-seq, Visium, or bulk tumor expression data.</p></div>
 
 
     </div><div class="section level2">
@@ -155,7 +154,7 @@
           <code><a href="DeconvoluteSE.html">DeconvoluteSE()</a></code>
 
         </dt>
-        <dd>Infer SE Abundances Using Pretrained NMF Model</dd>
+        <dd>Infer SE Abundances Using a Pretrained NMF Model</dd>
       </dl><dl><dt>
 
           <code><a href="NMFpredict.html">NMFpredict()</a></code>

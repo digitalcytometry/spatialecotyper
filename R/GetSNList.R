@@ -1,7 +1,7 @@
 #' Construct Cell-Type-Specific Similarity Network
 #'
 #' This function generates a list of similarity networks (SNs) for a given list of embeddings.
-#' The embeddings represent spatial microregions, and the function computes K-nearest neighbor (KNN)
+#' The embeddings represent spatial neighborhoods, and the function computes K-nearest neighbor (KNN)
 #' graphs based on the provided embeddings to create similarity matrices.
 #'
 #' @param emb_list A list of matrices where each matrix contains the embeddings for a single sample.
@@ -38,7 +38,7 @@ GetSNList <- function(emb_list,
   nspots <- table(unlist(lapply(emb_list, colnames)))
   if(sum(nspots<min.cts.per.region)>0){
     message("\t\tRemove ", sum(nspots<min.cts.per.region),
-            " spatial microregions with fewer than ",
+            " spatial neighborhoods with fewer than ",
             min.cts.per.region, " cell types ")
     nspots <- names(nspots)[nspots>=min.cts.per.region]
     emb_list <- lapply(emb_list, function(x){
@@ -124,7 +124,7 @@ fillspots <- function(snlist){
 #   nspots <- table(unlist(lapply(emb_list, colnames)))
 #   if(sum(nspots<min.cts.per.region)>0){
 #     message("\t\tRemove ", sum(nspots<min.cts.per.region),
-#             " spatial microregions with fewer than ",
+#             " spatial neighborhoods with fewer than ",
 #             min.cts.per.region, " cell types ")
 #     nspots <- names(nspots)[nspots>=min.cts.per.region]
 #     emb_list <- lapply(emb_list, function(x){

@@ -23,7 +23,7 @@
 #' @param min.coph Numeric specifying the minimum cophenetic coefficient required for a rank to be optimal.
 #' @param radius Numeric specifying the radius (in the same units as spatial coordinates)
 #' for defining spatial neighborhoods around each cell. Default is 50.
-#' @param min.cts.per.region Integer specifying the minimum number of cell types required for a microregion.
+#' @param min.cts.per.region Integer specifying the minimum number of cell types required for a spatial neighborhood.
 #' @param nfeatures An integer specifying the maximum number of top variable genes to select for each cell type.
 #' @param min.features An integer specifying the minimum number of shared features (genes) required across samples.
 #' @param Region Character string specifying the column name in metadata data frames
@@ -34,8 +34,8 @@
 #' @param ncores Integer specifying the number of cores for parallel processing. Default is 1.
 #' @param seed An integer used to seed the random number generator for NMF analysis.
 #' @param filter.region.by.celltypes A character vector specifying the cell types to include in the analysis.
-#' Only spatial microregions that contain at least one of the specified cell types will be analyzed, while regions
-#' lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial microregions will
+#' Only spatial neighborhoods that contain at least one of the specified cell types will be analyzed, while regions
+#' lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial neighborhoods will
 #' be included, regardless of cell type composition.
 #' @param ... Additional arguments passed to the `SpatialEcoTyper` function.
 #'

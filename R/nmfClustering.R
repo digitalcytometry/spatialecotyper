@@ -4,7 +4,7 @@
 #' are provided, this function will determine the optimal number of communities (K)
 #' by assessing the cophenetic coefficient across different values of K.
 #'
-#' @param mat Numeric matrix representing the input data for clustering analysis.
+#' @param mat Numeric matrix (feature by sample) for clustering analysis.
 #' @param ranks Numeric vector specifying the number of clusters to evaluate.
 #' @param nrun.per.rank Integer specifying the number of runs per rank for clustering.
 #' @param min.coph Numeric specifying the minimum cophenetic coefficient required for a rank to be optimal.
@@ -48,7 +48,6 @@ nmfClustering <- function(mat, ranks = 10,
                           seed = 2024, ...){
   ## Preprocess the data
   mat = as.matrix(mat)
-  mat = mat[apply(mat, 1, var) > 0, ]
   if(min(mat)<0) mat = posneg(mat)
   mat[is.na(mat)] = 0
   idx <- duplicated(rownames(mat))
@@ -56,6 +55,7 @@ nmfClustering <- function(mat, ranks = 10,
     rownames(mat)[!idx] <- paste0(rownames(mat)[!idx], "__pos")
     rownames(mat)[idx] <- paste0(rownames(mat)[idx], "__neg")
   }
+  mat = mat[apply(mat, 1, var) > 0, ]
 
   ## Generate seeds for NMF analysis
   set.seed(seed)

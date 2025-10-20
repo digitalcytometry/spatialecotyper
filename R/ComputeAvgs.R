@@ -43,7 +43,7 @@
 #' head(avgexprs)
 #'
 #' @import Seurat
-#' @export
+#' @keywords internal
 #'
 ComputeAvgs <- function(normdata, scmeta, cluster = "SE",
                        Region = NULL, scale = TRUE, ncores = 4){
@@ -52,42 +52,40 @@ ComputeAvgs <- function(normdata, scmeta, cluster = "SE",
   cids = na.omit(intersect(rownames(scmeta), colnames(normdata)))
   scmeta = scmeta[cids, ]
   normdata = normdata[, cids]
-  ## Seurat object
-  obj = CreateSeuratObject(normdata, meta.data = scmeta)
-  seurat_version = as.integer(gsub("\\..*", "", as.character(packageVersion("SeuratObject"))))
-  if(seurat_version>=5) obj[["RNA"]]$data = obj[["RNA"]]$counts
-  rm(normdata)
+  if(max(normdata)>50 & min(normdata)>=0) normdata = log1p(normdata+1)
   ##### Within sample normalization ######
-  lfcs <- mclapply(unique(obj$CellType), function(ct){
-    if(sum(obj$CellType==ct)<10) return(NULL)
-    tmpobj <- subset(obj, CellType==ct)
-    slot = "data"
+  lfcs <- mclapply(unique(scmeta$CellType), function(ct){
+    if(sum(scmeta$CellType==ct)<10) return(NULL)
+    tmpdata = normdata[, scmeta$CellType==ct]
+    tmpmeta = scmeta[scmeta$CellType==ct, ]
+    if(length(unique(tmpmeta$SE))<2) return(NULL)
     if(scale){
       if(!is.null(Region) && (Region%in%colnames(scmeta))){
         if(seurat_version>=5){
-          tmpdat <- Znorm(tmpobj[["RNA"]]$data, groups = tmpobj@meta.data[, Region])
+          tmpdat <- Znorm(tmpdata, groups = tmpmeta[, Region])
         }else{
-          tmpdat <- Znorm(GetAssayData(tmpobj, "data"), groups = tmpobj@meta.data[, Region])
+          tmpdat <- Znorm(tmpdata, groups = tmpmeta[, Region])
         }
-        tmpobj <- CreateSeuratObject(tmpdat, meta.data = tmpobj@meta.data)
-        if(seurat_version>=5) tmpobj[["RNA"]]$data = tmpobj[["RNA"]]$counts
-        slot <- "data"
       }else{
-        tmpobj <- ScaleData(tmpobj, verbose = FALSE)
-        slot <- "scale.data"
+        tmpdat <- ScaleData(tmpdata, verbose = FALSE)
       }
     }
-    Idents(tmpobj) <- tmpobj$SE
-    if(length(unique(tmpobj$SE))<2) return(NULL)
-    lfcs <- AverageExpression(tmpobj, slot = slot)$RNA
+    tmp = Matrix(0, nrow = ncol(tmpdata),
+                 ncol = length(unique(tmpmeta$SE)), sparse = TRUE)
+    colnames(tmp) = sort(unique(tmpmeta$SE))
+    idx = cbind(1:nrow(tmpmeta), match(tmpmeta$SE, colnames(tmp)))
+    tmp[as.array(idx)] = 1
+    tmp = Matrix::t(Matrix::t(tmp) / Matrix::colSums(tmp))
+    lfcs <- tmpdata %*% tmp
     rownames(lfcs) <- paste0(ct, "..", rownames(lfcs))
     lfcs
   }, mc.cores = ncores)
-  names(lfcs) <- unique(obj$CellType)
+  names(lfcs) <- unique(scmeta$CellType)
+  lfcs = lfcs[lengths(lfcs)>0]
   lfcs <- mclapply(lfcs, function(x){
     x = as.matrix(x)
-    x <- x[, match(unique(obj$SE), colnames(x))]
-    colnames(x) <- unique(obj$SE)
+    x = x[, match(unique(scmeta$SE), colnames(x))]
+    colnames(x) = unique(scmeta$SE)
     x
   }, mc.cores = ncores)
   lfcs <- do.call(rbind, lfcs)
@@ -95,77 +93,63 @@ ComputeAvgs <- function(normdata, scmeta, cluster = "SE",
 }
 
 
-#' #' Compute Cell-Type-Specific Fold Changes (FCs) for Spatial Clusters
-#' #'
-#' #' This function computes fold changes (FCs) for spatial transcriptomic data,
-#' #' comparing expression levels between spatial clusters within each cell type.
-#' #'
-#' #' @param normdata Numeric matrix of normalized expression data, where rows
-#' #' represent genes and columns represent cells.
-#' #' @param scmeta Data frame containing metadata associated with each cell,
-#' #' including spatial cluster and cell type annotations.
-#' #' @param cluster Character string specifying the column name in 'scmeta'
-#' #' containing spatial cluster annotations.
-#' #' @param Region Character string specifying the column name in metadata data
-#' #' frames containing region annotations (default: NULL).
-#' #' @param scale A boolean specifying whether to do univariance normalization.
-#' #' @param ncores Integer specifying the number of CPU cores to use for parallel processing.
-#' #'
-#' #' @return A matrix of fold changes (FCs), where rows represent genes and columns
-#' #' represent spatial clusters from the sample.
-#' #'
-#' #'
-#' #' @import Seurat
-#' #' @export
-#' #'
-#' ComputeFCs <- function(normdata, scmeta, cluster = "SE",
-#'                        Region = NULL, scale = FALSE,
-#'                        ncores = parallel::detectCores()){
-#'   if(!"CellType" %in% colnames(scmeta)){
-#'     stop("the meta data have to include a column (CellType) for cell type annotations")
-#'   }
-#'   scmeta$SE = scmeta[, cluster]
-#'   scmeta <- scmeta[!is.na(scmeta$SE), ]
-#'   normdata <- normdata[, match(rownames(scmeta), colnames(normdata))]
+#' Compute Cell-Type-Specific Fold Changes (FCs) for Spatial Clusters
 #'
-#'   ## Seurat object
-#'   obj <- CreateSeuratObject(normdata, meta.data = scmeta)
-#'   seurat_version = as.integer(gsub("\\..*", "", as.character(packageVersion("SeuratObject"))))
-#'   if(seurat_version>=5) obj[["RNA"]]$data = obj[["RNA"]]$counts
-#'   rm(normdata)
-#'   ##### Within sample normalization ######
-#'   lfcs <- mclapply(unique(obj$CellType), function(ct){
-#'     if(sum(obj$CellType==ct)<10) return(NULL)
-#'     tmpobj = subset(obj, CellType==ct)
-#'     slot = "data"
-#'     if(scale){
-#'       if(!is.null(Region) && (Region%in%colnames(scmeta))){
-#'         if(seurat_version>=5){
-#'           tmpdat <- Znorm(tmpobj[["RNA"]]$data, groups = tmpobj@meta.data[, Region])
-#'         }else{
-#'           tmpdat <- Znorm(GetAssayData(tmpobj, "data"), groups = tmpobj@meta.data[, Region])
-#'         }
-#'         tmpobj <- CreateSeuratObject(tmpdat, meta.data = tmpobj@meta.data)
-#'       }else{
-#'         tmpobj <- ScaleData(tmpobj)
-#'         slot <- "scale.data"
-#'       }
-#'       if(seurat_version>=5) tmpobj[["RNA"]]$data = tmpobj[["RNA"]]$counts
-#'     }
-#'     Idents(tmpobj) <- tmpobj$SE
-#'     if(length(unique(tmpobj$SE))<2) return(NULL)
-#'     lfcs <- mclapply(unique(tmpobj$SE), function(cl){
-#'       lfcs <- FoldChange(tmpobj, ident.1 = cl, slot = slot)
-#'       lfcs[,1]
-#'     }, mc.cores = ncores)
-#'     lfcs <- do.call(cbind, lfcs)
-#'     colnames(lfcs) <- unique(tmpobj$SE)
-#'     rownames(lfcs) <- paste0(ct, "..", rownames(tmpobj))
-#'     lfcs <- lfcs[, match(unique(obj$SE), colnames(lfcs))]
-#'     colnames(lfcs) <- unique(obj$SE)
-#'     lfcs[is.na(lfcs)] <- 0
-#'     lfcs
-#'   }, mc.cores = ncores)
-#'   lfcs <- do.call(rbind, lfcs)
-#'   return(lfcs)
-#' }
+#' This function computes fold changes (FCs) for spatial transcriptomic data,
+#' comparing expression levels between spatial clusters within each cell type.
+#'
+#' @param normdata Numeric matrix of normalized expression data, where rows
+#' represent genes and columns represent cells.
+#' @param scmeta Data frame containing metadata associated with each cell,
+#' including spatial cluster and cell type annotations.
+#' @param cluster Character string specifying the column name in 'scmeta'
+#' containing spatial cluster annotations.
+#' @param Region Character string specifying the column name in metadata data
+#' frames containing region annotations (default: NULL).
+#' @param scale A boolean specifying whether to do univariance normalization.
+#' @param ncores Integer specifying the number of CPU cores to use for parallel processing.
+#'
+#' @return A matrix of fold changes (FCs), where rows represent genes and columns
+#' represent spatial clusters from the sample.
+#'
+#'
+#' @import Seurat
+#' @export
+#'
+ComputeFCs <- function(normdata, scmeta, cluster = "SE",
+                       Region = NULL, scale = FALSE,
+                       ncores = 4){
+  if(!"CellType" %in% colnames(scmeta)){
+    stop("the meta data have to include a column (CellType) for cell type annotations")
+  }
+  scmeta$SE = scmeta[, cluster]
+  scmeta <- scmeta[!is.na(scmeta$SE), ]
+  normdata <- normdata[, match(rownames(scmeta), colnames(normdata))]
+
+  ##### Within sample normalization ######
+  lfcs <- mclapply(unique(scmeta$CellType), function(ct){
+    if(sum(scmeta$CellType==ct)<10) return(NULL)
+    tmpmeta = scmeta[scmeta$CellType==ct, ]
+    tmpdata = normdata[, scmeta$CellType==ct]
+    if(scale){
+      if(!is.null(Region) && (Region%in%colnames(scmeta))){
+        tmpdata <- Znorm(tmpdata, groups = tmpmeta[, Region])
+      }else{
+        tmpdata <- ScaleData(tmpdata)
+      }
+    }
+    if(length(unique(tmpmeta$SE))<2) return(NULL)
+    lfcs <- lapply(unique(tmpmeta$SE), function(cl){
+      rowMeans(tmpdata[, tmpmeta$SE==cl, drop=FALSE]) - rowMeans(tmpdata[, tmpmeta$SE!=cl, drop=FALSE])
+    })
+    lfcs <- do.call(cbind, lfcs)
+    colnames(lfcs) <- unique(tmpmeta$SE)
+    rownames(lfcs) <- paste0(ct, "..", rownames(lfcs))
+    lfcs <- lfcs[, match(unique(scmeta$SE), colnames(lfcs))]
+    colnames(lfcs) <- unique(scmeta$SE)
+    lfcs[is.na(lfcs)] <- 0
+    lfcs
+  }, mc.cores = ncores)
+  lfcs <- do.call(rbind, lfcs)
+  return(lfcs)
+}

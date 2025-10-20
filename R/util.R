@@ -1,33 +1,3 @@
-#' Matrix Multiplication with Minibatching and Parallel Processing
-#'
-#' This function performs matrix multiplication of two matrices (`mat1` and `mat2`)
-#' using minibatching to manage memory usage and parallel processing to speed up
-#' computation. It is particularly useful for large matrices where full multiplication
-#' would otherwise be computationally intensive or memory prohibitive.
-#'
-#' @param mat1 A matrix with dimensions (m x n).
-#' @param mat2 A matrix with dimensions (n x p).
-#' @param minibatch The number of columns from `mat2` to process in each minibatch. Default is 5000.
-#' @param ncores The number of cores to use for parallel processing. Default is 1 (no parallel processing).
-#'
-#' @return A matrix with dimensions (m x p) representing the product of `mat1` and `mat2`.
-#' @examples
-#' # Example usage:
-#' mat1 <- matrix(runif(1000), nrow=100, ncol=10)
-#' mat2 <- matrix(runif(2000), nrow=10, ncol=200)
-#' result <- matrixMultiply(mat1, mat2, minibatch=100, ncores=2)
-#' @import parallel
-#' @export
-matrixMultiply <- function(mat1, mat2, minibatch = 5000, ncores = 1){
-  cycles = ceiling(ncol(mat2) / minibatch)
-  res = mclapply(1:cycles, function(ii){
-    query_idx = ((ii-1)*minibatch+1):min(ii*minibatch, ncol(mat2))
-    x = mat1 %*% mat2[, query_idx, drop = FALSE]
-    return(x)
-  }, mc.cores = ncores)
-  do.call(cbind, res)
-}
-
 #' Identify the most frequent category in a vector
 #'
 #' This function takes a vector as input and returns the most frequent

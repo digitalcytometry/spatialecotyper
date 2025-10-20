@@ -11,29 +11,31 @@
 #' @param radius Numeric specifying the radius (in the same units as spatial coordinates)
 #' for defining spatial neighborhoods around each cell. Default is 50.
 #' @param resolution Numeric specifying the resolution for Louvain clustering (default: 0.5).
-#' @param nfeatures Integer specifying the number of top variable features (default: 3000) used for PCA.
-#' @param min.cts.per.region Integer specifying the minimum number of cell types required for a microregion.
+#' @param nfeatures Integer specifying the number of top variable features (default: 500) used for the analysis.
+#' @param min.cts.per.region Integer specifying the minimum number of cell types required for a spatial neighborhood.
 #' @param npcs Integer specifying the number of principal components (PCs) (default: 20).
-#' @param k.sn Integer specifying the number of spatial nearest neighbors (default: 50) for constructing similarity network.
-#' @param k Integer specifying the number of spatial nearest neighbors (default: 20) used to construct spatial meta-cells.
 #' @param min.cells Minimum number of cells / spatial-meta-cells (default: 5)  expressing a feature/gene.
 #' @param min.features Minimum number of features (default: 10) detected in a cell / spatial-meta-cell.
-#' @param iterations Integer specifying the number of iterations (default: 5) for SNF analysis.
+#' @param iterations Integer specifying the number of iterations (default: 10) for SNF analysis.
 #' @param minibatch Integer specifying the number of columns to process in each minibatch in the SNF analysis.
 #' Default is 5000. This option splits the matrix into smaller chunks (minibatch), thus reducing memory usage.
 #' @param ncores Integer specifying the number of CPU cores to use for parallel processing.
 #' @param grid.size Numeric specifying the grid size for spatial discretization of coordinates. By default,
-#' this size is determined based on the specified radius (radius*1.4 µm). Increasing the grid.size will
-#' downsample microregions and expedite the analysis, while it might eliminate cells located between bins
+#' this size is determined based on the specified radius round(radius*1.4 µm). Increasing the grid.size will
+#' downsample spatial neighborhoods and expedite the analysis, while it might eliminate cells located between bins
 #' from the SE discovery analysis.
 #' @param filter.region.by.celltypes A character vector specifying the cell types to include in the analysis.
-#' Only spatial microregions that contain at least one of the specified cell types will be analyzed, while regions
-#' lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial microregions will
+#' Only spatial neighborhoods that contain at least one of the specified cell types will be analyzed, while regions
+#' lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial neighborhoods will
 #' be included, regardless of cell type composition.
+#' @param k Integer specifying the number of spatial nearest neighbors (default: 20) used to construct spatial meta-cells.
+#' @param k.sn Integer specifying the number of nearest neighbors (default: 20) for constructing similarity network.
+#' @param dropcell Logical. If TRUE, cells that cannot be assigned to any spatial
+#' ecotype (outside the radius) will be removed from the returned metadata. Default is TRUE.
 #'
 #' #' @return A list containing two elements:
 #' \describe{
-#'   \item{obj}{A seurat object constructed from fused similarity network of sptial microregions}
+#'   \item{obj}{A seurat object constructed from fused similarity network of sptial neighborhoods}
 #'   \item{metadata}{Updated \code{metadata}, with a new column (`SE`) added}
 #' }
 #'
@@ -83,18 +85,19 @@ SpatialEcoTyper <- function(normdata, metadata,
                             outprefix = "SE",
                             radius = 50,
                             resolution = 0.5,
-                            nfeatures = 3000,
-                            min.cts.per.region = 1,
+                            nfeatures = 500,
+                            min.cts.per.region = 2,
                             npcs = 20,
-                            k.sn = 50,
-                            k = 20,
                             min.cells = 5,
                             min.features = 10,
-                            iterations = 5,
+                            iterations = 10,
                             minibatch = 5000,
                             ncores = 1,
                             grid.size = round(radius*1.4),
-                            filter.region.by.celltypes = NULL){
+                            filter.region.by.celltypes = NULL,
+                            k = 20,
+                            k.sn = 50,
+                            dropcell = TRUE){
 
   if(ncol(normdata)!=nrow(metadata)){
     stop("The number of cells in expression data and meta data do not match.")
@@ -105,9 +108,9 @@ SpatialEcoTyper <- function(normdata, metadata,
   normdata <- tmp$expdat
   metadata <- tmp$metadata
 
-  if(!"CellType" %in% colnames(metadata)) stop("the meta data should include a column (CellType) for cell type annotations")
-  if(!"X" %in% colnames(metadata)) stop("the meta data should include spatial coordinates (X and Y) of cells")
-  if(!"Y" %in% colnames(metadata)) stop("the meta data should include spatial coordinates (X and Y) of cells")
+  if(!"CellType" %in% colnames(metadata)) stop("The meta data should include a column (CellType) for cell type annotations")
+  if(!"X" %in% colnames(metadata)) stop("The meta data should include spatial coordinates (X and Y) of cells")
+  if(!"Y" %in% colnames(metadata)) stop("The meta data should include spatial coordinates (X and Y) of cells")
 
   ncmeta = metadata
   ncmeta$SpotID <- paste0("X", round(ncmeta$X / grid.size), "_Y", round(ncmeta$Y / grid.size))
@@ -122,11 +125,19 @@ SpatialEcoTyper <- function(normdata, metadata,
                               ncores = ncores)
   ### Only interested in spatial regions include a certain cell type?
   if(!is.null(filter.region.by.celltypes)){
-    idx = gsub(".*\\.+", "", colnames(ncem)) %in% filter.region.by.celltypes
-    spots = gsub("\\.+.*", "", colnames(ncem)[idx])
-    ncem = ncem[, gsub("\\.+.*", "", colnames(ncem))%in%spots]
+    spots = unlist(lapply(filter.region.by.celltypes, function(x){
+      idx = gsub(".*\\.+", "", colnames(ncem)) %in% filter.region.by.celltypes
+      spots = gsub("\\.+.*", "", colnames(ncem)[idx])
+      spots
+    }))
+    spots = table(spots)
+    spots = names(spots)[spots==length(filter.region.by.celltypes)]
+    idx = gsub("\\.+.*", "", colnames(ncem))%in%spots
+    if(sum(idx)<20) stop("Fewer than 20 spatial neighborhoods contain ",
+                         paste0(filter.region.by.celltypes, collapse = ", "))
+    ncem = ncem[, idx]
   }
-  ## microregion level meta data
+  ## spatial neighborhood level meta data
   ncmeta <- ncmeta[, colnames(ncmeta)!="CID"]
   ## If categorical, take the most frequent category, if numeric, take median.
   tmpmedian <- ncmeta %>% group_by(SpotID, Spot.X, Spot.Y) %>% summarise(across(where(is.numeric), median))
@@ -136,7 +147,7 @@ SpatialEcoTyper <- function(normdata, metadata,
   rownames(ncmeta) <- ncmeta$SpotID
 
   spots = unique(gsub("\\.+.*", "", colnames(ncem)))
-  message("\t\tTotal spatial microregions: ", length(spots),
+  message("\t\tTotal spatial neighborhoods: ", length(spots),
           "\n\t\tTotal spatial meta cells: ", ncol(ncem))
   rm(normdata)
 
@@ -178,7 +189,7 @@ SpatialEcoTyper <- function(normdata, metadata,
                             "_min.features", min.features,
                             "_min.cts.per.region", min.cts.per.region,
                             "_iterations", iterations, "_grid.size", grid.size)
-  metadata = AnnotateCells(metadata, obj)
+  metadata = AnnotateCells(metadata, obj, dropcell = dropcell)
   results <- list(obj = obj, metadata = metadata)
   if(!is.null(outprefix)){
     snf_outf <- paste0(outprefix, "_SpatialEcoTyper_results.rds")

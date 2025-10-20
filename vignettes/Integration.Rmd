@@ -16,11 +16,11 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 In this tutorial, we will illustrate how to identify conserved spatial ecotypes (SEs) across multiple samples using the [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html) function. Each sample represents a single-cell spatial transcriptomics data, including a gene expression profile and associated single-cell metadata.
 
-We will be analyzing single-cell spatial transcriptomics data from cancer samples provided by [Vizgen's MERSCOPE FFPE Human Immuno-oncology](https://vizgen.com/data-release-program/). For efficiency, we have selected a subset regions from a melanoma sample and a colon cancer sample for the integrative analysis. You can download the gene expression profiles and single-cell metadata [`here`](https://drive.google.com/open?id=1CYncsGZ4aTaIRGkR4rVAmbOGskVyoTEQ&usp=drive_fs). 
+We will be analyzing single-cell spatial transcriptomics data from cancer samples provided by [Vizgen's MERSCOPE FFPE Human Immuno-oncology](https://vizgen.com/data-release-program/). For efficiency, we have selected a subset of regions from a melanoma sample and a colon cancer sample for the integrative analysis. You can download the gene expression profiles and single-cell metadata [`here`](https://drive.google.com/open?id=1CYncsGZ4aTaIRGkR4rVAmbOGskVyoTEQ&usp=drive_fs). 
 
-The melanoma sample includes spatial expression data for 500 genes across 27,907 cells, while the colon cancer sample contains data for 38,080 cells. In both samples, cells were categorized into ten distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells (DC), fibroblasts, endothelial cells, and the cancer cell of origin (CCOs). Due to their high heterogeneity, CCOs were excluded from this demonstration.
+The melanoma sample includes spatial expression data for 500 genes across 27,907 cells, while the colon cancer sample contains data for 38,080 cells. In both samples, cells were categorized into ten distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells (DC), fibroblasts, endothelial cells, and cancer cells. Cancer cells are excluded from this demonstration to reduce processing time.
 
-All cells were also annotated into four spatial regions, including tumor, inner margin, outer margin, and stroma. The tumor and stroma regions were defined based on the density of cancer cells. The inner and outer margins were delineated as regions extending 250 μm inside and outside the tumor boundaries, respectively. In addition, we assessed distance of each single cell to tumor/stroma interface by computing the shortest Euclidean distance to tumor regions (or stromal regions) for cells localized in stromal region (or tumor regions). A positive distance is used for cells localized in tumor region, and a negative distance is used for cells localized in stroma region.
+All cells are grouped into four spatial regions: tumor, inner margin, outer margin, and stroma. The tumor and stroma regions are defined based on the density of cancer cells, as described in the [CytoSPACE paper](https://www.nature.com/articles/s41587-023-01697-9). The inner and outer margins are defined as regions extending 250 μm inside and outside the tumor boundaries, respectively. Furthermore, we quantified each cell’s distance to the tumor–stroma interface by calculating the shortest Euclidean distance to the nearest tumor region (for stromal cells) or stromal region (for tumor cells). A positive distance indicates cells located within the tumor region, while a negative distance indicates cells located within the stroma.
 
 __First load required packages for this vignette__
 
@@ -41,7 +41,7 @@ library(SpatialEcoTyper)
 **Spatial EcoTyper** analysis requires two input data for each sample:
 
 * gene expression matrix: rows represent gene names and columns represent cell IDs
-* meta data: a data frame with at least three columns, including "X" (X-coordinate), "Y" (Y-coordinate), and "CellType" (the cell type annotation). The row names of the meta data should match the column names (cell IDs) in the expression matrix.
+* meta data: a data frame with at least three columns, including "X" (X-coordinate), "Y" (Y-coordinate), and "CellType" (cell type annotation). The row names of the meta data should match the column names (cell IDs) in the expression matrix.
 
 <details open><summary><strong>Text files as input</strong></summary>
 
@@ -150,7 +150,7 @@ normdata2 <- NormalizeData(scdata2)
 
 # Preview of the samples
 
-The [SpatialView](../reference/SpatialView.html) function can be used to visualize the spatial distribution of single cells within the tissues.
+The [SpatialView](../reference/SpatialView.html) function can be used to visualize single cells within the tissue. You can color the cells by cell type or predefined spatial regions.
 
 ```{r viewct, fig.height=3}
 # Visualize the cell type annotations in the tissue
@@ -160,8 +160,6 @@ p2 <- SpatialView(scmeta2, by = "CellType") + labs(title = "CRC") +
         scale_color_manual(values = pals::cols25())
 p1 + p2
 ```
-
-The [SpatialView](../reference/SpatialView.html) function can also be used to visualize spatial landscape of these regions in the samples.
 
 ```{r viewregion, fig.height=3}
 # Visualize the regions in the tissue
@@ -173,7 +171,7 @@ p2 <- SpatialView(scmeta2, by = "Region") + labs(title = "CRC") +
 p1 + p2
 ```
 
-You can also visualize continuous characteristics, such as the minimum distance of each single cell to the tumor/stroma margin, using the [SpatialView](../reference/SpatialView.html) function. Here, positive distances indicate cells located within the tumor region, while negative distances denote cells within the stroma. 
+The [SpatialView](../reference/SpatialView.html) function can also be used to visualize continuous characteristics, such as the minimum distance of each single cell to tumor/stroma margin. Here, positive distances indicate cells located within the tumor region, while negative distances denote cells within the stroma. 
 
 ```{r viewdist, fig.height=3}
 # Visualize the distance to tumor margin
@@ -200,11 +198,15 @@ p1 + p2
 
 # Spatial EcoTyper analysis across multiple samples
 
+```{r workflow, out.width = '100%', echo=FALSE}
+knitr::include_graphics("images/MultiSpatialEcoTyper.png")
+```
+
 The [MultiSpatialEcoTyper](../reference/SpatialView.html) function enables the integration of single-cell spatial transcriptomics data across multiple samples, facilitating the identification of SEs shared across samples or cancer types. The analysis is performed in three stages:
   
--   **Independent Spatial EcoTyper Analysis**: [Spatial EcoTyper](../reference/SpatialEcoTyper.html) is run on each sample independently to identify spatial clusters and construct cell-type-specific gene expression profiles for all spatial clusters.
--   **Integration**: Spatial clusters from different samples are integrated to learn a unified embedding).
--   **Clustering**: Clustering is applied to the unified embedding to identify conserved SEs across samples.
+-   **Independent Spatial EcoTyper Analysis**: [Spatial EcoTyper](../reference/SpatialEcoTyper.html) analysis is performed on each single-cell ST sample to identify spatial neighborhood clusters.
+-   **Integration via Similarity Network Fusion**: The spatial clusters from individual samples are represented by gene expression profiles (GEPs) of their associated cell states. These cell type–specific GEPs are integrated using Similarity Network Fusion (Wang et al., 2014), producing a unified similarity network of spatial clusters across all samples.
+-   **NMF Clustering**: Non-negative Matrix Factorization (NMF) is applied to the unified network embedding to identify conserved SEs across samples.
 
 <details open><summary><strong>Key arguments for `MultiSpatialEcoTyper`</strong></summary>
 
@@ -246,7 +248,7 @@ MultiSpatialEcoTyper(data_list, metadata_list,
 
 ## Pathologist region annotation available
 
-If region annotations are available, we recommend to include the region annotations in all metadata and specify the `Region` in the [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html) function, which could improve integration accuracy.
+If tumor and adjacent stroma region annotations are available, we recommend to include the annotations in all metadata and specify the `Region` in the [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html) function, which could improve integration accuracy.
 
 ```{r multi2, eval=TRUE}
 ## Annotation of tumor and stroma regions will be considered for the analysis.
@@ -256,7 +258,7 @@ metadata_list$SKCM$Region2 = ifelse(metadata_list$SKCM$Dist2Interface<0, "Stroma
 metadata_list$CRC$Region2 = ifelse(metadata_list$CRC$Dist2Interface<0, "Stroma", "Tumor")
 MultiSpatialEcoTyper(data_list, metadata_list, 
                      normalization.method = "None", # Normalization method
-                     min.cts.per.region = 2, # At least two cell types in each microregion
+                     min.cts.per.region = 2, # At least two cell types in each spatial neighborhood
                      nmf_ranks = 10,  # Number of clusters
                      nrun.per.rank = 5,  # Recommend 30 or higher for robust results
                      Region = "Region2", # Use pathologist annotations if available
@@ -288,8 +290,8 @@ MultiSpatialEcoTyper(data_list, metadata_list,
 If you’ve already run [SpatialEcoTyper](../reference/SpatialEcoTyper.html) for each sample, you can integrate the results directly using [IntegrateSpatialEcoTyper](../reference/IntegrateSpatialEcoTyper.html).
 
 ```{r downloadres, eval=FALSE}
-drive_download(as_id("126OSOk8sAaxhJID1D3-75bI9S-to9Lkg"), "CRC_SpatialEcoTyper_results.rds", overwrite = TRUE)
-drive_download(as_id("11y0lcpawQAZAvDCnt3tBQsF90Wet0lKe"), "SKCM_SpatialEcoTyper_results.rds", overwrite = TRUE)
+drive_download(as_id("1lAfzK6v1jnthjmPEHgcnQFKr-pRMSqRm"), "CRC_SpatialEcoTyper_results.rds", overwrite = TRUE)
+drive_download(as_id("1dPtmNrH0piUbzB_tltYkD-AoXLvf6P3Q"), "SKCM_SpatialEcoTyper_results.rds", overwrite = TRUE)
 ```
 
 ```{r integrate, eval = FALSE}
@@ -308,21 +310,21 @@ IntegrateSpatialEcoTyper(SpatialEcoTyper_list, data_list,
 </details>
 
 <details><summary><strong>Optimizing memory usage</strong></summary>
-For real-world single-cell ST datasets with over 100,000 cells, the analysis can be both time- and memory-intensive. To speed up the process, you can increase the number of cores used (`ncores`), but this will also increase memory consumption.
+For large single-cell spatial transcriptomics (ST) datasets with more than 100,000 cells, the analysis can be both time- and memory-intensive. To accelerate computation, you can increase the number of cores used (`ncores`), but this will also increase memory consumption.
 
-If you have limited computational memory, there are several strategies to reduce usage. One approach is to decrease the `minibatch` size and reduce the number of cores (`ncores`) allocated. However, for larger datasets, the minimum memory requirement may remain high. Another option is to increase the `grid.size`, which reduces the number of spatial microregions. This can significantly decrease memory usage by downsampling the ST data, potentially excluding many cells from the analysis though.
+If computational memory is limited, several strategies can help reduce usage. One option is to increase the `grid.size`, which decreases the number of spatial neighborhoods and can substantially decrease memory usage. Another option is to reduce the `minibatch` size and the number of cores (`ncores`). However, the minimum memory requirement may still remain high for very large datasets.
 
 </details>
 
 <details><summary><strong>Interested in multicellular communities associated with specific cell types?</strong></summary>
 
-If you’re interested in studying multicellular communities associated with specific cell types, you can use the `filter.region.by.celltypes` argument to focus on microregions containing at least one cell from the specified cell types. An example is available in [Discovery of Spatial Ecotypes from a Single Sample](./SingleSample.html).
+If you’re interested in studying multicellular communities associated with specific cell types, you can use the `filter.region.by.celltypes` argument to restrict the analysis to spatial neighborhoods that include at least one cell of the specified types. An example is available in [Discovery of Spatial Ecotypes from a Single Sample](./SingleSample.html).
 
 </details>
 
 <details><summary><strong>Interested in regions with multiple cell types?</strong></summary>
 
-If you’re interested in regions composed of multiple cell types, you can use the `min.cts.per.region` argument to specify the minimum number of distinct cell types required for each microregion to be included in the analysis.
+If you’re interested in regions composed of multiple cell types, you can use the `min.cts.per.region` argument to restrict the analysis to spatial neighborhoods containing at least the specified minimum number of distinct cell types.
 
 </details>
 
@@ -390,7 +392,7 @@ ses <- predict(nmf_res$NMFfits[[paste0("K.", nmf_res$bestK)]])
 head(ses)
 ```
 
-You can add the newly defined SEs into the meta data
+You can add the newly defined SEs into the meta data:
 ```{r updatemeta}
 finalmeta$SE = paste0("SE", ses[finalmeta$InitSE])
 head(finalmeta)
@@ -437,7 +439,7 @@ drawRectangleAnnotation(ann$SE, ann$SE)
 
 ## Visualizing SEs in the tissue
 
-To examine the spatial distribution of the identified SEs, you can use the [SpatialView](../reference/SpatialView.html) function visualize the SEs in the tissues.
+The spatial distribution of SEs within the tissue can be visualized using the [SpatialView](../reference/SpatialView.html) function.
 
 ```{r spatialmapse, fig.height=3}
 SpatialView(finalmeta, by = "SE")  + facet_wrap(~Sample, scales = "free")
@@ -445,7 +447,7 @@ SpatialView(finalmeta, by = "SE")  + facet_wrap(~Sample, scales = "free")
 
 ## Association between SEs and pre-annotated regions
 
-To examine the enrichment of SEs in pre-annotated regions, you can visualize the cell fractions from each region, for each SE.
+This bar plot shows the enrichment of SEs in pre-defined regions (e.g., tumor and stroma).
 
 ```{r bar_region1}
 gg <- finalmeta %>% filter(!is.na(SE)) %>% count(SE, Region, Sample) %>% 

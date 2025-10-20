@@ -4,15 +4,21 @@
 \alias{AnnotateCells}
 \title{Extract Spatial Ecotype Annotations for Single Cells}
 \usage{
-AnnotateCells(scmeta, obj)
+AnnotateCells(scmeta, obj, col = "SE", dropcell = TRUE)
 }
 \arguments{
 \item{scmeta}{Data frame containing single-cell metadata. Two columns (X and Y) for spatial coordinates are required.}
 
 \item{obj}{A Seurat object returned from SpatialEcoTyper function.}
+
+\item{col}{Character string specifying the name of the column in `obj@meta.data`
+containing the spatial ecotype annotations. Default is `"SE"`.}
+
+\item{dropcell}{Logical. If TRUE, cells that cannot be assigned to any spatial
+ecotype (outside the radius) will be removed from the returned metadata. Default is TRUE.}
 }
 \value{
-A modified version of `scmeta` with spatial ecotype annotations added.
+An updated version of `scmeta` with spatial ecotype annotations added.
 }
 \description{
 This function adds spatial ecotype annotations to the metadata of single cells.
@@ -37,7 +43,7 @@ head(scmeta)
 obj <- readRDS("Melanoma1_subset_SpatialEcoTyper_results.rds")$obj
 
 ## Transfer SE annotations to single cells
-scmeta <- AnnotateCells(scmeta = scmeta, obj = obj)
+scmeta <- AnnotateCells(scmeta = scmeta, obj = obj, dropcell = TRUE)
 head(scmeta)
 
 }

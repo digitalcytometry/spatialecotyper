@@ -19,8 +19,8 @@
 #' @import Matrix
 #' @export
 #'
-SNF2 <- function(Wall, K = 50, t = 5,
-                 minibatch = 5000, ncores = 1,
+SNF2 <- function(Wall, K = 10, t = 10,
+                 minibatch = 5000, ncores = 4,
                  verbose = FALSE){ #
   require("Matrix")
   # Similarity Network Fusion takes multiple views of a network (Wall) and
@@ -36,12 +36,6 @@ SNF2 <- function(Wall, K = 50, t = 5,
   #   W: Unified similarity graph of all data types in Wall.
 
   check_wall_names <- function(Wall){
-    # Checks if dimnames are consistent across all matrices in Wall
-    #   #Move to internal functions?
-    # Args:
-    #   Wall: List of matrices
-    # Returns:
-    #   logical: True/False indicator of dimnames equivalence
     name_match <- function(names_A, names_B){
       return(identical(dimnames(names_A), dimnames(names_B)))
     }
@@ -61,13 +55,20 @@ SNF2 <- function(Wall, K = 50, t = 5,
 
   #Normalization method for affinity matrices
   normalize <- function(X){
-    X = as(X, "sparseMatrix")
-    row.sum.mdiag <- Matrix::rowSums(X) - diag(X)
+    if(is(X, "sparseMatrix")){
+      row.sum.mdiag <- Matrix::rowSums(X) - diag(X)
+    }else{
+      row.sum.mdiag <- rowSums(X) - diag(X)
+    }
     #If rowSumx(X) == diag(X), set row.sum.mdiag to 1 to avoid div by zero
     row.sum.mdiag[row.sum.mdiag == 0] <- 1
-    X <- X/(2*(row.sum.mdiag))
+    X <- X / (2*(row.sum.mdiag))
     diag(X) <- 0.5
-    X <- (X + Matrix::t(X))/2
+    if(is(X, "sparseMatrix")){
+      X <- (X + Matrix::t(X))/2
+    }else{
+      X <- (X + t(X))/2
+    }
     return(X)
   }
 
@@ -83,57 +84,80 @@ SNF2 <- function(Wall, K = 50, t = 5,
   #Perform the diffusion for t iterations
   if(verbose) message(Sys.time(), " Perform the diffusion ...")
 
-  sum_matrix <- function(Mats){ ## Sum up a list of matrices
-    sumres = Mats[[1]]
-    for (i in 2:length(Mats)) {
-      sumres <- sumres + Mats[[i]]
-    }
-    return(sumres)
-  }
+  # sum_matrix <- function(Mats){ ## Sum up a list of matrices
+  #   sumres = Mats[[1]]
+  #   for (i in 2:length(Mats)) {
+  #     sumres <- sumres + Mats[[i]]
+  #   }
+  #   return(sumres)
+  # }
 
   for (i in 1:t){
     if(verbose) message("\t", Sys.time(), " Iteration: ", i)
     Wall <- mclapply(1:LW, function(j){
-      sumWJ <- sum_matrix(Wall[-j]) / (LW-1)
+      sumWJ <- Reduce("+", Wall[-j]) / (LW-1)
       x <- matrixMultiply(newW[[j]], sumWJ, minibatch = minibatch)
       x <- matrixMultiply(x, Matrix::t(newW[[j]]), minibatch = minibatch)
       normalize(x)
     }, mc.cores = ncores)
   }
 
-  # Construct the combined affinity matrix by summing diffused matrices
-  Wall_sum <- sum_matrix(Wall)
-  LW_sum <- Matrix::sparseMatrix(i = integer(0),
-                                 j = integer(0),
-                                 dims = dim(Wall[[1]]))
+  LW <- Reduce("+", mclapply(Wall, function(x) { x>0 }, mc.cores = ncores))
+  LW <- as(LW, "sparseMatrix")
 
-  for (i in seq_along(Wall)){
-    idx <- rowSums(Wall[[i]]) == 0
-    if (sum(idx) > 0){
-      Wall[[i]][idx,] <- NA
-      Wall[[i]][,idx] <- NA
-    }
-    LW_sum <- LW_sum + !is.na(Wall[[i]])
-  }
-  Wall <- Wall_sum / LW_sum
-  Wall <- (Wall + Matrix::t(Wall)) / 2
+  Wall <- Reduce("+", Wall) / LW
+  Wall@x[is.infinite(Wall@x)] <- 0
+  Wall@x[is.nan(Wall@x)] <- 0
+  rownames(Wall) = wall.names[[1]]
+  colnames(Wall) = wall.names[[2]]
   return(Wall)
 }
 
-.dominateset <- function(xx, K = 50, ncores = 1){
+.dominateset <- function(xx, KK=20, ncores = 8){
   require("Matrix")
+  if(nrow(xx)>5000) xx <- as(xx, "sparseMatrix")
+  ###This function outputs the top KK neighbors.
   zero <- function(x) {
-    if(K>=length(x)) return(x)
     s = sort(x, index.return=TRUE)
-    x[s$ix[1:(length(x)-K)]] = 0
+    x[s$ix[1:(length(x)-KK)]] = 0
     return(x)
   }
-  ###This function outputs the top K neighbors.
+  # normalize <- function(X) X / Matrix::rowSums(X)
+  xx <- parallel::mclapply(1:nrow(xx), function(i) {
+    zero(xx[i,])
+  }, mc.cores = ncores)
+  xx <- do.call(rbind, xx)
+  # xx <- normalize(xx)
   xx <- as(xx, "sparseMatrix")
-  non_zero_indices <- which(xx != 0, arr.ind = TRUE)
-  non_zero_values <- xx@x
-  xx@x <- ave(non_zero_values, non_zero_indices[, "col"], FUN = zero)
-  # xx = drop0(xx)
   return(xx)
 }
 
+#' Matrix Multiplication with Minibatching and Parallel Processing
+#'
+#' This function performs matrix multiplication of two matrices (`mat1` and `mat2`)
+#' using minibatching to manage memory usage and parallel processing to speed up
+#' computation. It is particularly useful for large matrices where full multiplication
+#' would otherwise be computationally intensive or memory prohibitive.
+#'
+#' @param mat1 A matrix with dimensions (m x n).
+#' @param mat2 A matrix with dimensions (n x p).
+#' @param minibatch The number of columns from `mat2` to process in each minibatch. Default is 5000.
+#' @param ncores The number of cores to use for parallel processing. Default is 1 (no parallel processing).
+#'
+#' @return A matrix with dimensions (m x p) representing the product of `mat1` and `mat2`.
+#' @examples
+#' # Example usage:
+#' mat1 <- matrix(runif(1000), nrow=100, ncol=10)
+#' mat2 <- matrix(runif(2000), nrow=10, ncol=200)
+#' result <- matrixMultiply(mat1, mat2, minibatch=100, ncores=2)
+#' @import parallel
+#' @export
+matrixMultiply <- function(mat1, mat2, minibatch = 5000, ncores = 1){
+  cycles = ceiling(ncol(mat2) / minibatch)
+  res = mclapply(1:cycles, function(ii){
+    query_idx = ((ii-1)*minibatch+1):min(ii*minibatch, ncol(mat2))
+    x = mat1 %*% mat2[, query_idx, drop = FALSE]
+    return(x)
+  }, mc.cores = ncores)
+  do.call(cbind, res)
+}

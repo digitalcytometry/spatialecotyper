@@ -4,7 +4,14 @@
 \alias{NMFpredict}
 \title{Prediction Using Pretrained NMF Model}
 \usage{
-NMFpredict(W, testdat, scale = FALSE, ncell.per.run = 500)
+NMFpredict(
+  W,
+  testdat,
+  scale = FALSE,
+  ncell.per.run = 500,
+  sum2one = TRUE,
+  ncores = 1
+)
 }
 \arguments{
 \item{W}{Matrix representing the factorization matrix W of a pretrained NMF model.}
@@ -14,9 +21,14 @@ NMFpredict(W, testdat, scale = FALSE, ncell.per.run = 500)
 \item{scale}{Logical indicating whether to scale the input data.}
 
 \item{ncell.per.run}{Integer specifying the maximum number of cells per NMF prediction run to avoid memory issues.}
+
+\item{sum2one}{Logical. If `TRUE`, normalizes the predicted scores so that
+they sum to 1 for each sample.}
+
+\item{ncores}{Integer specifying the number of CPU cores to use for parallel processing.}
 }
 \value{
-A matrix representing the NMF prediction scores.
+A matrix representing the NMF prediction scores, with rows as samples/cells and columns as SE groups.
 }
 \description{
 This function uses pretrained NMF models to recover cell states / spatial ecotypes.

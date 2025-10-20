@@ -17,7 +17,7 @@ nmfClustering(
 )
 }
 \arguments{
-\item{mat}{Numeric matrix representing the input data for clustering analysis.}
+\item{mat}{Numeric matrix (feature by sample) for clustering analysis.}
 
 \item{ranks}{Numeric vector specifying the number of clusters to evaluate.}
 
