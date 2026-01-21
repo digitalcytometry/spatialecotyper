@@ -1,0 +1,13 @@
+pandoc: 3.1.11
+pkgdown: 2.1.0
+pkgdown_sha: ~
+articles:
+  Integration: Integration.html
+  Recovery_Bulk: Recovery_Bulk.html
+  Recovery_scRNA: Recovery_scRNA.html
+  SingleSample: SingleSample.html
+  TrainRecoveryModels: TrainRecoveryModels.html
+last_built: 2025-10-20T01:18Z
+urls:
+  reference: https://digitalcytometry.github.io/spatialecotyper/reference
+  article: https://digitalcytometry.github.io/spatialecotyper/articles

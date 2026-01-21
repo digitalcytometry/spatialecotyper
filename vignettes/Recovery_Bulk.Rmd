@@ -1,0 +1,198 @@
+---
+title: "Recovery of Spatial Ecotypes from Bulk Gene Expression Data"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Overview
+
+In this tutorial, we will demonstrate how to infer spatial ecotype (SE) abundances from bulk gene expression profiles, including bulk RNA-seq and Visium spatial transcriptomics. 
+
+__First load required packages for this vignette__
+
+```{r lib}
+suppressPackageStartupMessages(library(googledrive))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(data.table))
+library(SpatialEcoTyper)
+```
+
+
+# Deconvolution of bulk RNA-seq data to infer SE levels
+
+We will start with the SE deconvolution from bulk RNA-seq. We will use bulk RNA-seq data from TCGA melanoma (SKCM) samples for demonstration. The gene expression matrix is available at [SKCM_RNASeqV2.geneExp.tsv](https://drive.google.com/open?id=14RwnoxhIkGeLp6GXehmAXLvy8Ii2_COU&usp=drive_fs), which is a Transcripts Per Million (TPM) matrix obtained from the [PanCanAtlas](https://gdc.cancer.gov/about-data/publications/pancanatlas).
+
+## Loading bulk expression of TCGA melanoma samples
+
+```{r downloadtcga, eval=FALSE}
+drive_deauth() # Disable Google sign-in requirement
+drive_download(as_id("14RwnoxhIkGeLp6GXehmAXLvy8Ii2_COU"), "SKCM_RNASeqV2.geneExp.tsv", overwrite = TRUE) # download data from googledrive
+```
+
+```{r loadbulk}
+bulkdata <- fread("SKCM_RNASeqV2.geneExp.tsv", sep = "\t", data.table = FALSE)
+rownames(bulkdata) <- bulkdata[, 1] ## Set the first column as row names
+bulkdata <- bulkdata[, -1] ## Drop the first column
+head(bulkdata[, 1:5]) ## TPM matrix
+```
+
+## SE deconvolution
+
+The [DeconvoluteSE](../reference/DeconvoluteSE.html) function infers SE abundances in bulk tissue samples. Users can either use the default model, which estimates the abundances of predefined SEs, or apply a custom model to infer the abundance of newly defined SEs from bulk gene expression data. Before prediction, [DeconvoluteSE](../reference/DeconvoluteSE.html) automatically applies a log₂ transformation (if the maximum value exceeds 80) and standardizes the data so that each gene has a mean of 0 and a unit variance. To ensure reliable standardization, we recommend a minimum of 20 samples. For smaller datasets, we recommend to combine them with a larger dataset for normalization prior to running [DeconvoluteSE](../reference/DeconvoluteSE.html).
+
+The default model is trained on pseudobulk gene expression data and predicts the abundances of nine predefined SEs along with a nonSE group, which primarily includes cancer cells and cells not associated with any SEs. The predicted SE and nonSE abundances for each sample sum to 1, making them comparable across samples.
+
+**Note**: 1) SE abundances are directly comparable across samples, enabling the analysis of SE distribution patterns under different conditions. 2) Since the number of cell states varies across SEs, direct abundance comparisons between different SEs or with the nonSE group may not be meaningful. SEs represent distinct spatial multicellular communities, each defined by a unique combination of cell states.
+
+### Using default model
+
+```{r DeconvoluteSE1}
+sefracs <- DeconvoluteSE(bulkdata, scale = TRUE)
+head(sefracs)
+```
+**Note**: If your data are already standardized to have zero mean and unit variance per gene, set `scale = FALSE`.
+
+### Using custom model
+
+After identifying SEs using [SpatialEcoTyper](../reference/SpatialEcoTyper.html) or [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html), users can develop a Non-Negative Matrix Factorization (NMF) model to deconvolve SEs from bulk tissue samples, following the tutorial below.
+
+<details><summary><strong>Development of SE deconvolution models</strong></summary>
+
+Users can create an NMF model to deconvolve SEs from bulk gene expression data. The training data can be derived from pseudo-bulk mixtures created by aggregating single-cell transcriptomics data. In this tutorial, we will generate pseudo-bulk mixtures using single-cell RNA-seq data from a melanoma sample, which is also featured in the [Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data](Recovery_scRNA.html). 
+
+The raw count for this sample is available at  [WU2161_counts.tsv](https://drive.google.com/open?id=17VAeOnz6vTt2s0ZeTrK1kITdJ3Yus4ei&usp=drive_fs) and SE recovery results are available at [WU2161_RecoveredSEs.tsv](https://drive.google.com/open?id=17kFjOHhmWxWAKm-LDqy6wV27o5lvz8L2&usp=drive_fs).
+
+__Loading data__
+
+```{r downloadscrna, eval=FALSE}
+# Download single-cell gene expression matrix and SE recovery results.
+# The downloads should be finished within 1min.
+drive_download(as_id("17VAeOnz6vTt2s0ZeTrK1kITdJ3Yus4ei"), "WU2161_counts.tsv", overwrite = TRUE)
+drive_download(as_id("17kFjOHhmWxWAKm-LDqy6wV27o5lvz8L2"), "WU2161_RecoveredSEs.tsv", overwrite = TRUE)
+```
+
+```{r loadscrna, eval=FALSE}
+# Load single-cell gene expression matrix.
+counts = fread("WU2161_counts.tsv", sep = "\t", data.table = FALSE)
+rownames(counts) = counts[, 1] ## Set the first column as row names
+counts = counts[, -1] ## Drop the first column
+head(counts[, 1:5])
+
+# Load SE recovery results
+SEs = read.table("WU2161_RecoveredSEs.tsv", sep = "\t", row.names = 1, header = TRUE)
+SEs = SEs[match(colnames(counts), rownames(SEs)), 1] # extract SE predictions
+length(SEs)
+table(SEs)
+```
+
+**Note**: For demonstration purposes, we used 1,337 cells grouped into SEs to create pseudo-bulk mixtures. While this limited cell number offers a basic example, it may not fully capture the diverse characteristics of SEs, potentially affecting the robustness of model training and subsequent SE recovery. In practice, we recommend using a more comprehensive dataset that accurately reflects the properties of SEs, ensuring that the training process results in a reliable recovery model.
+
+__Creating pseudobulk data__
+
+The [CreatePseudobulks](../reference/CreatePseudobulks.html) function will be used to create pseudo-bulk mixtures from single-cell (spatial) transcriptomics data with all cells grouped into SEs. It samples cell fractions from a Gaussian distribution, sets negative fractions to 0 and re-normalizes fractions to sum to 1 across all SEs. Based on the resulting fractions, it samples 1,000 cells per pseudo-bulk mixture with replacement, aggregates their transcriptomes in non-log linear space, and normalize the resulting mixture to logarithm CPM using Seurat's `NormalizeData`.
+
+```{r createpseudobulk, eval=FALSE}
+result = CreatePseudobulks(counts = counts, groups = SEs, n_mixtures = 100)
+head(result$Mixtures[, 1:5]) ## Gene expression matrix of pseudobulks
+head(result$Fracs) ## SE fractions in pseudobulks
+```
+
+__Training__
+
+The [NMFGenerateW](../reference/NMFGenerateW.html) function will be used to train an NMF model for SE deconvolution based on the provided SE fractions and gene expression matrix. Before applying NMF, each gene's expression is scaled to have a mean of 0 and unit variance (recommended). To meet the non-negativity requirement of NMF, the expression matrix is transformed using the posneg method. This transformation splits the expression matrix into two matrices: one containing only positive values and the other containing the absolute values of the negative values. These two matrices are then concatenated to form the final training data for the NMF model.
+
+```{r traindecov, eval=FALSE}
+W = NMFGenerateW(t(result$Fracs), result$Mixtures)
+## This step should be done within 1 min
+head(W)
+```
+
+The resulting W matrix can be used to infer SE sbundances from bulk gene expression profiles by using the [DeconvoluteSE](../reference/DeconvoluteSE.html) function. 
+
+</details>
+
+__Deconvolution__
+
+Then you can use the new model for SE deconvolution by specifying the `W` parameter:
+```{r DeconvoluteSE2, eval=FALSE}
+sefracs <- DeconvoluteSE(bulkdata, W = W)
+```
+
+
+## Visualizing SE abundances across samples
+```{r visualse}
+library(grid)
+HeatmapView(sefracs, breaks = c(0, 0.15, 0.3), 
+            show_row_names = FALSE, cluster_rows = TRUE)
+```
+
+
+# Deconvolution of Visium data to infer SE levels
+
+In this tutorial, we will demonstrate how to infer SE levels in Visium spots using a breast cancer sample. The expression data can be accessed from: [V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5](https://drive.google.com/open?id=15D9LgvZmCZUfsL62cD67JMf8Jcq_UyuB&usp=drive_fs), which was obtained from [10x Genomics datasets](https://www.10xgenomics.com/datasets).
+
+## Loading data
+
+First, download the data from Google Drive
+```{r downloadvisium, eval=FALSE}
+drive_download(as_id("15D9LgvZmCZUfsL62cD67JMf8Jcq_UyuB"), "V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5", overwrite = TRUE)
+drive_download(as_id("15NTZc1HrW_gLS_pmi1ckYLw30kNarf4w"), "V1_Breast_Cancer_Block_A_Section_1_tissue_positions_list.csv", overwrite = TRUE)
+## This download should be done within 1 min.
+```
+
+Load the expression data into R using the `Read10X_h5` function from the Seurat package.
+```{r loadvisium}
+if(!"hdf5r" %in% installed.packages()) BiocManager::install("hdf5r")
+require("hdf5r")
+# Load Visium gene expression matrix. Rows are genes, columns are spots.
+visiumdat <- Read10X_h5("V1_Breast_Cancer_Block_A_Section_1_filtered_feature_bc_matrix.h5")
+# normalize the expression data
+visiumdat <- NormalizeData(visiumdat)
+
+meta <- read.csv("V1_Breast_Cancer_Block_A_Section_1_tissue_positions_list.csv", 
+                 header = FALSE, row.names = 1)
+colnames(meta) <- c("tissue", "row", "col", "imagerow", "imagecol")
+meta <- meta[colnames(visiumdat), ]
+head(meta)
+```
+
+## SE deconvolution
+
+The process of SE deconvolution for Visium data is the same as for bulk RNA-seq data described above. We will use the same  [DeconvoluteSE](../reference/DeconvoluteSE.html) function. Here we’ll run SE deconvolution using the default model. For additional details on parameters and options, please refer to `Deconvolution of bulk RNA-seq data to infer SE levels` above.
+
+```{r DeconvoluteSE3}
+sefracs <- DeconvoluteSE(visiumdat, scale = TRUE)
+head(sefracs)
+```
+
+
+## Visualizing SE abundances across Visium spots
+
+The [SpatialView](../reference/SpatialView.html) function can be used to visualize SE levels across Visium spots.
+
+```{r DeconvoluteSE4}
+library(ggplot2)
+## attach the spatial coordinates to the matrix for visualization
+gg = cbind(sefracs, meta[match(rownames(sefracs), rownames(meta)), ])
+gg = as.data.frame(gg)
+SpatialView(gg, by = "SE7", X = "imagerow", Y = "imagecol", pt.size = 3.5) +
+  scale_color_gradientn(colors = rev(RColorBrewer::brewer.pal(11, "Spectral"))) + 
+  coord_fixed()
+```
+
+
+# Session info
+
+The session info allows users to replicate the exact environment and identify potential discrepancies in package versions or configurations that might be causing problems.
+
+```{r session}
+sessionInfo()
+```

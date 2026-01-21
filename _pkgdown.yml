@@ -1,0 +1,103 @@
+url: https://digitalcytometry.github.io/spatialecotyper
+
+development:
+  mode: auto
+
+repo:
+  url:
+    home: https://github.com/digitalcytometry/spatialecotyper
+    source: https://github.com/digitalcytometry/spatialecotyper/blob/main/
+    issue: https://github.com/digitalcytometry/spatialecotyper/issues
+  branch: main
+
+template:
+  bootswatch: simplex
+  bootstrap: 5
+  bslib:
+    primary: "#0054AD"
+    border-radius: 0.5rem
+    btn-border-radius: 0.25rem
+
+authors:
+  Wubing Zhang:
+    href: https://profiles.stanford.edu/wubing-zhang
+  Aaron Newman Lab:
+    href: https://anlab.stanford.edu/
+
+navbar:
+  title: ~
+  type: default
+  left:
+    - text: Vignettes
+      menu:
+      - text: Discovery of Spatial Ecotypes from a Single Sample
+        href: articles/SingleSample.html
+      - text: Discovery of Spatial Ecotypes from Multiple Samples
+        href: articles/Integration.html
+      - text: Development of NMF Models for Spatial Ecotype Recovery
+        href: articles/TrainRecoveryModels.html
+      - text: Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data
+        href: articles/Recovery_scRNA.html
+      - text: Recovery of Spatial Ecotypes from Bulk Gene Expression Data
+        href: articles/Recovery_Bulk.html
+
+    - text: R functions
+      href: reference/index.html
+    - text: News
+      href: news/index.html
+
+reference:
+- title: Discovery of spatial ecotypes (SEs)
+  contents:
+  - SpatialEcoTyper
+  - MultiSpatialEcoTyper
+  - IntegrateSpatialEcoTyper
+  - GetSpatialMetacells
+  - ComputeFCs
+  - SNF2
+  - GetPCList
+  - getSN
+  - GetSNList
+  - Integrate
+
+- title: Development of SE recovery models
+  desc:  Developing models for recovering spatial ecotypes from single-cell spatial data, scRNA-seq data, Visium spatial data, or bulk tumor expression data.
+  contents:
+  - CreatePseudobulks
+  - NMFGenerateW
+  - NMFGenerateWList
+
+- title: SE recovery
+  desc:  Recovering spatial ecotypes from single-cell spatial transcriptomics, scRNA-seq, Visium, or bulk tumor expression data.
+  contents:
+  - RecoverSE
+  - DeconvoluteSE
+  - NMFpredict
+
+- title: NMF (Non-negative Matrix Factorization) clustering
+  desc:  Clustering via NMF.
+  contents:
+  - nmfClustering
+
+- title: Visualization
+  contents:
+  - SpatialView
+  - HeatmapView
+  - drawRectangleAnnotation
+  - getColors
+
+- title: Data processing
+  contents:
+  - PreprocessST
+  - AnnotateCells
+  - Znorm
+  - rankSparse
+  - matrixMultiply
+  - fillspots
+  - mostFrequent
+
+news:
+  releases:
+  - text: "Version 1.0.1"
+    href:
+

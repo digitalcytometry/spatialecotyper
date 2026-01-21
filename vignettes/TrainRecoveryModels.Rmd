@@ -1,0 +1,169 @@
+---
+title: "Development of NMF Models for Spatial Ecotype Recovery"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Overview
+
+After performing Spatial EcoTyper analysis, users can develop machine learning models for spatial ecotype (SE) recovery, including reference-guided SE annotation in held-out single-cell datasets (scRNA-seq or single-cell spatial transcriptomics) and SE deconvolution to infer SE abundances from bulk gene expression data (bulk RNA-seq or Visium). The Spatial EcoTyper framework employs non-negative matrix factorization (NMF) as the core algorithm in both analyses, given its robustness and proven effectiveness in recovering carcinoma ecotypes from multimodal expression data in our [prior study](https://www.sciencedirect.com/science/article/pii/S0092867421010618). Here, we will demonstrate how to train NMF models for SE recovery from single-cell gene expression data and for SE deconvolution from bulk gene expression data separately.
+
+# Development of recovery model to annotate SEs in single-cell gene expression data
+
+In this tutorial, we will use the Vizgen MERSCOPE data of two samples to demonstrate the process for developing cell-type-specific NMF models for recovering SEs from single-cell gene expression profiles, including both single-cell spatial transcriptomics and single-cell RNA-seq data.
+
+The gene expression matrices, cell type and SE annotations required for the training can be obtained from [here](https://drive.google.com/open?id=17lFcu0DrUChy_1Edfs-dvVAPQLenL-jT&usp=drive_fs).
+
+__First load required packages for this vignette__
+
+```{r lib}
+suppressPackageStartupMessages(library(googledrive))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(NMF))
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(dplyr))
+library(SpatialEcoTyper)
+```
+
+## Loading data
+
+__Download the data from Google Drive__
+```{r download, eval=FALSE}
+drive_deauth() # Disable Google sign-in requirement
+drive_download(as_id("17mbc56M0GTq-9MR0GqHas-L-yIXdnxtu"), "HumanMelanomaPatient1_subset_counts.tsv.gz", overwrite = TRUE)
+drive_download(as_id("17nL0ceONPw8ByAtDe34DiXiGLMVBLlPX"), "HumanColonCancerPatient2_subset_counts.tsv.gz", overwrite = TRUE)
+drive_download(as_id("1t3MX84RHm5BQMzcAvXtmzc-Dj4e6Y7Ik"), "MultiSE_metadata_final.tsv", overwrite = TRUE)
+```
+
+__Load gene expression matrix__
+```{r load}
+## Read the expression matrix for the first sample
+scdata <- fread("HumanMelanomaPatient1_subset_counts.tsv.gz", 
+                sep = "\t",header = TRUE, data.table = FALSE)
+rownames(scdata) <- scdata[, 1]  ## set the first column as row names
+scdata <- scdata[, -1]  ## drop the first column
+scdata <- NormalizeData(scdata)  ## Normalize the expression matrix
+
+## Read the expression matrix for the second sample
+scdata2 <- fread("HumanColonCancerPatient2_subset_counts.tsv.gz", 
+                sep = "\t",header = TRUE, data.table = FALSE)
+rownames(scdata2) <- scdata2[, 1]  ## set the first column as row names
+scdata2 <- scdata2[, -1]  ## drop the first column
+scdata2 <- NormalizeData(scdata2)  ## Normalize the expression matrix
+
+## Combine the two expression matrices
+genes <- intersect(rownames(scdata), rownames(scdata2))
+scdata <- cbind(scdata[genes, ], scdata2[genes, ])
+head(scdata[, 1:5])
+```
+
+__Load cell type and SE annotations__
+```{r loadse}
+## Load the single-cell meta data derived from MultiSpatialEcoTyper analysis
+scmeta <- read.table("MultiSE_metadata_final.tsv", sep = "\t", 
+                     header = TRUE, row.names = 1)
+scmeta$SE[is.na(scmeta$SE)] = "nonSE" ## cells with NA predictions were assigned into the nonSE group
+
+## Matches the row names of meta data and column names of expression matrix
+cells <- intersect(colnames(scdata), rownames(scmeta))
+scdata <- scdata[, cells]
+scmeta <- scmeta[cells, ]
+head(scmeta[, c("Sample", "CellType", "SE")])
+```
+
+## Training
+
+The [NMFGenerateWList](../reference/NMFGenerateWList.html) function will be used to train cell-type specific NMF models for recovering SEs. Prior to NMF, each gene is scaled to mean 0 and unit variance within each cell type-specific expression matrix. To satisfy the non-negativity requirement of NMF, the cell type-specific expression matrices are individually processed using posneg transformation, which converts each expression matrix into two matrices, one containing only positive values and the other containing only negative values with the sign inverted. The two matrices are subsequently concatenated to produce the training data. The [NMFGenerateWList](../reference/NMFGenerateWList.html) function will return a list of `feature × SE` matrices, each representing a cell type-specific gene signature matrix with rows as features and columns as SEs. 
+
+**Note**: By default, the [NMFGenerateWList](../reference/NMFGenerateWList.html) selects the top 2000 variable features (`nfeature` argument) and down-samples 2500 cells (`downsample` argument) within each cell type for training. After training, it retains 50 genes per SE (`nfeature.per.se` argument) in the model. Users can tune the parameters accordingly.
+
+```{r train}
+# training
+Ws = NMFGenerateWList(scdata, scmeta, 
+                      CellType = "CellType",
+                      SE = "SE", Sample = "Sample")
+## This step would take ~3 mins for the demo.
+class(Ws)
+names(Ws)
+head(Ws[[2]])
+```
+
+The resulting W matrices could be used to recover SEs from spatial transcriptomics and single-cell RNA-seq using the [RecoverSE](../reference/RecoverSE.html) function. The detailed documentation for SE recovery is available at [Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data](Recovery_scRNA.html) and [Recovery of Spatial Ecotypes from Spatial Transcriptomics Data](Recovery_Spatial.html).
+
+# Development of SE deconvolution model to infer SE abundances from bulk gene expression data
+
+In this tutorial, we will demonstrate how to develop an NMF model to deconvolve SEs from bulk gene expression data. This process requires bulk training data with known SE compositions, which we can generated by aggregating single-cell RNA-seq data into pseudo-bulk mixtures. For demonstration, we will use single-cell RNA-seq data from a melanoma sample. 
+
+The raw count for this sample is available at  [WU2161_counts.tsv](https://drive.google.com/open?id=17VAeOnz6vTt2s0ZeTrK1kITdJ3Yus4ei&usp=drive_fs) and SE recovery results are available at [WU2161_RecoveredSEs.tsv](https://drive.google.com/open?id=17kFjOHhmWxWAKm-LDqy6wV27o5lvz8L2&usp=drive_fs).
+
+## Loading data
+
+```{r downloadscrna, eval=FALSE}
+# Download single-cell gene expression matrix and SE recovery results.
+# The downloads should be finished within 1min.
+drive_download(as_id("17VAeOnz6vTt2s0ZeTrK1kITdJ3Yus4ei"), "WU2161_counts.tsv", overwrite = TRUE)
+drive_download(as_id("17kFjOHhmWxWAKm-LDqy6wV27o5lvz8L2"), "WU2161_RecoveredSEs.tsv", overwrite = TRUE)
+```
+
+```{r loadscrna, eval=TRUE}
+# Load single-cell gene expression matrix.
+counts = fread("WU2161_counts.tsv", sep = "\t", data.table = FALSE)
+rownames(counts) = counts[, 1] ## Set the first column as row names
+counts = counts[, -1] ## Drop the first column
+head(counts[, 1:5])
+
+# Load SE recovery results
+SEs = read.table("WU2161_RecoveredSEs.tsv", sep = "\t", row.names = 1, header = TRUE)
+SEs = SEs[match(colnames(counts), rownames(SEs)), 1] # extract SE predictions
+length(SEs)
+table(SEs)
+```
+  
+**Note**: For demonstration purposes, we used 1,337 cells grouped into SEs to create pseudo-bulk mixtures. While this limited cell number offers a basic example, it does not fully capture the diverse characteristics of SEs, potentially affecting the robustness of model training and subsequent SE recovery. In practice, we recommend using a more comprehensive dataset that accurately reflects the properties of SEs, ensuring that the training process results in a reliable recovery model.
+
+## Creating pseudobulk data
+
+The [CreatePseudobulks](../reference/CreatePseudobulks.html) function will be used to create pseudo-bulk mixtures from single-cell (spatial) transcriptomics data with all cells grouped into SEs. It samples cell fractions from a Gaussian distribution, sets negative fractions to 0 and re-normalizes fractions to sum to 1 across all SEs. Based on the resulting fractions, it samples 1,000 cells per pseudo-bulk mixture with replacement, aggregates their transcriptomes in non-log linear space, and normalize the resulting mixture to logarithm CPM using Seurat's `NormalizeData`.
+
+```{r createpseudobulk}
+result = CreatePseudobulks(counts = counts, groups = SEs, n_mixtures = 100)
+## This step took ~4 min for the demo.
+head(result$Mixtures[, 1:5]) ## Gene expression matrix of pseudobulks
+head(result$Fracs) ## SE fractions in pseudobulks
+```
+
+## Training
+
+The [NMFGenerateW](../reference/NMFGenerateW.html) function will be used to train an NMF model for SE deconvolution based on the provided SE fractions and gene expression matrix. Before applying NMF, each gene's expression is scaled to have a mean of 0 and unit variance by default. To meet the non-negativity requirement of NMF, the expression matrix is transformed using the posneg method. This transformation splits the expression matrix into two matrices: one containing only positive values and the other containing the absolute values of the negative values. These two matrices are then concatenated to form the final training data for the NMF model.
+
+**Note**: By default, the [NMFGenerateW](../reference/NMFGenerateW.html) selects the top 2000 variable features (`nfeature` argument) for training. After training, it retains 50 genes per SE (`nfeature.per.se` argument) in the model. Users can tune the parameters accordingly.
+
+```{r traindecov}
+W = NMFGenerateW(result$Fracs, result$Mixtures)
+## This step took less than 1 min for the demo.
+head(W)
+```
+
+```{r saveW}
+## Save the model for late use.
+saveRDS(W, "SE_Deconvolution_W.rds")
+```
+
+The resulting W matrix can be used to infer SE abundances from bulk gene expression profiles using the [DeconvoluteSE](../reference/DeconvoluteSE.html) function. The detailed documentation for SE deconvolution is available at [Recovery of Spatial Ecotypes from Bulk Gene Expression Data](Recovery_Bulk.html).
+
+
+# Session info
+
+The session info allows users to replicate the exact environment and identify potential discrepancies in package versions or configurations that might be causing problems.
+
+```{r session}
+sessionInfo()
+```
