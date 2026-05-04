@@ -94,6 +94,6 @@ Please see the <a href="LICENSE.html" target="_blank">LICENSE</a> file.
 
 
 ## Citation
-If you use Spatial EcoTyper, please cite:
+If you use Spatial EcoTyper, please cite: 
 
-
+Wubing Zhang<sup>\*</sup>, Erin L. Brown<sup>\*</sup>, Abul Usmani<sup>\*</sup>, Noah Earland, Minji Kang, Chibuzor Olelewe, Anushka Viswanathan, Pradeep S. Chauhan, Chloé B. Steen, Hyun Soo Jeon, Susanna Avagyan, Irfan Alahi, Nicholas P. Semenkovich, Janella C. Schwab, Chloe M. Sachs, Faridi Qaium, Peter K. Harris, Qingyuan Cai, Andrew J. Gentles, James Knight, Rondell P. Graham, Antonietta Bacchiocchi, Peter C. Lucas, Ryan C. Fields, Mario Sznol, Ruth Halaban, David Y. Chen, Aadel A. Chaudhuri<sup>†</sup> and Aaron M. Newman<sup>†</sup>. **Non-invasive profiling of the tumour microenvironment with spatial ecotypes.** *Nature*, 2026.  [doi.org/10.1038/s41586-026-10452-4](https://www.nature.com/articles/s41586-026-10452-4).
