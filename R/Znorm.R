@@ -13,31 +13,18 @@
 #' library(Seurat)
 #' library(data.table)
 #' library(SpatialEcoTyper)
-#' library(googledrive)
-#' drive_deauth() # no Google sign-in is required
-#' drive_download(as_id("1CoQmU3u8MoVC8RbLUvTDQmOuJJ703HHB"),
-#'               "HumanMelanomaPatient1_subset_counts.tsv.gz", overwrite = TRUE)
-#' scdata <- fread("HumanMelanomaPatient1_subset_counts.tsv.gz",
+#' scdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz",
 #'                 sep = "\t",header = TRUE, data.table = FALSE)
 #' rownames(scdata) <- scdata[, 1]
 #' scdata <- as.matrix(scdata[, -1])
-#' tmpobj <- CreateSeuratObject(scdata) %>%
-#'           SCTransform(clip.range = c(-10, 10), verbose = FALSE)
-#' seurat_version = as.integer(gsub("\\..*", "", as.character(packageVersion("SeuratObject"))))
-#' if(seurat_version<5){
-#'   normdata <- GetAssayData(tmpobj, "data")
-#' }else{
-#'   normdata <- tmpobj[["SCT"]]$data
-#' }
+#' tmpobj <- CreateSeuratObject(scdata) %>% NormalizeData(verbose = FALSE)
+#' normdata <- GetAssayData(tmpobj, layer = "data")
 #' # Z-score normalization
 #' znorm_data <- Znorm(normdata)
 #' head(znorm_data[, 1:5])
 #'
 #' # Weighted Z-score normalization
-#' drive_download(as_id("12xcZNhpT-xbhcG8kX1QAdTeM9TKeFAUW"),
-#'                      "HumanMelanomaPatient1_subset_scmeta.tsv",
-#'                     overwrite = TRUE, verbose = FALSE)
-#' scmeta <- fread("HumanMelanomaPatient1_subset_scmeta.tsv",
+#' scmeta <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv",
 #'                 sep = "\t",header = TRUE, data.table = FALSE)
 #' wtdznorm_data <- Znorm(normdata, groups = scmeta$Region)
 #' head(wtdznorm_data[, 1:5])

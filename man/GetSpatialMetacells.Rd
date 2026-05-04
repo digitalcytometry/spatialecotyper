@@ -61,18 +61,12 @@ and generate metacell expression profiles for each cell type.
 library(data.table)
 library(Seurat)
 library(SpatialEcoTyper)
-library(googledrive)
-drive_deauth() # no Google sign-in is required
-drive_download(as_id("1CgUOQKrWY_TG61o5aw7J9LZzE20D6NuI"),
-                    "HumanMelanomaPatient1_subset_scmeta.tsv", overwrite = TRUE)
-drive_download(as_id("1CoQmU3u8MoVC8RbLUvTDQmOuJJ703HHB"),
-              "HumanMelanomaPatient1_subset_counts.tsv.gz", overwrite = TRUE)
-scdata <- fread("HumanMelanomaPatient1_subset_counts.tsv.gz",
+scdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz",
                 sep = "\t",header = TRUE, data.table = FALSE)
 rownames(scdata) <- scdata[, 1]
 scdata <- as.matrix(scdata[, -1])
 normdata = NormalizeData(scdata)
-scmeta <- read.table("HumanMelanomaPatient1_subset_scmeta.tsv",
+scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv",
                       sep = "\t",header = TRUE, row.names = 1)
 
 # Construct spatial metacells from single-cell spatial data

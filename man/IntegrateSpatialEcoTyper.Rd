@@ -12,13 +12,13 @@ IntegrateSpatialEcoTyper(
   nmf_ranks = 10,
   nrun.per.rank = 30,
   min.coph = 0.95,
-  nfeatures = 3000,
+  nfeatures = 300,
   min.features = 10,
   Region = NULL,
   downsample.by.region = TRUE,
   subresolution = 30,
   minibatch = 5000,
-  ncores = 1,
+  ncores = 4,
   seed = 1
 )
 }
@@ -30,8 +30,7 @@ represents a list returned from the \code{SpatialEcoTyper} function.}
 gene expression data used for the SpatialEcoTyper analysis. The list name should match
 that of \code{SpatialEcoTyper_list}.}
 
-\item{outdir}{Directory where the results will be saved. Defaults to the current
-directory with a subdirectory named "SpatialEcoTyper_results_" followed by the current date.}
+\item{outdir}{Directory where the results will be saved. Defaults to the current directory.}
 
 \item{normalization.method}{Method for normalizing the expression data. Options
 include "None" (default), "SCT", or other methods compatible with Seurat's `NormalizeData` function.}

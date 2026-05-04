@@ -1,6 +1,13 @@
-# SpatialEcoTyper 0.0.7
+# SpatialEcoTyper 1.0.2
 
-* First release of SpatialEcoTyper.
+  * Add tutorial for SE recovery from single-cell ST data
+  * Add tutorial for identifying SE-specific cell states
+  * Reformat the tutorial for multi-sample integration analysis
+  * Add functions for colocalization, Moran's I, and average expression of SE markers
+  * Fixed potential issues in drawRectangleAnnotation function.
+
+# SpatialEcoTyper 1.0.1
+
   * SpatialEcoTyper: SE discovery from a single sample
   * MultiSpatialEcoTyper: Integrative analysis of SEs from multiple samples
   * IntegrateSpatialEcoTyper: Integrative analysis of SEs from multiple samples
@@ -36,6 +43,5 @@
 
 # SpatialEcoTyper 0.0.1
   * Second release
-  * Update SE recovery from Visium data
   * Add option `dropcell` to SpatialEcoTyper function to drop NA regions
 

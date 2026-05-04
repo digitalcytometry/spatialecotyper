@@ -36,11 +36,11 @@ This function estimates the abundances of SEs in bulk tumor gene expression data
 using a provided basis matrix (`W`) from NMF model.
 }
 \examples{
-library(googledrive)
-drive_deauth() # no Google sign-in is required
-drive_download(as_id("14QvmgISxaArTzWt_UHvf55aAYN2zm84Q"), "SKCM_RNASeqV2.geneExp.rds",
-                    overwrite = TRUE)
-bulkdata <- readRDS("SKCM_RNASeqV2.geneExp.rds")
+
+bulkdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv",
+                  sep = "\t", header = TRUE, data.table = FALSE)
+rownames(bulkdata) = bulkdata[, 1]
+bulkdata = as.matrix(bulkdata[, -1])
 
 # Predict SE abundances in bulk tumors
 se_abundances <- DeconvoluteSE(dat = bulkdata)

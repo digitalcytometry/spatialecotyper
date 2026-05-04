@@ -12,8 +12,7 @@
 #' contains metadata corresponding to the cells in the expression matrices. Each row
 #' should correspond to a column (cell) in the expression matrices. Each metadata
 #' should include at least three columns, including X, Y and CellType.
-#' @param outdir Directory where the results will be saved. Defaults to the current
-#' directory with a subdirectory named "SpatialEcoTyper_results_" followed by the current date.
+#' @param outdir Directory where the results will be saved. Defaults to the current directory.
 #' @param normalization.method Method for normalizing the expression data. Options
 #' include "None" (default), "SCT", or other methods compatible with Seurat's `NormalizeData` function.
 #' @param nmf_ranks Integer or a vector specifying the number of clusters (10 by default).
@@ -61,7 +60,7 @@ MultiSpatialEcoTyper <- function(data_list,
                                  min.coph = 0.95,
                                  radius = 50,
                                  min.cts.per.region = 1,
-                                 nfeatures = 3000,
+                                 nfeatures = 300,
                                  min.features = 10,
                                  Region = NULL,
                                  downsample.by.region = TRUE,
@@ -72,7 +71,6 @@ MultiSpatialEcoTyper <- function(data_list,
                                  filter.region.by.celltypes = NULL,
                                  ...){
 
-  outdir <- file.path(outdir, paste0("SpatialEcoTyper_results_", Sys.Date()))
   dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
   if(is.null(names(data_list)) & is.null(names(metadata_list))){
     sample_names <- paste0("Sample", 1:length(data_list))

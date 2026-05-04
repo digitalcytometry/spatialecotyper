@@ -169,7 +169,7 @@ getColors <- function(n, palette = 1, categoric = TRUE, exclude = NULL){
     }else if(palette==14){
       kovesi.linear_bgyw_15_100_c67(n)
     }else{
-      stop("Palette not found")
+      stop("Palette not found. Please provide a valid palette name.")
     }
   }
 }

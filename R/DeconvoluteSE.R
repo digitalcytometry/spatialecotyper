@@ -15,11 +15,11 @@
 #' @return A matrix of SE abundances in bulk tumors.
 #'
 #' @examples
-#' library(googledrive)
-#' drive_deauth() # no Google sign-in is required
-#' drive_download(as_id("14QvmgISxaArTzWt_UHvf55aAYN2zm84Q"), "SKCM_RNASeqV2.geneExp.rds",
-#'                     overwrite = TRUE)
-#' bulkdata <- readRDS("SKCM_RNASeqV2.geneExp.rds")
+#'
+#' bulkdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv",
+#'                   sep = "\t", header = TRUE, data.table = FALSE)
+#' rownames(bulkdata) = bulkdata[, 1]
+#' bulkdata = as.matrix(bulkdata[, -1])
 #'
 #' # Predict SE abundances in bulk tumors
 #' se_abundances <- DeconvoluteSE(dat = bulkdata)
@@ -36,10 +36,21 @@ DeconvoluteSE <- function(dat, scale = TRUE, W = NULL,
     W <- readRDS(file.path(system.file("extdata", package = "SpatialEcoTyper"),
                            "Bulk_SE_Recovery_W.rds"))
   }
+  genes = unique(gsub("_.*", "", rownames(W)))
+  dat = dat[rownames(dat) %in% genes, ]
   if(all(dat>=0) & max(dat)>80){
     dat = log2(dat+1)
   }
-  preds <- NMFpredict(W = W, dat, scale = scale,
+  dat = dat[rownames(dat) %in% gsub("_.*", "", rownames(W)), ]
+  if(scale) dat = ScaleData(dat, verbose = FALSE)
+  # if(min(dat)>=0){
+  #   ngenes = colSums(dat<1e-16)
+  #   cantpred = colnames(dat)[ngenes<3]
+  #   if(length(cantpred)>0){
+  #     warning(length(cantpred), " samples are omitted due to lack of model gene expression")
+  #   }
+  # }
+  preds <- NMFpredict(W = W, dat, scale = FALSE,
                       ncell.per.run = nsample.per.run,
                       sum2one = sum2one, ncores = ncores)
   return(preds)

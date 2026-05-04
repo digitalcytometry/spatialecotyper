@@ -13,7 +13,7 @@ and generate metacell expression profiles for each cell type."><meta property="o
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,11 +23,14 @@ and generate metacell expression profiles for each cell type."><meta property="o
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
-    <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
-    <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
+    <li><a class="dropdown-item" href="../articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
+    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
+    <li><a class="dropdown-item" href="../articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
+    <li><a class="dropdown-item" href="../articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">R functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -137,28 +140,12 @@ annotations. The row names of the <code>metadata</code> must match the column na
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://digitalcytometry.github/spatialecotyper" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://googledrive.tidyverse.org" class="external-link">googledrive</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_deauth.html" class="external-link">drive_deauth</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># no Google sign-in is required</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_download.html" class="external-link">drive_download</a></span><span class="op">(</span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_id.html" class="external-link">as_id</a></span><span class="op">(</span><span class="st">"1CgUOQKrWY_TG61o5aw7J9LZzE20D6NuI"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                    <span class="st">"HumanMelanomaPatient1_subset_scmeta.tsv"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> File downloaded:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • <span style="color: #00BBBB;">HumanMelanomaPatient1_subset_scmeta.tsv</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   <span style="color: #555555;">&lt;id: 1CgUOQKrWY_TG61o5aw7J9LZzE20D6NuI&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saved locally as:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • <a href="file:///Users/wzhang39/Library/CloudStorage/Box-Box/WZ/EcoSystem/0_Script/SpatialEcoTyper/docs/reference/HumanMelanomaPatient1_subset_scmeta.tsv"><span style="color: #0000BB;">HumanMelanomaPatient1_subset_scmeta.tsv</span></a></span>
-<span class="r-in"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_download.html" class="external-link">drive_download</a></span><span class="op">(</span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_id.html" class="external-link">as_id</a></span><span class="op">(</span><span class="st">"1CoQmU3u8MoVC8RbLUvTDQmOuJJ703HHB"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"HumanMelanomaPatient1_subset_counts.tsv.gz"</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> File downloaded:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • <span style="color: #00BBBB;">HumanMelanomaPatient1_subset_counts.tsv.gz</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   <span style="color: #555555;">&lt;id: 1CoQmU3u8MoVC8RbLUvTDQmOuJJ703HHB&gt;</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Saved locally as:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • <a href="file:///Users/wzhang39/Library/CloudStorage/Box-Box/WZ/EcoSystem/0_Script/SpatialEcoTyper/docs/reference/HumanMelanomaPatient1_subset_counts.tsv.gz"><span style="color: #0000BB;">HumanMelanomaPatient1_subset_counts.tsv.gz</span></a></span>
-<span class="r-in"><span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"HumanMelanomaPatient1_subset_counts.tsv.gz"</span>,</span></span>
+<span class="r-in"><span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz"</span>,</span></span>
 <span class="r-in"><span>                sep <span class="op">=</span> <span class="st">"\t"</span>,header <span class="op">=</span> <span class="cn">TRUE</span>, data.table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">scdata</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">normdata</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="st">"HumanMelanomaPatient1_subset_scmeta.tsv"</span>,</span></span>
+<span class="r-in"><span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv"</span>,</span></span>
 <span class="r-in"><span>                      sep <span class="op">=</span> <span class="st">"\t"</span>,header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Construct spatial metacells from single-cell spatial data</span></span></span>

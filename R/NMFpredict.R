@@ -90,11 +90,11 @@
 #' @return A matrix representing the NMF prediction scores, with rows as samples/cells and columns as SE groups.
 #'
 #' @examples
-#' library(googledrive)
-#' drive_deauth() # no Google sign-in is required
-#' drive_download(as_id("14QvmgISxaArTzWt_UHvf55aAYN2zm84Q"), "SKCM_RNASeqV2.geneExp.rds",
-#'                     overwrite = TRUE)
-#' bulkdata <- readRDS("SKCM_RNASeqV2.geneExp.rds")
+#'
+#' bulkdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv",
+#'                   sep = "\t", header = TRUE, data.table = FALSE)
+#' rownames(bulkdata) = bulkdata[, 1]
+#' bulkdata = as.matrix(bulkdata[, -1])
 #' W <- readRDS(file.path(system.file("extdata", package = "SpatialEcoTyper"), "Bulk_SE_Recovery_W.rds"))
 #'
 #' # Predict SE abundances in bulk tumors
@@ -110,17 +110,15 @@ NMFpredict <- function(W, testdat,
                        sum2one = TRUE,
                        ncores = 1){
   ## Prediction
-  if(!scale) warning("Unit-variance normalization is essential for the prediction.")
-  testdat = testdat[rownames(testdat) %in% gsub("_.*", "", rownames(W)), ]
-
-  ngenes = colSums(testdat>0)
-  cantpred = colnames(testdat)[ngenes<3]
-  if(length(cantpred)>0){
-    warning(length(cantpred), " samples are omitted due to lack of model gene expression")
+  if(scale){
+    ngenes = colSums(testdat<1e-16)
+    cantpred = colnames(testdat)[ngenes<3]
+    if(length(cantpred)>0){
+      warning(length(cantpred), " cells are omitted due to lack of model gene expression")
+    }
+    testdat = testdat[, ngenes>=3]
+    testdat = Seurat::ScaleData(testdat, verbose = FALSE)
   }
-  testdat = testdat[, ngenes>=3, drop = FALSE]
-
-  if(scale) testdat = Seurat::ScaleData(testdat, verbose = FALSE)
   if(ncol(testdat)>ncell.per.run){
     nfold <- round(ncol(testdat)/ncell.per.run)
     ncells <- ceiling(ncol(testdat)/nfold)

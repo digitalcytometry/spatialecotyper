@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,11 +17,14 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
-    <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
-    <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
+    <li><a class="dropdown-item" href="../articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
+    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
+    <li><a class="dropdown-item" href="../articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
+    <li><a class="dropdown-item" href="../articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">R functions</a></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -40,8 +43,15 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.7" id="spatialecotyper-007">SpatialEcoTyper 0.0.7<a class="anchor" aria-label="anchor" href="#spatialecotyper-007"></a></h2>
-<ul><li>First release of SpatialEcoTyper.
+<h2 class="pkg-version" data-toc-text="1.0.2" id="spatialecotyper-102">SpatialEcoTyper 1.0.2<a class="anchor" aria-label="anchor" href="#spatialecotyper-102"></a></h2>
+<ul><li>Add tutorial for SE recovery from single-cell ST data</li>
+<li>Add tutorial for identifying SE-specific cell states</li>
+<li>Reformat the tutorial for multi-sample integration analysis</li>
+<li>Add functions for colocalization, Moran’s I, and average expression of SE markers</li>
+<li>Fixed potential issues in drawRectangleAnnotation function.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.1" id="spatialecotyper-101">SpatialEcoTyper 1.0.1<a class="anchor" aria-label="anchor" href="#spatialecotyper-101"></a></h2>
 <ul><li>SpatialEcoTyper: SE discovery from a single sample</li>
 <li>MultiSpatialEcoTyper: Integrative analysis of SEs from multiple samples</li>
 <li>IntegrateSpatialEcoTyper: Integrative analysis of SEs from multiple samples</li>
@@ -52,7 +62,6 @@
 <li>CreatePseudobulks: create pseudobulk mixtures</li>
 <li>NMFGenerateW: train an NMF model for SE deconvolution from bulk expression profiles</li>
 <li>NMFGenerateWList: train cell-type specific NMF model for SE recovery</li>
-</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.6" id="spatialecotyper-006">SpatialEcoTyper 0.0.6<a class="anchor" aria-label="anchor" href="#spatialecotyper-006"></a></h2>
@@ -84,7 +93,6 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.1" id="spatialecotyper-001">SpatialEcoTyper 0.0.1<a class="anchor" aria-label="anchor" href="#spatialecotyper-001"></a></h2>
 <ul><li>Second release</li>
-<li>Update SE recovery from Visium data</li>
 <li>Add option <code>dropcell</code> to SpatialEcoTyper function to drop NA regions</li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

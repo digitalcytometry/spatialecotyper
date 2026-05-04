@@ -206,90 +206,190 @@ heatmap_annotation <- function(df, palettes = NULL,
                     show_annotation_name = show_annotation_name, border = T)
 }
 
-#' Draw Rectangle Annotations
+#' Draw Rectangular Annotations for Matching Row/Column Groups in a Heatmap
 #'
-#' This function draw rectangle grids based on given row and column factors.
+#' This function overlays rectangular boundaries on a \code{ComplexHeatmap}
+#' heatmap to highlight blocks where row and column annotations share the
+#' same group label. It detects contiguous segments (blocks) of identical
+#' labels in both rows and columns and draws rectangles around all matching
+#' row–column block pairs.
 #'
-#' @param rows A vector of row identifiers.
-#' @param columns A vector of column identifiers.
+#' Unlike simpler implementations, this function correctly handles cases where
+#' the same annotation label appears in multiple disjoint segments (e.g., after
+#' clustering or reordering).
 #'
+#' @param rows A vector of row annotation labels. Length must match the number
+#' of rows in the heatmap.
+#'
+#' @param columns A vector of column annotation labels. Length must match the
+#' number of columns in the heatmap.
+#'
+#' @param col Character. Color of rectangle borders. Default is \code{"black"}.
+#'
+#' @param heatmap_name Character. Name of the heatmap used in
+#' \code{\link[ComplexHeatmap]{decorate_heatmap_body}}. Must match the \code{name}
+#' argument used when creating the heatmap. Default is \code{"hmap"}.
+#'
+#' @param include_na Logical. Whether to treat \code{NA} values as a valid group.
+#' If \code{FALSE} (default), \code{NA} values are ignored when drawing rectangles.
+#' If \code{TRUE}, \code{NA} is treated as a separate group and rectangles may be
+#' drawn for missing labels.
+#'
+#' @details
+#' The function performs the following steps:
+#' \itemize{
+#'   \item Converts annotation vectors to character format
+#'   \item Identifies contiguous blocks of identical labels using run-length encoding
+#'   \item Maps block coordinates to the heatmap's normalized coordinate system
+#'   \item Draws rectangles around all row–column block pairs sharing the same label
+#' }
+#'
+#' All drawing is performed within \code{\link[ComplexHeatmap]{decorate_heatmap_body}},
+#' so the heatmap must already be drawn before calling this function.
+#'
+#' @return
+#' This function is called for its side effects and returns \code{NULL}. It adds
+#' graphical elements (rectangles) to an existing heatmap.
 #'
 #' @examples
-#' library(grid)
-#' library(SpatialEcoTyper)
+#' \dontrun{
 #' library(ComplexHeatmap)
 #'
-#' dat = matrix(rnorm(100), 10)
-#' rownames(dat) = letters[1:10]
-#' colnames(dat) = letters[11:20]
-#' rowann = data.frame(Group = rep(letters[1:2], each=5), index = 1:10)
-#' colann = data.frame(Group = rep(letters[1:2], each=5), index = 11:20)
-#' HeatmapView(dat, left_ann = rowann, top_ann = colann)
-#' drawRectangleAnnotation(rowann$Group, colann$Group)
+#' mat <- matrix(rnorm(100), 10)
+#' row_ann <- rep(c("A", "B"), each = 5)
+#' col_ann <- rep(c("A", "B"), times = 5)
+#'
+#' p1 = Heatmap(mat, name = "hmap")
+#' p1 = draw(p1)
+#' drawRectangleAnnotation(p1,
+#'   rows = row_ann,
+#'   columns = col_ann,
+#'   col = "black"
+#' )
+#' }
+#'
+#' @seealso \link[ComplexHeatmap]{decorate_heatmap_body}
+#'
+#' @importFrom ComplexHeatmap decorate_heatmap_body
+#' @importFrom grid grid.rect unit gpar
 #'
 #' @export
-drawRectangleAnnotation <- function(rows, columns, col = "black"){
-  levels = union(unique(rows), levels(columns))
-  rows = factor(as.character(rows), levels = levels)
-  columns = factor(as.character(columns), levels = levels)
+#'
+#'
+drawRectangleAnnotation <- function(ht, rows, columns, col = "black",
+                                    heatmap_name = "hmap",
+                                    include_na = FALSE) {
 
-  dup = sapply(levels, function(lvl) which(rows == lvl)[1]-1)
-  fract = dup / length(rows)
+  stopifnot(length(rows) > 0, length(columns) > 0)
 
-  dup = sapply(levels, function(lvl) which(columns == lvl)[1]-1)
-  fract2 = dup / length(columns)
+  rows <- as.character(rows)
+  columns <- as.character(columns)
 
-  for(i in length(levels):1)
-  {
+  if (include_na) {
+    rows[is.na(rows)] <- "NA"
+    columns[is.na(columns)] <- "NA"
+  }
 
-    if(i == 1)
-    {
-      if(is.na(fract[i]))
-      {
-        fract[i] = 0
-      }
-      if(is.na(fract2[i]))
-      {
-        fract2[i] = 0
-      }
-    }else{
-      if(i == length(levels))
-      {
-        if(is.na(fract[i]))
-        {
-          fract[i] = 1
-        }
-        if(is.na(fract2[i]))
-        {
-          fract2[i] = 1
-        }
-      }else{
-        if(is.na(fract[i]))
-        {
-          fract[i] = fract[i+1]
-        }
-        if(is.na(fract2[i]))
-        {
-          fract2[i] = fract2[i+1]
+  # ---- helper: contiguous blocks ----
+  get_blocks <- function(vec) {
+    if (length(vec) == 0) return(NULL)
+    r <- rle(vec)
+    ends <- cumsum(r$lengths)
+    starts <- ends - r$lengths + 1
+    data.frame(label = r$values, start = starts, end = ends,
+               stringsAsFactors = FALSE)
+  }
+
+  # ---- label matching ----
+  same_label <- function(a, b) {
+    if (include_na) {
+      identical(a, b)
+    } else {
+      !is.na(a) && !is.na(b) && a == b
+    }
+  }
+
+  # Get row and column orders with split info
+  ro_list <- ComplexHeatmap::row_order(ht)
+  co_list <- ComplexHeatmap::column_order(ht)
+
+  # Ensure they're lists (in case of no splitting)
+  if (!is.list(ro_list)) ro_list <- list(ro_list)
+  if (!is.list(co_list)) co_list <- list(co_list)
+
+  # Get the number of row and column slices
+  n_row_slices <- length(ro_list)
+  n_col_slices <- length(co_list)
+
+  # Function to draw rectangles for a specific slice
+  draw_for_slice <- function(slice_r, slice_c) {
+    # Get indices for this slice
+    r_ind <- ro_list[[slice_r]]
+    c_ind <- co_list[[slice_c]]
+
+    if (length(r_ind) == 0 || length(c_ind) == 0) return()
+
+    # Get the annotation values for this slice
+    rows_slice <- rows[r_ind]
+    cols_slice <- columns[c_ind]
+
+    # Find contiguous blocks
+    row_blocks <- get_blocks(rows_slice)
+    col_blocks <- get_blocks(cols_slice)
+
+    if (is.null(row_blocks) || is.null(col_blocks)) return()
+
+    n_row <- length(rows_slice)
+    n_col <- length(cols_slice)
+
+    # Calculate normalized coordinates within the slice
+    if (n_row > 0) {
+      row_blocks$ymin <- 1 - row_blocks$end / n_row
+      row_blocks$ymax <- 1 - (row_blocks$start - 1) / n_row
+    }
+
+    if (n_col > 0) {
+      col_blocks$xmin <- (col_blocks$start - 1) / n_col
+      col_blocks$xmax <- col_blocks$end / n_col
+    }
+
+    # Draw rectangles for matching labels
+    for (i in seq_len(nrow(row_blocks))) {
+      for (j in seq_len(nrow(col_blocks))) {
+
+        if (same_label(row_blocks$label[i], col_blocks$label[j])) {
+
+          # Calculate rectangle position
+          x_center <- (col_blocks$xmin[j] + col_blocks$xmax[j]) / 2
+          y_center <- (row_blocks$ymin[i] + row_blocks$ymax[i]) / 2
+          width <- col_blocks$xmax[j] - col_blocks$xmin[j]
+          height <- row_blocks$ymax[i] - row_blocks$ymin[i]
+
+          # Draw the rectangle
+          grid::grid.rect(
+            x = grid::unit(x_center, "npc"),
+            y = grid::unit(y_center, "npc"),
+            width = grid::unit(width, "npc"),
+            height = grid::unit(height, "npc"),
+            gp = grid::gpar(col = col, fill = NA, lwd = 2, lty = 1)
+          )
         }
       }
     }
   }
-  height =  c(fract[-1], 1) - fract
-  width =  c(fract2[-1], 1) - fract2
-  rect <- list(y=c(1-fract, 0), h=height, x=c(fract2,1), w=width)
-  ## Draw grids
-  for(i in 1:(length(rect$x)-1)){
-    decorate_heatmap_body("hmap", {
-      grid.lines(x = unit(rep(rect$x[i], 2), "native"), y = unit(rect$y[i:(i+1)], "native"),
-                 gp = gpar(col = col, lty = 1, lwd = 2))
-      grid.lines(x = unit(rep(rect$x[i+1], 2), "native"), y = unit(rect$y[i:(i+1)], "native"),
-                 gp = gpar(col = col, lty = 1, lwd = 2))
-      grid.lines(x = unit(rect$x[i:(i+1)], "native"), y = unit(rep(rect$y[i],2), "native"),
-                 gp = gpar(col = col, lty = 1, lwd = 2))
-      grid.lines(x = unit(rect$x[i:(i+1)], "native"), y = unit(rep(rect$y[i+1], 2), "native"),
-                 gp = gpar(col = col, lty = 1, lwd = 2))
-    })
+
+  # Use decorate_heatmap_body for each combination of splits
+  for (slice_r in seq_len(n_row_slices)) {
+    for (slice_c in seq_len(n_col_slices)) {
+      # Call decorate_heatmap_body for each specific slice
+      ComplexHeatmap::decorate_heatmap_body(
+        heatmap_name,
+        {
+          draw_for_slice(slice_r, slice_c)
+        },
+        row_slice = slice_r,
+        column_slice = slice_c
+      )
+    }
   }
 }
-

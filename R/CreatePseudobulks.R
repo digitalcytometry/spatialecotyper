@@ -22,11 +22,10 @@
 #' }
 #' @examples
 #' library(SpatialEcoTyper)
-#' library(googledrive)
-#' drive_deauth() # no Google sign-in is required
-#' drive_download(as_id("15n9zlXed74oeGaO1pythOOM_iWIfuMn2"), "Melanoma_WU2161_counts.rds",
-#'                     overwrite = TRUE)
-#' counts <- readRDS("Melanoma_WU2161_counts.rds") ## raw counts of scRNA-seq data
+#' counts <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv",
+#'                 sep = "\t", header = TRUE, data.table = FALSE)
+#' rownames(counts) = counts[, 1]
+#' counts = as.matrix(counts[, -1])
 #' groups <- sample(paste0("SE", 1:10), ncol(counts), replace = TRUE)
 #' names(groups) <- colnames(counts)
 #' result = CreatePseudobulks(counts = counts, groups = groups, n_mixtures = 20)

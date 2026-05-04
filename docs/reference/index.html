@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,11 +17,14 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
-    <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
-    <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
+    <li><a class="dropdown-item" href="../articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
+    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
+    <li><a class="dropdown-item" href="../articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
+    <li><a class="dropdown-item" href="../articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">R functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -39,7 +42,7 @@
     </div>
 
     <div class="section level2">
-      <h2 id="discovery-of-spatial-ecotypes-ses-">Discovery of spatial ecotypes (SEs)<a class="anchor" aria-label="anchor" href="#discovery-of-spatial-ecotypes-ses-"></a></h2>
+      <h2 id="discovering-spatial-ecotypes">Discovering Spatial Ecotypes<a class="anchor" aria-label="anchor" href="#discovering-spatial-ecotypes"></a></h2>
 
 
 
@@ -110,9 +113,32 @@
         </dt>
         <dd>Integrate Spatial Clusters From Multiple Samples Via Similarity Network Fusion</dd>
       </dl></div><div class="section level2">
-      <h2 id="development-of-se-recovery-models">Development of SE recovery models<a class="anchor" aria-label="anchor" href="#development-of-se-recovery-models"></a></h2>
+      <h2 id="identifying-se-specific-cell-states">Identifying SE-Specific Cell States<a class="anchor" aria-label="anchor" href="#identifying-se-specific-cell-states"></a></h2>
 
-      <div class="section-desc"><p>Developing models for recovering spatial ecotypes from single-cell spatial data, scRNA-seq data, Visium spatial data, or bulk tumor expression data.</p></div>
+      <div class="section-desc"><p>Identifying SE-specific cell states via leave-one-sample-out cross-validation.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="LoocvPredict.html">LoocvPredict()</a></code>
+
+        </dt>
+        <dd>Perform leave-one-out cross-validation (LOOCV) for SE prediction</dd>
+      </dl><dl><dt>
+
+          <code><a href="ComputeMetrics.html">ComputeMetrics()</a></code>
+
+        </dt>
+        <dd>Assess concordance between true and predicted spatial ecotype labels</dd>
+      </dl></div><div class="section level2">
+      <h2 id="nmf-model-development-for-spatial-ecotype-recovery-and-deconvolution">NMF Model Development for Spatial Ecotype Recovery and Deconvolution<a class="anchor" aria-label="anchor" href="#nmf-model-development-for-spatial-ecotype-recovery-and-deconvolution"></a></h2>
+
+      <div class="section-desc"><p>Developing NMF models for recovering spatial ecotypes from single-cell spatial data, scRNA-seq data, Visium spatial data, or bulk tumor expression data.</p></div>
 
 
     </div><div class="section level2">
@@ -139,7 +165,7 @@
         </dt>
         <dd>Train Cell Type-Specific NMF Models for Recovering Spatial EcoTypes</dd>
       </dl></div><div class="section level2">
-      <h2 id="se-recovery">SE recovery<a class="anchor" aria-label="anchor" href="#se-recovery"></a></h2>
+      <h2 id="recovering-spatial-ecotypes">Recovering Spatial Ecotypes<a class="anchor" aria-label="anchor" href="#recovering-spatial-ecotypes"></a></h2>
 
       <div class="section-desc"><p>Recovering spatial ecotypes from single-cell spatial transcriptomics, scRNA-seq, Visium, or bulk tumor expression data.</p></div>
 
@@ -168,7 +194,54 @@
         </dt>
         <dd>Prediction Using Pretrained NMF Model</dd>
       </dl></div><div class="section level2">
-      <h2 id="nmf-non-negative-matrix-factorization-clustering">NMF (Non-negative Matrix Factorization) clustering<a class="anchor" aria-label="anchor" href="#nmf-non-negative-matrix-factorization-clustering"></a></h2>
+      <h2 id="validating-spatial-ecotypes">Validating Spatial Ecotypes<a class="anchor" aria-label="anchor" href="#validating-spatial-ecotypes"></a></h2>
+
+      <div class="section-desc"><p>Validating spatial ecotypes in held-out single-cell or spatial transcriptomics data by testing the co-association or spatial autocorrelation of recovered SE-specific cell states.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="Colocalization.html">Colocalization()</a></code>
+
+        </dt>
+        <dd>Evaluate Cell State Colocalization</dd>
+      </dl><dl><dt>
+
+          <code><a href="ColocalizationHeatmapView.html">ColocalizationHeatmapView()</a></code>
+
+        </dt>
+        <dd>Colocalization Heatmap Visualization</dd>
+      </dl><dl><dt>
+
+          <code><a href="CoassociationTest.html">CoassociationTest()</a></code>
+
+        </dt>
+        <dd>Test Co-association Significance Between Cell States</dd>
+      </dl><dl><dt>
+
+          <code><a href="Coassociation.html">Coassociation()</a></code>
+
+        </dt>
+        <dd>Compute co-association of cell states across samples</dd>
+      </dl><dl><dt>
+
+          <code><a href="ComputeNormalizedMoranI.html">ComputeNormalizedMoranI()</a></code>
+
+        </dt>
+        <dd>Compute Normalized Moran's I for Spatial Ecotypes</dd>
+      </dl><dl><dt>
+
+          <code><a href="AverageConsensusMarkers.html">AverageConsensusMarkers()</a></code>
+
+        </dt>
+        <dd>Compute average expression of consensus markers across all spatial ecotypes (SEs)</dd>
+      </dl></div><div class="section level2">
+      <h2 id="clustering-analysis">Clustering Analysis<a class="anchor" aria-label="anchor" href="#clustering-analysis"></a></h2>
 
       <div class="section-desc"><p>Clustering via NMF.</p></div>
 
@@ -212,7 +285,7 @@
           <code><a href="drawRectangleAnnotation.html">drawRectangleAnnotation()</a></code>
 
         </dt>
-        <dd>Draw Rectangle Annotations</dd>
+        <dd>Draw Rectangular Annotations for Matching Row/Column Groups in a Heatmap</dd>
       </dl><dl><dt>
 
           <code><a href="getColors.html">getColors()</a></code>
@@ -220,7 +293,7 @@
         </dt>
         <dd>Generate a List of Colors</dd>
       </dl></div><div class="section level2">
-      <h2 id="data-processing">Data processing<a class="anchor" aria-label="anchor" href="#data-processing"></a></h2>
+      <h2 id="data-processing">Data Processing<a class="anchor" aria-label="anchor" href="#data-processing"></a></h2>
 
 
 

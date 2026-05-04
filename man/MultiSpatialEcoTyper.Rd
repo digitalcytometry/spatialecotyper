@@ -14,7 +14,7 @@ MultiSpatialEcoTyper(
   min.coph = 0.95,
   radius = 50,
   min.cts.per.region = 1,
-  nfeatures = 3000,
+  nfeatures = 300,
   min.features = 10,
   Region = NULL,
   downsample.by.region = TRUE,
@@ -37,8 +37,7 @@ contains metadata corresponding to the cells in the expression matrices. Each ro
 should correspond to a column (cell) in the expression matrices. Each metadata
 should include at least three columns, including X, Y and CellType.}
 
-\item{outdir}{Directory where the results will be saved. Defaults to the current
-directory with a subdirectory named "SpatialEcoTyper_results_" followed by the current date.}
+\item{outdir}{Directory where the results will be saved. Defaults to the current directory.}
 
 \item{normalization.method}{Method for normalizing the expression data. Options
 include "None" (default), "SCT", or other methods compatible with Seurat's `NormalizeData` function.}

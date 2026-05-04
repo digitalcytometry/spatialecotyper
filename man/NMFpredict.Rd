@@ -35,11 +35,11 @@ This function uses pretrained NMF models to recover cell states / spatial ecotyp
 It takes a factorization matrix W representing a pretrained NMF model and a numeric gene expression matrix.
 }
 \examples{
-library(googledrive)
-drive_deauth() # no Google sign-in is required
-drive_download(as_id("14QvmgISxaArTzWt_UHvf55aAYN2zm84Q"), "SKCM_RNASeqV2.geneExp.rds",
-                    overwrite = TRUE)
-bulkdata <- readRDS("SKCM_RNASeqV2.geneExp.rds")
+
+bulkdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv",
+                  sep = "\t", header = TRUE, data.table = FALSE)
+rownames(bulkdata) = bulkdata[, 1]
+bulkdata = as.matrix(bulkdata[, -1])
 W <- readRDS(file.path(system.file("extdata", package = "SpatialEcoTyper"), "Bulk_SE_Recovery_W.rds"))
 
 # Predict SE abundances in bulk tumors

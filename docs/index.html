@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,11 +41,14 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
-<li><a class="dropdown-item" href="articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
-    <li><a class="dropdown-item" href="articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
-    <li><a class="dropdown-item" href="articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
-    <li><a class="dropdown-item" href="articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
+<li><a class="dropdown-item" href="articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
+    <li><a class="dropdown-item" href="articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
+    <li><a class="dropdown-item" href="articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
+    <li><a class="dropdown-item" href="articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
+    <li><a class="dropdown-item" href="articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
+    <li><a class="dropdown-item" href="articles/Recovery_Bulk.html">Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">R functions</a></li>
@@ -70,37 +73,54 @@
 <img src="logo.png" class="logo" alt=""><h1 id="deciphering-spatial-ecotypes-from-spatial-single-cell-and-bulk-transcriptomic-data">Deciphering spatial ecotypes from spatial, single-cell, and bulk transcriptomic data<a class="anchor" aria-label="anchor" href="#deciphering-spatial-ecotypes-from-spatial-single-cell-and-bulk-transcriptomic-data"></a>
 </h1>
 </div>
-<p><strong>Spatial EcoTyper</strong> is a versatile framework designed for the systematic identification of spatial cellular communities, termed spatial ecotypes, from single-cell spatial transcriptomics data. In addition, it provides unified methods for the recovery of spatial ecotypes across multiple data modalities, including spatial transcriptomics, single-cell RNA-seq, and bulk transcriptomic datasets.</p>
+<p><strong>Spatial EcoTyper</strong> is a versatile framework for identifying spatially distinct multicellular communities, termed spatial ecotypes, from single-cell spatial transcriptomics data. In addition, it provides unified methods for the recovery of spatial ecotypes across multiple data modalities, including spatial transcriptomics, single-cell RNA-seq, and bulk transcriptomic datasets.</p>
 <div class="section level2">
 <h2 id="overview-of-spatial-ecotyper">Overview of Spatial EcoTyper<a class="anchor" aria-label="anchor" href="#overview-of-spatial-ecotyper"></a>
 </h2>
 <p><strong>Spatial EcoTyper</strong> is available as an R package, with comprehensive documentation accessible at <a href="https://digitalcytometry.github.io/spatialecotyper" class="uri">https://digitalcytometry.github.io/spatialecotyper</a>.</p>
-<p>We provide five comprehensive tutorials illustrating the functionalities included in the SpatialEcoTyper R package. The first tutorial demonstrates how to identify spatial ecotypes from a single-cell spatial transcriptomics data. The second demonstrates how to identified conserved spatial ecotypes across multiple samples. The third demonstrates how to develop NMF models for recovery of spatial ecotypes from unseen data. The remaining tutorials introduce how to recover spatial ecotypes from single-cell (scRNA-seq or single-cell spatial transcriptomics) and bulk (bulk RNA-seq or Visium) gene expression profiles.</p>
+<p>We provide eight comprehensive tutorials illustrating the key functionalities of Spatial EcoTyper framework:</p>
 <ul>
 <li>
-<strong>Tutorial 1:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/SingleSample.html">Discovery of Spatial Ecotypes from A Single Sample</a>
+<strong>Tutorial 1</strong>: <a href="https://digitalcytometry.github.io/spatialecotyper/articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a>
 </li>
 <li>
-<strong>Tutorial 2:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a>
+<strong>Tutorial 2</strong>: <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a>
 </li>
 <li>
-<strong>Tutorial 3:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a>
+<strong>Tutorial 3</strong>: <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a>
 </li>
 <li>
-<strong>Tutorial 4:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a>
+<strong>Tutorial 4</strong>: <a href="https://digitalcytometry.github.io/spatialecotyper/articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a>
 </li>
 <li>
-<strong>Tutorial 5:</strong> <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a>
+<strong>Tutorial 5</strong>: <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a>
+</li>
+<li>
+<strong>Tutorial 6</strong>: <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a>
+</li>
+<li>
+<strong>Tutorial 7</strong>: <a href="https://digitalcytometry.github.io/spatialecotyper/articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a>
+</li>
+<li>
+<strong>Tutorial 8</strong>: <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Bulk.html">Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data</a>
 </li>
 </ul>
-<p>Data used in the tutorials can be obtained from <a href="https://drive.google.com/open?id=1En0pgY6_3_u8XK2hTSTbrA9Iouhvc4TD&amp;usp=drive_fs" class="external-link uri">https://drive.google.com/open?id=1En0pgY6_3_u8XK2hTSTbrA9Iouhvc4TD&amp;usp=drive_fs</a>.</p>
-<p><strong>Note</strong>: <strong>Spatial EcoTyper</strong> depends extensively on Seurat for key processes like dimensionality reduction, UMAP embedding, clustering, and visualization. Initially developed using Seurat v4.3, the tool has been thoroughly tested and validated with Seurat v5. Although UMAP embeddings and clustering results show slight differences between Seurat v4 and v5, the overall consistency remains strong, ensuring that core biological insights are preserved across both versions.</p>
+<p><strong>Note</strong>: Spatial EcoTyper depends extensively on Seurat for key processes like dimensionality reduction, UMAP embedding, clustering, and visualization. Initially developed using Seurat v4.3, the tool has been thoroughly tested and validated with Seurat v5. Although UMAP embeddings and clustering results show slight differences between Seurat v4 and v5, the overall consistency remains strong, ensuring that core biological insights are preserved across both versions.</p>
 </div>
 <div class="section level2">
 <h2 id="system-requirements">System requirements<a class="anchor" aria-label="anchor" href="#system-requirements"></a>
 </h2>
-<p>This package is compatible with all operating systems and has been tested on the following platforms:</p>
-<p>macOS: Big Sur, Monterey, Ventura, Sonoma, Sequoia (15.2) Linux: CentOS 7.2 and High-Performance Computing (HPC) clusters</p>
+<ul>
+<li>
+<strong>R</strong>: Version 4.0 or higher is required.</li>
+<li>
+<strong>Operating Systems</strong>: This package is compatible with all operating systems and has been tested on the following platforms:
+<ul>
+<li>macOS: Big Sur, Monterey, Ventura, Sonoma, Sequoia (15.2)</li>
+<li>Linux: CentOS 7.2 and High-Performance Computing (HPC) clusters</li>
+</ul>
+</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -112,8 +132,8 @@
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co">## Install dependencies</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"remotes"</span>, <span class="st">"Seurat"</span>, <span class="st">"NMF"</span>, <span class="st">"dplyr"</span>, <span class="st">"pals"</span>,</span>
-<span>                       <span class="st">"data.table"</span>, <span class="st">"ComplexHeatmap"</span>, <span class="st">"googledrive"</span>, </span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"remotes"</span>, <span class="st">"Seurat"</span>, <span class="st">"NMF"</span>, <span class="st">"dplyr"</span>, <span class="st">"tidyr"</span>, <span class="st">"pals"</span>,</span>
+<span>                       <span class="st">"parallel"</span>, <span class="st">"data.table"</span>, <span class="st">"ComplexHeatmap"</span>, </span>
 <span>                       <span class="st">"glmGamPoi"</span>, <span class="st">"immunogenomics/presto"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Install SpatialEcoTyper</span></span>
@@ -152,11 +172,6 @@ Install SpatialEcoTyper from source code
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
 <p>Please see the <a href="LICENSE.html" target="_blank">LICENSE</a> file.</p>
-</div>
-<div class="section level2">
-<h2 id="authors">Authors<a class="anchor" aria-label="anchor" href="#authors"></a>
-</h2>
-<p>Spatial EcoTyper was developed in the <a href="https://anlab.stanford.edu/" target="_blank" class="external-link">Newman Lab</a> by Wubing Zhang.</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>

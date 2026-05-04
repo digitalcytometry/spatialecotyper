@@ -12,7 +12,7 @@ NMFGenerateWList(
   scale = TRUE,
   Sample = NULL,
   balance.sample = TRUE,
-  nfeature = 2000,
+  nfeature = 300,
   nfeature.per.se = 50,
   min.cells = 20,
   downsample = 2500,
@@ -24,7 +24,7 @@ NMFGenerateWList(
 \item{scdata}{Numeric matrix containing single-cell expression data.}
 
 \item{scmeta}{Data frame containing metadata information associated with single-cell data,
-including cell types and spatial clusters.}
+including cell types and spatial clusters. Row names should match column names of `scdata`.}
 
 \item{CellType}{Character string specifying the column name in the metadata data
 frame containing cell type annotations.}
@@ -42,7 +42,7 @@ performed within each sample.}
 \item{balance.sample}{Boolean specifying whether to perform balance the cells from all samples
 before training the models (default: TRUE).}
 
-\item{nfeature}{Integer specifying the top variable features for training the models (default: 2000).}
+\item{nfeature}{Integer specifying the top variable features for training the models (default: 300).}
 
 \item{nfeature.per.se}{Integer specifying the maximal number of features to select for each SE (default: 50).}
 

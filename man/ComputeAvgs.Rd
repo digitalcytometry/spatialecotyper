@@ -41,24 +41,16 @@ Compute Cell-Type-Specific Average Expression of Spatial Clusters
 library(data.table)
 library(Seurat)
 library(SpatialEcoTyper)
-library(googledrive)
-drive_deauth() # no Google sign-in is required
-drive_download(as_id("1CoQmU3u8MoVC8RbLUvTDQmOuJJ703HHB"),
-              "HumanMelanomaPatient1_subset_counts.tsv.gz", overwrite = TRUE)
-drive_download(as_id("1nSPj2zRywFUdbo1fwiz77ds4NuM6bmV2"),
-              "Melanoma1_subset_SpatialEcoTyper_results.rds", overwrite = TRUE)
-scdata <- fread("HumanMelanomaPatient1_subset_counts.tsv.gz",
+
+scdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz",
                 sep = "\t",header = TRUE, data.table = FALSE)
 rownames(scdata) <- scdata[, 1]
 scdata <- as.matrix(scdata[, -1])
-tmpobj <- CreateSeuratObject(scdata) \%>\%
-        SCTransform(clip.range = c(-10, 10), verbose = FALSE)
-seurat_version = as.integer(gsub("\\\\..*", "", as.character(packageVersion("SeuratObject"))))
-if(seurat_version<5){
-  normdata <- GetAssayData(tmpobj, "data")
-}else{
-  normdata <- tmpobj[["SCT"]]$data
-}
+tmpobj <- CreateSeuratObject(scdata) \%>\% NormalizeData()
+normdata <- GetAssayData(tmpobj, layer = "data")
+
+url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_SpatialEcoTyper_results.rds"
+download.file(url, destfile = "Melanoma1_subset_SpatialEcoTyper_results.rds", mode = "wb")
 metadata = readRDS("Melanoma1_subset_SpatialEcoTyper_results.rds")$metadata
 
 # Construct cell-type-specific gene expression signatures of SEs

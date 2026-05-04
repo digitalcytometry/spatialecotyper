@@ -1,0 +1,163 @@
+---
+title: "NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Overview
+
+Users can develop machine learning models to enable spatial ecotype (SE) recovery from held-out single-cell datasets (e.g., scRNA-seq or single-cell spatial transcriptomics). The Spatial EcoTyper framework leverages non-negative matrix factorization (NMF) as its core algorithm for SE recovery, given its robustness and demonstrated effectiveness in recovering carcinoma ecotypes from multimodal expression data in our [prior study](https://www.sciencedirect.com/science/article/pii/S0092867421010618). Here, we will demonstrate how to train the model to recover SEs from single-cell gene expression data.
+
+# Development of SE recovery model
+
+In this tutorial, we will use the Vizgen MERSCOPE data of two samples to demonstrate the process for developing cell-type-specific NMF models for recovering SEs from single-cell gene expression profiles, including both single-cell spatial transcriptomics and single-cell RNA-seq data.
+
+__First load required packages for this vignette__
+
+```{r lib}
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(NMF))
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(dplyr))
+library(SpatialEcoTyper)
+```
+
+## Loading data
+
+__Load gene expression matrix__
+```{r load}
+## Read the expression matrix for the first sample
+scdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz", 
+                sep = "\t",header = TRUE, data.table = FALSE)
+rownames(scdata) <- scdata[, 1]  ## set the first column as row names
+scdata <- scdata[, -1]  ## drop the first column
+scdata <- NormalizeData(scdata)  ## Normalize the expression matrix
+
+## Read the expression matrix for the second sample
+scdata2 <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=CRC2_subset_counts.tsv.gz", 
+                sep = "\t",header = TRUE, data.table = FALSE)
+rownames(scdata2) <- scdata2[, 1]  ## set the first column as row names
+scdata2 <- scdata2[, -1]  ## drop the first column
+scdata2 <- NormalizeData(scdata2)  ## Normalize the expression matrix
+
+## Combine the two expression matrices
+genes <- intersect(rownames(scdata), rownames(scdata2))
+scdata <- cbind(scdata[genes, ], scdata2[genes, ])
+head(scdata[, 1:5])
+```
+
+__Load cell type and SE annotations__
+```{r loadse}
+## Load the single-cell meta data derived from MultiSpatialEcoTyper analysis
+scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=MultiSE_metadata_final.tsv", sep = "\t", 
+                     header = TRUE, row.names = 1)
+scmeta$SE[is.na(scmeta$SE)] = "nonSE" ## cells with NA predictions were assigned into the nonSE group
+
+## Matches the row names of meta data and column names of expression matrix
+cells <- intersect(colnames(scdata), rownames(scmeta))
+scdata <- scdata[, cells]
+scmeta <- scmeta[cells, ]
+head(scmeta[, c("Sample", "CellType", "SE")])
+```
+
+## Training
+
+The [NMFGenerateWList](../reference/NMFGenerateWList.html) function will be used to train cell-type specific NMF models for recovering SEs. Prior to NMF, each gene is scaled to mean 0 and unit variance within each cell type-specific expression matrix. To satisfy the non-negativity requirement of NMF, the cell type-specific expression matrices are individually processed using posneg transformation, which converts each expression matrix into two matrices, one containing only positive values and the other containing only negative values with the sign inverted. The two matrices are subsequently concatenated to produce the training data. The [NMFGenerateWList](../reference/NMFGenerateWList.html) function will return a list of `feature × SE` matrices, each representing a cell type-specific gene signature matrix with rows as features and columns as SEs.
+
+By default, for each cell type, the [NMFGenerateWList](../reference/NMFGenerateWList.html) balances cell numbers across samples (via the `Sample` argument) by randomly subsampling each sample to a target size equal to the median number of cells per sample, downsamples a total of 2,500 cells across all samples (`downsample` argument), and selects the top 300 variable features (`nfeature` argument) for model training. We recommend adjusting these parameters based on the characteristics of your dataset and available computational resources.
+
+For a quick demonstration, we train the model on the small example dataset using a simplified, built-in feature selection strategy.
+```{r demotrain}
+# training
+Ws = NMFGenerateWList(scdata, scmeta, 
+                      CellType = "CellType",
+                      SE = "SE", Sample = "Sample",
+                      nfeature = 300, 
+                      nfeature.per.se = 50, 
+                      ncores = 8)
+class(Ws)
+names(Ws)
+head(Ws[[2]])
+```
+
+The resulting W matrices could be used to recover SEs from spatial transcriptomics and single-cell RNA-seq using the [RecoverSE](../reference/RecoverSE.html) function. The detailed documentation for SE recovery is available at [Recovering Spatial Ecotypes from Single-Cell RNA-seq Data](Recovery_scRNA.html) and [Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data](Recovery_scST.html).
+
+
+**Note**: To obtain a robust model, we recommend performing multiple runs and constructing an ensemble. In our analysis (Zhang et al.), we repeated the training 50 times and averaged the resulting basis matrices to generate an ensemble matrix W for each cell type. For feature selection, we identified genes with the highest and most specific expression in each cell state from each run, and retained those consistently selected for the same cell state in more than half of the runs. 
+
+The NMF model training can be time-consuming. To improve efficiency, we recommend running training jobs as Slurm array jobs and and allocating sufficient computational resources (e.g., CPU cores) to each task. the resulting W matrices according to the procedure described above. An example Slurm array script is provided below.
+
+__nmf_trainings.R__
+```{r train, eval=FALSE}
+# ============================================================
+# Demo script for NMF training (do not run as-is without setup)
+# Designed for Slurm array jobs: one run per task
+# ============================================================
+
+# ---- Parse command-line argument (task index) ----
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args) < 1) {
+  stop("Usage: Rscript nmf_trainings.R <task_id>")
+}
+
+i <- as.integer(args[1])
+if (is.na(i)) {
+  stop("Error: <task_id> must be an integer.")
+}
+
+message("Running NMF training for iteration: ", i)
+
+# ---- Load required libraries and data (user-defined) ----
+library(SpatialEcoTyper)
+# scdata <- ...
+# scmeta <- ...
+
+# ---- Run NMF training ----
+Ws <- NMFGenerateWList(
+  scdata, scmeta,
+  CellType = "CellType",
+  SE = "SE",
+  Sample = "Sample",
+  nfeature = 500,
+  nfeature.per.se = Inf,  # disable internal feature selection
+  ncores = 16
+)
+
+# ---- Save output ----
+saveRDS(Ws, paste0("path/to/SE_recovery_nmf_models_", i, ".rds"))
+```
+
+__submit_slurm_jobs_nmf.sh__
+```{bash, eval=FALSE}
+#!/bin/bash
+#SBATCH --job-name=nmf_train
+#SBATCH --array=1-50
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=32G
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/nmf_%A_%a.out
+Rscript nmf_trainings.R $SLURM_ARRAY_TASK_ID
+```
+
+After all jobs finish, you can average the resulting basis matrices.  For feature selection, genes showing the highest and most specific expression in each cell state were identified from each basis matrix as described, and then genes that were selected for the same cell state in over half of the repetitions were retained in the ensemble matrix. 
+
+# Next step
+
+Using the SE recovery model, users can recover spatial ecotypes from held-out single-cell datasets, including both single-cell spatial transcriptomics and single-cell RNA-seq data, as demonstrated separately in [Tutorial 5](Recovery_scST.html) and [Tutorial 6](Recovery_scRNA.html) separately.
+
+# Session info
+
+The session info allows users to replicate the exact environment and identify potential discrepancies in package versions or configurations that might be causing problems.
+
+```{r session}
+sessionInfo()
+```

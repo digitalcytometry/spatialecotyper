@@ -1,0 +1,87 @@
+---
+title: "NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Development of SE deconvolution model to infer SE abundances from bulk gene expression data
+
+This tutorial will demonstrate how to develop an NMF model to deconvolve SEs from bulk gene expression data. This process requires bulk gene expression data with known SE compositions, which we can generate by aggregating single-cell RNA-seq data into pseudo-bulk mixtures. For demonstration, we will use single-cell RNA-seq data from a melanoma sample. 
+
+The raw count for this sample is available at  [scRNAseq_demo_counts.tsv](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv) and SE recovery results are available at [scRNAseq_demo_RecoveredSEs.tsv](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_RecoveredSEs.tsv).
+
+__First load required packages for this vignette__
+
+```{r lib}
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(parallel))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(data.table))
+library(SpatialEcoTyper)
+```
+
+## Loading data
+
+```{r loadscrna, eval=TRUE}
+# Load single-cell gene expression matrix.
+counts = fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv", sep = "\t", data.table = FALSE)
+rownames(counts) = counts[, 1] ## Set the first column as row names
+counts = counts[, -1] ## Drop the first column
+head(counts[, 1:5])
+
+# Load SE recovery results
+SEs = read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_RecoveredSEs.tsv", sep = "\t", row.names = 1, header = TRUE)
+SEs = SEs[match(colnames(counts), rownames(SEs)), 1] # extract SE predictions
+length(SEs)
+table(SEs)
+```
+  
+**Note**: For demonstration purposes, we used 1,337 cells grouped into SEs to create pseudo-bulk mixtures. While this limited cell number offers a basic example, it does not fully capture the diverse characteristics of SEs, potentially affecting the robustness of model training and subsequent SE recovery. In practice, we recommend using a more comprehensive dataset that accurately reflects the properties of SEs, ensuring that the training process results in a reliable recovery model.
+
+## Creating pseudobulk data
+
+The [CreatePseudobulks](../reference/CreatePseudobulks.html) function will be used to create pseudo-bulk mixtures from single-cell (spatial) transcriptomics data with all cells grouped into SEs. It samples cell fractions from a Gaussian distribution, sets negative fractions to 0 and re-normalizes fractions to sum to 1 across all SEs. Based on the resulting fractions, it samples 1,000 cells per pseudo-bulk mixture with replacement, aggregates their transcriptomes in non-log linear space, and normalizes the resulting mixture to log CPM using Seurat's `NormalizeData`.
+
+```{r createpseudobulk}
+result = CreatePseudobulks(counts = counts, groups = SEs, n_mixtures = 100)
+## This step took ~4 min for the demo.
+head(result$Mixtures[, 1:5]) ## Gene expression matrix of pseudobulks
+head(result$Fracs) ## SE fractions in pseudobulks
+```
+
+## Training
+
+The [NMFGenerateW](../reference/NMFGenerateW.html) function will be used to train an NMF model for SE deconvolution based on the provided SE fractions and gene expression matrix. Before applying NMF, each gene's expression is scaled to have a mean of 0 and unit variance by default. To meet the non-negativity requirement of NMF, the expression matrix is transformed using the posneg method. This transformation splits the expression matrix into two matrices: one containing only positive values and the other containing the absolute values of the negative values. These two matrices are then concatenated to form the final training data for the NMF model.
+
+**Note**: By default, the [NMFGenerateW](../reference/NMFGenerateW.html) selects the top 2000 variable features (`nfeature` argument) for training. After training, it retains 50 genes per SE (`nfeature.per.se` argument) in the model. Users can tune the parameters accordingly.
+
+```{r traindecov}
+W = NMFGenerateW(result$Fracs, result$Mixtures)
+## This step took less than 1 min for the demo.
+head(W)
+```
+
+```{r saveW}
+## Save the model for late use.
+saveRDS(W, "SE_Deconvolution_W.rds")
+```
+
+The resulting W matrix can be used to infer SE abundances from bulk gene expression profiles using the [DeconvoluteSE](../reference/DeconvoluteSE.html) function. The detailed documentation for SE deconvolution is available at [Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data](Recovery_Bulk.html).
+
+# Session info
+
+The session info allows users to replicate the exact environment and identify potential discrepancies in package versions or configurations that might be causing problems.
+
+```{r session}
+sessionInfo()
+```
+

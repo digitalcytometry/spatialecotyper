@@ -91,9 +91,9 @@ GetSNList <- function(emb_list,
   })
   nspots <- table(unlist(lapply(emb_list, colnames)))
   if(sum(nspots<min.cts.per.region)>0){
-    message("\t\tRemove ", sum(nspots<min.cts.per.region),
+    message("Removing ", sum(nspots<min.cts.per.region),
             " spatial neighborhoods with fewer than ",
-            min.cts.per.region, " cell types ")
+            min.cts.per.region, " distinct cell types.")
     nspots <- names(nspots)[nspots>=min.cts.per.region]
     emb_list <- lapply(emb_list, function(x){
       x[, colnames(x) %in% nspots]
@@ -140,37 +140,3 @@ fillspots <- function(snlist){
   })
 }
 
-
-# GetSNList <- function(emb_list,
-#                       method = "euclidean",
-#                       npcs = 20,
-#                       k = 20,
-#                       min.cts.per.region = 1,
-#                       ncores = 1){
-#   emb_list <- lapply(emb_list, function(x){
-#     x[1:min(npcs, nrow(x)), ]
-#   })
-#   nspots <- table(unlist(lapply(emb_list, colnames)))
-#   if(sum(nspots<min.cts.per.region)>0){
-#     message("\t\tRemove ", sum(nspots<min.cts.per.region),
-#             " spatial neighborhoods with fewer than ",
-#             min.cts.per.region, " cell types ")
-#     nspots <- names(nspots)[nspots>=min.cts.per.region]
-#     emb_list <- lapply(emb_list, function(x){
-#       x[, colnames(x) %in% nspots]
-#     })
-#   }
-#   snlist <- mclapply(emb_list, function(x){
-#     dists <- as.matrix(stats::dist(t(x), method = method))
-#     ## Replace distance of 0 with a random small distance
-#     # dists[dists==0] <- quantile(dists[dists>0], 0.01)
-#     W <- affinityMatrix(dists, K = min(k, nrow(dists)-1), sigma = 0.5)
-#     rownames(W) <- colnames(x)
-#     colnames(W) <- colnames(x)
-#     return(W)
-#   }, mc.cores = ncores)
-#   rm(emb_list)
-#   snlist <- fillspots(snlist)
-#   return(snlist)
-# }
-#

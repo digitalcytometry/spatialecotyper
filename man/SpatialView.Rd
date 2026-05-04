@@ -67,11 +67,8 @@ library(data.table)
 library(Seurat)
 library(SpatialEcoTyper)
 library(ggplot2)
-library(googledrive)
-drive_deauth() # no Google sign-in is required
-drive_download(as_id("1CgUOQKrWY_TG61o5aw7J9LZzE20D6NuI"),
-                    "HumanMelanomaPatient1_subset_scmeta.tsv", overwrite = TRUE)
-scmeta <- fread("HumanMelanomaPatient1_subset_scmeta.tsv",
+
+scmeta <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv",
                 sep = "\t",header = TRUE, data.table = FALSE)
 
 # Visualize the cell type annotations in the tissue

@@ -11,7 +11,7 @@
 #' @param radius Numeric specifying the radius (in the same units as spatial coordinates)
 #' for defining spatial neighborhoods around each cell. Default is 50.
 #' @param resolution Numeric specifying the resolution for Louvain clustering (default: 0.5).
-#' @param nfeatures Integer specifying the number of top variable features (default: 500) used for the analysis.
+#' @param nfeatures Integer specifying the number of top variable features (default: 300) used for the analysis.
 #' @param min.cts.per.region Integer specifying the minimum number of cell types required for a spatial neighborhood.
 #' @param npcs Integer specifying the number of principal components (PCs) (default: 20).
 #' @param min.cells Minimum number of cells / spatial-meta-cells (default: 5)  expressing a feature/gene.
@@ -21,44 +21,35 @@
 #' Default is 5000. This option splits the matrix into smaller chunks (minibatch), thus reducing memory usage.
 #' @param ncores Integer specifying the number of CPU cores to use for parallel processing.
 #' @param grid.size Numeric specifying the grid size for spatial discretization of coordinates. By default,
-#' this size is determined based on the specified radius round(radius*1.4 µm). Increasing the grid.size will
-#' downsample spatial neighborhoods and expedite the analysis, while it might eliminate cells located between bins
-#' from the SE discovery analysis.
+#' this size is determined from the specified radius using `round(radius * 1.4)`. Increasing the grid.size will
+#' downsample spatial neighborhoods and reduce memory usage, but may remove cells that fall between grid bins.
 #' @param filter.region.by.celltypes A character vector specifying the cell types to include in the analysis.
-#' Only spatial neighborhoods that contain at least one of the specified cell types will be analyzed, while regions
-#' lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial neighborhoods will
-#' be included, regardless of cell type composition.
+#' Only spatial neighborhoods that contain at least one of the specified cell types will be analyzed. If NULL, all spatial neighborhoods
+#' will be included.
 #' @param k Integer specifying the number of spatial nearest neighbors (default: 20) used to construct spatial meta-cells.
-#' @param k.sn Integer specifying the number of nearest neighbors (default: 50) for constructing similarity network.
-#' @param dropcell Logical. If TRUE, cells that cannot be assigned to any spatial
-#' ecotype (outside the radius) will be removed from the returned metadata. Default is TRUE.
+#' @param k.sn Integer specifying the number of nearest neighbors (default: 50) for constructing similarity networks.
+#' @param dropcell Logical. If TRUE, cells that cannot be assigned to any spatial ecotype will be removed from the returned metadata. Default is TRUE.
 #'
-#' #' @return A list containing two elements:
+#' @return A list containing two elements:
 #' \describe{
-#'   \item{obj}{A seurat object constructed from fused similarity network of sptial neighborhoods}
-#'   \item{metadata}{Updated \code{metadata}, with a new column (`SE`) added}
+#'   \item{obj}{A Seurat object constructed from the fused similarity network of spatial neighborhoods.}
+#'   \item{metadata}{Updated metadata with a new column (`SE`) containing spatial ecotype labels.}
 #' }
 #'
 #' @import Seurat
 #' @importFrom parallel detectCores
 #'
 #' @examples
-#' # See https://digitalcytometry.github.io/spatialecotyper/docs/articles/SingleSample.html
 #' suppressPackageStartupMessages(library(dplyr))
 #' suppressPackageStartupMessages(library(ggplot2))
 #' suppressPackageStartupMessages(library(parallel))
 #' suppressPackageStartupMessages(library(Seurat))
 #' suppressPackageStartupMessages(library(data.table))
-#' suppressPackageStartupMessages(library(googledrive))
 #' suppressPackageStartupMessages(library(R.utils))
 #' library(SpatialEcoTyper)
 #'
-#' drive_deauth() # Disable Google sign-in requirement
-#' drive_download(as_id("13Rc5Rsu8jbnEYYfUse-xQ7ges51LcI7n"), "HumanMelanomaPatient1_subset_counts.tsv.gz")
-#' drive_download(as_id("12xcZNhpT-xbhcG8kX1QAdTeM9TKeFAUW"), "HumanMelanomaPatient1_subset_scmeta.tsv")
-#'
 #' # Load single-cell gene expression matrix. Rows are genes, columns are cells.
-#' scdata <- fread("HumanMelanomaPatient1_subset_counts.tsv.gz",
+#' scdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz",
 #'                 sep = "\t",header = TRUE, data.table = FALSE)
 #' rownames(scdata) <- scdata[, 1]  # set genes as row names
 #' scdata <- as.matrix(scdata[, -1])
@@ -66,7 +57,7 @@
 #' head(normdata[, 1:5])
 #'
 #' # Load single-cell metadata. Three columns are required, including X, Y, and CellType. Others are optional.
-#' scmeta <- read.table("HumanMelanomaPatient1_subset_scmeta.tsv",
+#' scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv",
 #'                      sep = "\t",header = TRUE, row.names = 1)
 #' scmeta <- scmeta[colnames(scdata), ] # match the cell ids in scdata and scmeta
 #' head(scmeta)
@@ -85,7 +76,7 @@ SpatialEcoTyper <- function(normdata, metadata,
                             outprefix = "SE",
                             radius = 50,
                             resolution = 0.5,
-                            nfeatures = 500,
+                            nfeatures = 300,
                             min.cts.per.region = 2,
                             npcs = 20,
                             min.cells = 5,
@@ -100,7 +91,7 @@ SpatialEcoTyper <- function(normdata, metadata,
                             dropcell = TRUE){
 
   if(ncol(normdata)!=nrow(metadata)){
-    stop("The number of cells in expression data and meta data do not match.")
+    stop("The number of columns in normdata does not match the number of rows in metadata.")
   }
   tmp <- PreprocessST(normdata, metadata = metadata,
                       min.cells = min.cells,
@@ -108,9 +99,9 @@ SpatialEcoTyper <- function(normdata, metadata,
   normdata <- tmp$expdat
   metadata <- tmp$metadata
 
-  if(!"CellType" %in% colnames(metadata)) stop("The meta data should include a column (CellType) for cell type annotations")
-  if(!"X" %in% colnames(metadata)) stop("The meta data should include spatial coordinates (X and Y) of cells")
-  if(!"Y" %in% colnames(metadata)) stop("The meta data should include spatial coordinates (X and Y) of cells")
+  if(!"CellType" %in% colnames(metadata)) stop("Metadata must include a 'CellType' column for cell type annotations.")
+  if(!"X" %in% colnames(metadata)) stop("Metadata must include both 'X' and 'Y' coordinate columns.")
+  if(!"Y" %in% colnames(metadata)) stop("Metadata must include both 'X' and 'Y' coordinate columns.")
 
   ncmeta = metadata
   ncmeta$SpotID <- paste0("X", round(ncmeta$X / grid.size), "_Y", round(ncmeta$Y / grid.size))
@@ -147,8 +138,8 @@ SpatialEcoTyper <- function(normdata, metadata,
   rownames(ncmeta) <- ncmeta$SpotID
 
   spots = unique(gsub("\\.+.*", "", colnames(ncem)))
-  message("\t\tTotal spatial neighborhoods: ", length(spots),
-          "\n\t\tTotal spatial meta cells: ", ncol(ncem))
+  message("Total spatial neighborhoods: ", length(spots),
+          "; total spatial meta cells: ", ncol(ncem))
   rm(normdata)
 
   ### Get PCs for all cell types

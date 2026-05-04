@@ -8,7 +8,7 @@ NMFGenerateW(
   Fracs,
   ExpMat,
   scale = TRUE,
-  nfeature = 2000,
+  nfeature = 300,
   nfeature.per.se = 50,
   method = "brunet"
 )
@@ -20,7 +20,7 @@ NMFGenerateW(
 
 \item{scale}{Logical indicating whether to scale the gene expression matrix. Default is TRUE.}
 
-\item{nfeature}{Integer specifying the top variable features for training the models (default: 2000).}
+\item{nfeature}{Integer specifying the top variable features for training the models (default: 300).}
 
 \item{nfeature.per.se}{Integer specifying the maximal number of features to select for each SE (default: 50).}
 

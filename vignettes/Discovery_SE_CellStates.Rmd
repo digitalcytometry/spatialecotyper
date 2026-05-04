@@ -1,0 +1,196 @@
+---
+title: "Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Overview
+
+To identify cell states specifically enriched in each SE and conserved across discovery samples, we can perform leave-one-sample-out cross-validation (LOOCV). This procedure builds upon the [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](../reference/TrainRecoveryModel.html). In each LOOCV iteration, an NMF model is trained using all but one sample and then applied to predict cell state labels in the held-out sample. The enrichment of each cell state within each SE is quantified based on its ability to correctly assign cells to that SE, measured by F1 score.
+
+A cell state is considered SE-specific if 1) Its F1 score for the assigned SE is the highest across all SEs; 2) The difference between the top F1 score and the second-highest F1 score exceeds a predefined threshold.
+
+In this tutorial, we will demonstrate this procedure using two samples profiled by Vizgen MERSCOPE.
+
+__First load required packages for this vignette__
+
+```{r lib}
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(NMF))
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(dplyr))
+library(SpatialEcoTyper)
+```
+
+# Loading data
+
+__Load gene expression matrix__
+```{r load}
+## Read the expression matrix for the first sample
+scdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz",
+                sep = "\t", header = TRUE, data.table = FALSE)
+rownames(scdata) <- scdata[, 1]  ## set the first column as row names
+scdata <- scdata[, -1]  ## drop the first column
+scdata <- NormalizeData(scdata)  ## Normalize the expression matrix
+
+## Read the expression matrix for the second sample
+scdata2 <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=CRC2_subset_counts.tsv.gz",
+                sep = "\t", header = TRUE, data.table = FALSE)
+rownames(scdata2) <- scdata2[, 1]  ## set the first column as row names
+scdata2 <- scdata2[, -1]  ## drop the first column
+scdata2 <- NormalizeData(scdata2)  ## Normalize the expression matrix
+
+## Combine the two expression matrices
+genes <- intersect(rownames(scdata), rownames(scdata2))
+scdata <- cbind(scdata[genes, ], scdata2[genes, ])
+head(scdata[, 1:5])
+```
+
+__Load cell type and SE annotations__
+```{r loadse}
+## Load the single-cell meta data derived from MultiSpatialEcoTyper analysis
+scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=MultiSE_metadata_final.tsv", 
+                     sep = "\t", header = TRUE, row.names = 1)
+scmeta$SE[is.na(scmeta$SE)] = "NonSE" ## cells with NA predictions were assigned into the nonSE group
+
+## Matches the row names of meta data and column names of expression matrix
+cells <- intersect(colnames(scdata), rownames(scmeta))
+scdata <- scdata[, cells]
+scmeta <- scmeta[cells, ]
+head(scmeta[, c("Sample", "CellType", "SE")])
+```
+
+# Leave-one-sample-out cross validation
+
+SpatialEcoTyper defines SEs based on spatial co-variation of cell states across cell types and samples. However, not all cell states associated with an SE are necessarily specific to that SE. To identify SE-specific and conserved cell states, we perform LOOCV by iteratively: 1) Training NMF models on all but one sample; 2) Predicting SE assignments in the held-out sample. The [LoocvPredict](../reference/LoocvPredict.html) function performs this procedure and returns predicted SE labels for all cells.
+
+```{r loocv}
+loocv_preds = LoocvPredict(scdata = scdata, scmeta = scmeta, 
+                           Sample = "Sample", SE = "SE", 
+                           CellType = "CellType", 
+                           repeats = 1, ncores = 16)
+```
+
+**Note:** The default parameters in [LoocvPredict](../reference/LoocvPredict.html) are optimized for pan-cancer SEs (Zhang et al., Nature 2026). For user-defined datasets, parameter tuning is recommended:
+`scale`: apply unit-variance normalization
+`balance.sample`: balance cell numbers across samples
+`nfeature`: number of variable genes per cell type
+`nfeature.per.se`: number of genes retained per SE
+`downsample`: number of cells used for training
+`repeats`: number of model training iterations (for robustness)
+
+# Identifying SE-specific cell states
+
+After LOOCV, we compare original SE assignments with predicted labels. The [ComputeMetrics](../reference/ComputeMetrics.html) function computes pairwise metrics (F1, F2, precision, or recall) across SE-associated cell states.
+
+```{r metrics}
+## Compute F1 matrix 
+F1s = ComputeMetrics(loocv_preds, SE = "SE", Pred = "cvPred", 
+                     CellType = "CellType", Sample = "Sample", metric = "F1")
+
+```
+
+We then define specificity based on:
+
+  * Maximum F1 score corresponds to the assigned SE
+  * Difference between top two F1 scores exceeds 0.1
+  
+Cell states that meet these criteria are considered SE-specific and conserved across samples. 
+  
+Cell states that do not meet these criteria could be broadly distributed across multiple SEs, or not conserved across samples. Such states are excluded from SE-specific analyses but may still represent biologically meaningful programs shared across microenvironments.
+
+```{r specificity}
+## Filter for the specific cell states and visualize the F1 matrix
+delta <- apply(F1s, 1, function(x) {
+  x <- sort(x, decreasing = TRUE)
+  x[1] - x[2]
+})
+idx = delta>0.1 & apply(F1s, 1, which.max)==1:nrow(F1s) ## Criteria for specificity
+gg = F1s[idx, idx]
+idx = sort(rownames(gg))
+gg = gg[idx, idx]
+HeatmapView(gg, c(0, 0.1, 0.3))
+
+SE_cellstates = rownames(gg)
+SE_cellstates ## SE-specific cell states
+```
+
+**Note** This tutorial uses two small datasets for demonstration purposes only. As a result, the identified spatial ecotypes (SEs) and cell states may not generalize due to the limited sample size. We recommend applying this workflow to larger, well-powered datasets and validating findings using independent or held-out data.
+
+Because model training involves stochastic subsampling of cells, we further recommend repeating the LOOCV procedure multiple times with different random seeds to ensure robustness. For each repetition, compute performance metrics (e.g., F1 scores) and average them across runs.
+
+Finally, NMF model training is computationally intensive, and the full LOOCV procedure can be time-consuming. To improve efficiency, we recommend running training jobs as Slurm array jobs and allocating sufficient computational resources (e.g., CPU cores) to each task. An example Slurm array script is provided below.
+
+__run_loocv_pred.R__
+
+```{r train, eval=FALSE}
+# ============================================================
+# Demo script for LOOCV analysis using LoocvPredict (do not run as-is without setup)
+# Designed for Slurm array jobs: one run per task
+# ============================================================
+
+# ---- Parse command-line argument (task index) ----
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args) < 1) {
+  stop("Usage: Rscript run_loocv_pred.R <task_id>")
+}
+
+i <- as.integer(args[1])
+if (is.na(i)) {
+  stop("Error: <task_id> must be an integer.")
+}
+
+message("LOOCV iteration: ", i)
+
+# ---- Load required libraries and data (user-defined) ----
+library(SpatialEcoTyper)
+# scdata <- ...
+# scmeta <- ...
+
+# ---- Run ----
+loocv_preds = LoocvPredict(scdata = scdata, scmeta = scmeta, 
+                           Sample = "Sample", SE = "SE", 
+                           CellType = "CellType", 
+                           repeats = 1, ncores = 32)
+# ---- Save output ----
+saveRDS(loocv_preds, paste0("path/to/SE_loocv_preds_", i, ".rds"))
+
+F1s = ComputeMetrics(loocv_preds, SE = "SE", Pred = "cvPred", 
+                     CellType = "CellType", Sample = "Sample", metric = "F1")
+saveRDS(F1s, paste0("path/to/SE_loocv_preds_", i, "_F1_matrices.rds"))
+```
+
+__submit_slurm_jobs_run_loocv_pred.sh__
+```{bash, eval=FALSE}
+#!/bin/bash
+#SBATCH --job-name=nmf_train
+#SBATCH --array=1-30
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=32G
+#SBATCH --time=24:00:00
+#SBATCH --output=logs/nmf_%A_%a.out
+Rscript run_loocv_pred.R $SLURM_ARRAY_TASK_ID
+```
+
+# Next step
+
+Following the identification of SE-specific cell states, users can finalize an SE recovery model to enable SE recovery from held-out single-cell datasets (e.g., scRNA-seq or single-cell spatial transcriptomics), as described in [Tutorial 4](TrainRecoveryModel.html).
+
+# Session info
+
+The session info allows users to replicate the exact environment and identify potential discrepancies in package versions or configurations that might be causing problems.
+
+```{r session}
+sessionInfo()
+```
+
+

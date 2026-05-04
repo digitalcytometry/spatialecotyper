@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,11 +17,14 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovery of Spatial Ecotypes from a Single Sample</a></li>
-    <li><a class="dropdown-item" href="../articles/Integration.html">Discovery of Spatial Ecotypes from Multiple Samples</a></li>
-    <li><a class="dropdown-item" href="../articles/TrainRecoveryModels.html">Development of NMF Models for Spatial Ecotype Recovery</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Recovery of Spatial Ecotypes from Bulk Gene Expression Data</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes"><li><a class="dropdown-item" href="../articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
+    <li><a class="dropdown-item" href="../articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
+    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
+    <li><a class="dropdown-item" href="../articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
+    <li><a class="dropdown-item" href="../articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Recovery_Bulk.html">Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">R functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
@@ -52,7 +55,7 @@
 <span>  outprefix <span class="op">=</span> <span class="st">"SE"</span>,</span>
 <span>  radius <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  nfeatures <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  nfeatures <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  min.cts.per.region <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  npcs <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  min.cells <span class="op">=</span> <span class="fl">5</span>,</span>
@@ -97,7 +100,7 @@ for defining spatial neighborhoods around each cell. Default is 50.</p></dd>
 
 
 <dt id="arg-nfeatures">nfeatures<a class="anchor" aria-label="anchor" href="#arg-nfeatures"></a></dt>
-<dd><p>Integer specifying the number of top variable features (default: 500) used for the analysis.</p></dd>
+<dd><p>Integer specifying the number of top variable features (default: 300) used for the analysis.</p></dd>
 
 
 <dt id="arg-min-cts-per-region">min.cts.per.region<a class="anchor" aria-label="anchor" href="#arg-min-cts-per-region"></a></dt>
@@ -131,16 +134,14 @@ Default is 5000. This option splits the matrix into smaller chunks (minibatch), 
 
 <dt id="arg-grid-size">grid.size<a class="anchor" aria-label="anchor" href="#arg-grid-size"></a></dt>
 <dd><p>Numeric specifying the grid size for spatial discretization of coordinates. By default,
-this size is determined based on the specified radius round(radius*1.4 µm). Increasing the grid.size will
-downsample spatial neighborhoods and expedite the analysis, while it might eliminate cells located between bins
-from the SE discovery analysis.</p></dd>
+this size is determined from the specified radius using `round(radius * 1.4)`. Increasing the grid.size will
+downsample spatial neighborhoods and reduce memory usage, but may remove cells that fall between grid bins.</p></dd>
 
 
 <dt id="arg-filter-region-by-celltypes">filter.region.by.celltypes<a class="anchor" aria-label="anchor" href="#arg-filter-region-by-celltypes"></a></dt>
 <dd><p>A character vector specifying the cell types to include in the analysis.
-Only spatial neighborhoods that contain at least one of the specified cell types will be analyzed, while regions
-lacking these cell types will be excluded from the SE discovery process. If NULL, all spatial neighborhoods will
-be included, regardless of cell type composition.</p></dd>
+Only spatial neighborhoods that contain at least one of the specified cell types will be analyzed. If NULL, all spatial neighborhoods
+will be included.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -148,45 +149,36 @@ be included, regardless of cell type composition.</p></dd>
 
 
 <dt id="arg-k-sn">k.sn<a class="anchor" aria-label="anchor" href="#arg-k-sn"></a></dt>
-<dd><p>Integer specifying the number of nearest neighbors (default: 50) for constructing similarity network.</p></dd>
+<dd><p>Integer specifying the number of nearest neighbors (default: 50) for constructing similarity networks.</p></dd>
 
 
 <dt id="arg-dropcell">dropcell<a class="anchor" aria-label="anchor" href="#arg-dropcell"></a></dt>
-<dd><p>Logical. If TRUE, cells that cannot be assigned to any spatial
-ecotype (outside the radius) will be removed from the returned metadata. Default is TRUE.</p>
-<p>#' @return A list containing two elements:</p><dl><dt>obj</dt>
-<dd><p>A seurat object constructed from fused similarity network of sptial neighborhoods</p></dd>
+<dd><p>Logical. If TRUE, cells that cannot be assigned to any spatial ecotype will be removed from the returned metadata. Default is TRUE.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A list containing two elements:</p><dl><dt>obj</dt>
+<dd><p>A Seurat object constructed from the fused similarity network of spatial neighborhoods.</p></dd>
 
   <dt>metadata</dt>
-<dd><p>Updated <code>metadata</code>, with a new column (`SE`) added</p></dd>
+<dd><p>Updated metadata with a new column (`SE`) containing spatial ecotype labels.</p></dd>
 
-
-</dl></dd>
 
 </dl></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># See https://digitalcytometry.github.io/spatialecotyper/docs/articles/SingleSample.html</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://googledrive.tidyverse.org" class="external-link">googledrive</a></span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://henrikbengtsson.github.io/R.utils/" class="external-link">R.utils</a></span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://digitalcytometry.github/spatialecotyper" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_deauth.html" class="external-link">drive_deauth</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># Disable Google sign-in requirement</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_download.html" class="external-link">drive_download</a></span><span class="op">(</span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_id.html" class="external-link">as_id</a></span><span class="op">(</span><span class="st">"13Rc5Rsu8jbnEYYfUse-xQ7ges51LcI7n"</span><span class="op">)</span>, <span class="st">"HumanMelanomaPatient1_subset_counts.tsv.gz"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in drive_download(as_id("13Rc5Rsu8jbnEYYfUse-xQ7ges51LcI7n"), "HumanMelanomaPatient1_subset_counts.tsv.gz"):</span> Local `path` already exists and overwrite is `FALSE`:</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #0000BB;">HumanMelanomaPatient1_subset_counts.tsv.gz</span></span>
-<span class="r-in"><span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_download.html" class="external-link">drive_download</a></span><span class="op">(</span><span class="fu"><a href="https://googledrive.tidyverse.org/reference/drive_id.html" class="external-link">as_id</a></span><span class="op">(</span><span class="st">"12xcZNhpT-xbhcG8kX1QAdTeM9TKeFAUW"</span><span class="op">)</span>, <span class="st">"HumanMelanomaPatient1_subset_scmeta.tsv"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in drive_download(as_id("12xcZNhpT-xbhcG8kX1QAdTeM9TKeFAUW"), "HumanMelanomaPatient1_subset_scmeta.tsv"):</span> Local `path` already exists and overwrite is `FALSE`:</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> <span style="color: #0000BB;">HumanMelanomaPatient1_subset_scmeta.tsv</span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load single-cell gene expression matrix. Rows are genes, columns are cells.</span></span></span>
-<span class="r-in"><span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"HumanMelanomaPatient1_subset_counts.tsv.gz"</span>,</span></span>
+<span class="r-in"><span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz"</span>,</span></span>
 <span class="r-in"><span>                sep <span class="op">=</span> <span class="st">"\t"</span>,header <span class="op">=</span> <span class="cn">TRUE</span>, data.table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">scdata</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>  <span class="co"># set genes as row names</span></span></span>
 <span class="r-in"><span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
@@ -215,7 +207,7 @@ ecotype (outside the radius) will be removed from the returned metadata. Default
 <span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                                    0</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load single-cell metadata. Three columns are required, including X, Y, and CellType. Others are optional.</span></span></span>
-<span class="r-in"><span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="st">"HumanMelanomaPatient1_subset_scmeta.tsv"</span>,</span></span>
+<span class="r-in"><span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv"</span>,</span></span>
 <span class="r-in"><span>                     sep <span class="op">=</span> <span class="st">"\t"</span>,header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="va">scmeta</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span>, <span class="op">]</span> <span class="co"># match the cell ids in scdata and scmeta</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">)</span></span></span>
@@ -237,33 +229,32 @@ ecotype (outside the radius) will be removed from the returned metadata. Default
 <span class="r-in"><span><span class="va">se_results</span> <span class="op">&lt;-</span> <span class="fu">SpatialEcoTyper</span><span class="op">(</span><span class="va">normdata</span>, <span class="va">scmeta</span>,</span></span>
 <span class="r-in"><span>                              outprefix <span class="op">=</span> <span class="st">"Melanoma1_subset"</span>,</span></span>
 <span class="r-in"><span>                              radius <span class="op">=</span> <span class="fl">50</span>, ncores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:43:17.608242 Remove 88 genes expressed in fewer than 5 cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:43:18.286728 Construct spatial meta cells for each cell type</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 		Total spatial neighborhoods: 2315</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 		Total spatial meta cells: 7711</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:43:26.833969 PCA for each cell type</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:43:28.097188 Construct cell-type-specific similarity network</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 		Remove 446 spatial neighborhoods with fewer than 2 cell types </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:43:28.664179 Similarity network fusion</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:43:28.664702 Normalize networks ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:43:28.753693 Calculate the local transition matrix ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:43:36.205797 Perform the diffusion ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:43:36.206637 Iteration: 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:43:40.068319 Iteration: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:43:48.739085 Iteration: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:44:00.653146 Iteration: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:44:08.782312 Iteration: 5</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:44:18.374433 Iteration: 6</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:44:28.224813 Iteration: 7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:44:38.996738 Iteration: 8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:44:51.346514 Iteration: 9</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-01-21 09:44:59.655105 Iteration: 10</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:45:12.959869 Create Seurat object and perform clustering analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:52:06.585699 Remove 88 genes expressed in fewer than 5 cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:52:06.91894 Construct spatial meta cells for each cell type</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Total spatial neighborhoods: 2315; total spatial meta cells: 7711</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:52:17.185483 PCA for each cell type</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:52:18.955613 Construct cell-type-specific similarity network</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Removing 446 spatial neighborhoods with fewer than 2 distinct cell types.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:52:19.556091 Similarity network fusion</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:52:19.558073 Normalize networks ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:52:19.620268 Calculate the local transition matrix ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:52:27.468105 Perform the diffusion ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:52:27.469284 Iteration: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:52:29.385864 Iteration: 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:52:41.016295 Iteration: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:52:54.039294 Iteration: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:53:07.268218 Iteration: 5</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:53:20.785643 Iteration: 6</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:53:32.559452 Iteration: 7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:53:45.562427 Iteration: 8</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:53:56.126691 Iteration: 9</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-05-03 17:54:07.275964 Iteration: 10</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:54:21.926803 Create Seurat object and perform clustering analysis</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Data is of class dgeMatrix. Coercing to dgCMatrix.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> This message will be shown once per session</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-01-21 09:45:19.614424 The Seurat object is saved into Melanoma1_subset_SpatialEcoTyper_results.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-05-03 17:54:29.821595 The Seurat object is saved into Melanoma1_subset_SpatialEcoTyper_results.rds</span>
 <span class="r-in"><span><span class="co"># Extract the Seurat object and updated single-cell metadata</span></span></span>
 <span class="r-in"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="va">se_results</span><span class="op">$</span><span class="va">obj</span> <span class="co"># A Seurat object</span></span></span>
 <span class="r-in"><span><span class="va">obj</span></span></span>

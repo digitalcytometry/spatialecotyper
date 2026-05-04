@@ -27,19 +27,13 @@ This function adds spatial ecotype annotations to the metadata of single cells.
 library(data.table)
 library(Seurat)
 library(SpatialEcoTyper)
-library(googledrive)
-drive_deauth() # no Google sign-in is required
-## Download a single-cell meta data
-drive_download(as_id("1CgUOQKrWY_TG61o5aw7J9LZzE20D6NuI"),
-                    "HumanMelanomaPatient1_subset_scmeta.tsv",
-                     overwrite = TRUE)
-## Obtain a Seurat object from SpatialEcoTyper result
-drive_download(as_id("1nSPj2zRywFUdbo1fwiz77ds4NuM6bmV2"),
-              "Melanoma1_subset_SpatialEcoTyper_results.rds", overwrite = TRUE)
 
-scmeta <- read.table("HumanMelanomaPatient1_subset_scmeta.tsv",
+scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv",
                      sep = "\t", header = TRUE, row.names = 1)
 head(scmeta)
+
+url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_SpatialEcoTyper_results.rds"
+download.file(url, destfile = "Melanoma1_subset_SpatialEcoTyper_results.rds", mode = "wb")
 obj <- readRDS("Melanoma1_subset_SpatialEcoTyper_results.rds")$obj
 
 ## Transfer SE annotations to single cells

@@ -28,18 +28,12 @@
 #' library(data.table)
 #' library(Seurat)
 #' library(SpatialEcoTyper)
-#' library(googledrive)
-#' drive_deauth() # no Google sign-in is required
-#' drive_download(as_id("1CgUOQKrWY_TG61o5aw7J9LZzE20D6NuI"),
-#'                     "HumanMelanomaPatient1_subset_scmeta.tsv", overwrite = TRUE)
-#' drive_download(as_id("1CoQmU3u8MoVC8RbLUvTDQmOuJJ703HHB"),
-#'               "HumanMelanomaPatient1_subset_counts.tsv.gz", overwrite = TRUE)
-#' scdata <- fread("HumanMelanomaPatient1_subset_counts.tsv.gz",
+#' scdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz",
 #'                 sep = "\t",header = TRUE, data.table = FALSE)
 #' rownames(scdata) <- scdata[, 1]
 #' scdata <- as.matrix(scdata[, -1])
 #' normdata = NormalizeData(scdata)
-#' scmeta <- read.table("HumanMelanomaPatient1_subset_scmeta.tsv",
+#' scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv",
 #'                       sep = "\t",header = TRUE, row.names = 1)
 #'
 #' # Construct spatial metacells from single-cell spatial data
@@ -61,6 +55,10 @@ GetSpatialMetacells <- function(normdata, metadata,
                                 min.cells.per.region = 1,
                                 ncores = 1){
 
+  if(!all(c("X", "Y", "CellType") %in% colnames(metadata))){
+    missing_cols = setdiff(c("X", "Y", "CellType"), colnames(metadata))
+    stop("Required metadata columns missing: ", paste0(missing_cols, collapse = ", "), ". Metadata must include X, Y, and CellType.")
+  }
   metadata <- as.data.frame(metadata)
   metadata <- metadata[match(colnames(normdata), rownames(metadata)), ]
 
@@ -84,7 +82,7 @@ GetSpatialMetacells <- function(normdata, metadata,
   celltypes <- metadata %>% dplyr::count(CellType, SpotID) %>%
     dplyr::count(CellType) %>% filter(n>4) %>% pull(CellType)
   exclude <- setdiff(unique(metadata$CellType), celltypes)
-  if(length(exclude)>0) message("\t\tExclude ", paste0(exclude, collapse = ", "), " due to limited number of spatial metacells")
+  if(length(exclude)>0) message("Excluding cell types due to insufficient spatial metacells: ", paste0(exclude, collapse = ", "), ".")
 
   metacell_list <- mclapply(celltypes, function(ct){
     tmpmeta <- metadata[metadata$CellType==ct, ]

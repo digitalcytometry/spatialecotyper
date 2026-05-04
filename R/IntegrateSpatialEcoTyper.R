@@ -5,8 +5,7 @@
 #' @param data_list A named list of expression matrices where each matrix represents
 #' gene expression data used for the SpatialEcoTyper analysis. The list name should match
 #' that of \code{SpatialEcoTyper_list}.
-#' @param outdir Directory where the results will be saved. Defaults to the current
-#' directory with a subdirectory named "SpatialEcoTyper_results_" followed by the current date.
+#' @param outdir Directory where the results will be saved. Defaults to the current directory.
 #' @param normalization.method Method for normalizing the expression data. Options
 #' include "None" (default), "SCT", or other methods compatible with Seurat's `NormalizeData` function.
 #' @param nmf_ranks Integer or a vector specifying the number of clusters (10 by default).
@@ -42,22 +41,22 @@ IntegrateSpatialEcoTyper <- function(SpatialEcoTyper_list,
                                      nmf_ranks = 10,
                                      nrun.per.rank = 30,
                                      min.coph = 0.95,
-                                     nfeatures = 3000,
+                                     nfeatures = 300,
                                      min.features = 10,
                                      Region = NULL,
                                      downsample.by.region = TRUE,
                                      subresolution = 30,
                                      minibatch = 5000,
-                                     ncores = 1,
+                                     ncores = 4,
                                      seed = 1){
 
   dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
   if(length(SpatialEcoTyper_list)!=length(data_list)){
-    stop(" The SpatialEcoTyper_list and data_list should have the same length.")
+    stop("SpatialEcoTyper_list and data_list must have the same length.")
   }
 
   if(is.null(names(SpatialEcoTyper_list)) & is.null(names(data_list))){
-    warnings("The samples are named as Sample1 -", length(data_list))
+    warning("Sample names were not provided; using default names Sample1, Sample2, etc.")
     sample_names <- paste0("Sample", 1:length(data_list))
     names(data_list) <- sample_names
     names(SpatialEcoTyper_list) <- sample_names
@@ -214,8 +213,8 @@ IntegrateSpatialEcoTyper <- function(SpatialEcoTyper_list,
                    legend_height = unit(1.5, "cm"))
 
   pdf(paste0(outdir, "/MultiSE_integrated_final_hmap.pdf"), width = 7, height = 5)
-  draw(p)
-  drawRectangleAnnotation(ann$SE, ann$SE)
+  p = draw(p)
+  drawRectangleAnnotation(p, ann$SE, ann$SE)
   dev.off()
 
   ## Spatial landscape of SEs

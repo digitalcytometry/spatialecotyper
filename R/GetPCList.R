@@ -51,8 +51,7 @@ GetPCList <- function(mergedncem,
 
   idx <- unlist(lapply(emb_list, is.null))
   if(sum(idx)>0){
-    warning("\t\tExclude ", paste0(unique(celltypes)[idx], collapse = ", "),
-            " due to limited number of spatial metacells\n")
+    warning("Excluding cell types with insufficient spatial metacells: ", paste0(unique(celltypes)[idx], collapse = ", "), ".")
     emb_list <- emb_list[!idx]
   }
   emb_list

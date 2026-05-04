@@ -30,15 +30,21 @@ navbar:
   left:
     - text: Vignettes
       menu:
-      - text: Discovery of Spatial Ecotypes from a Single Sample
+      - text: Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample
         href: articles/SingleSample.html
-      - text: Discovery of Spatial Ecotypes from Multiple Samples
+      - text: Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples
         href: articles/Integration.html
-      - text: Development of NMF Models for Spatial Ecotype Recovery
-        href: articles/TrainRecoveryModels.html
-      - text: Recovery of Spatial Ecotypes from Single-Cell Gene Expression Data
+      - text: Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation
+        href: articles/Discovery_SE_CellStates.html
+      - text: NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data
+        href: articles/TrainRecoveryModel.html
+      - text: Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data
+        href: articles/Recovery_scST.html
+      - text: Recovering Spatial Ecotypes from Single-Cell RNA-seq Data
         href: articles/Recovery_scRNA.html
-      - text: Recovery of Spatial Ecotypes from Bulk Gene Expression Data
+      - text: NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data
+        href: articles/TrainDeconvModel.html
+      - text: Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data
         href: articles/Recovery_Bulk.html
 
     - text: R functions
@@ -47,7 +53,7 @@ navbar:
       href: news/index.html
 
 reference:
-- title: Discovery of spatial ecotypes (SEs)
+- title: Discovering Spatial Ecotypes
   contents:
   - SpatialEcoTyper
   - MultiSpatialEcoTyper
@@ -60,21 +66,37 @@ reference:
   - GetSNList
   - Integrate
 
-- title: Development of SE recovery models
-  desc:  Developing models for recovering spatial ecotypes from single-cell spatial data, scRNA-seq data, Visium spatial data, or bulk tumor expression data.
+- title: Identifying SE-Specific Cell States
+  desc: Identifying SE-specific cell states via leave-one-sample-out cross-validation.
+  contents:
+  - LoocvPredict
+  - ComputeMetrics
+
+- title: NMF Model Development for Spatial Ecotype Recovery and Deconvolution
+  desc:  Developing NMF models for recovering spatial ecotypes from single-cell spatial data, scRNA-seq data, Visium spatial data, or bulk tumor expression data.
   contents:
   - CreatePseudobulks
   - NMFGenerateW
   - NMFGenerateWList
 
-- title: SE recovery
+- title: Recovering Spatial Ecotypes
   desc:  Recovering spatial ecotypes from single-cell spatial transcriptomics, scRNA-seq, Visium, or bulk tumor expression data.
   contents:
   - RecoverSE
   - DeconvoluteSE
   - NMFpredict
 
-- title: NMF (Non-negative Matrix Factorization) clustering
+- title: Validating Spatial Ecotypes
+  desc:  Validating spatial ecotypes in held-out single-cell or spatial transcriptomics data by testing the co-association or spatial autocorrelation of recovered SE-specific cell states.
+  contents:
+  - Colocalization
+  - ColocalizationHeatmapView
+  - CoassociationTest
+  - Coassociation
+  - ComputeNormalizedMoranI
+  - AverageConsensusMarkers
+
+- title: Clustering Analysis
   desc:  Clustering via NMF.
   contents:
   - nmfClustering
@@ -86,7 +108,7 @@ reference:
   - drawRectangleAnnotation
   - getColors
 
-- title: Data processing
+- title: Data Processing
   contents:
   - PreprocessST
   - AnnotateCells
@@ -98,6 +120,6 @@ reference:
 
 news:
   releases:
-  - text: "Version 1.0.1"
+  - text: "Version 1.0.2"
     href:
 

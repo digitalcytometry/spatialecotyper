@@ -6,12 +6,12 @@
 \usage{
 RecoverSE(
   dat,
-  celltypes = NULL,
+  celltypes,
   scale = TRUE,
   ncell.per.run = 500,
   Ws = NULL,
   min.score = 0.6,
-  ncores = 1
+  ncores = 8
 )
 }
 \arguments{
@@ -35,11 +35,15 @@ cell type and contain a W matrix from an NMF model.}
 \item{min.score}{A numeric threshold (0-1) specifying the minimum prediction
 score for SE classification; cells with lower scores are assigned to NonSE.}
 
-\item{ncores}{Integer specifying the number of CPU cores to use for parallel processing (default: 1).}
+\item{ncores}{Integer specifying the number of CPU cores to use for parallel processing (default: 8).}
 }
 \value{
-A data frame with four columns, including CID (cell id), CellType (cell type),
-SE (spatial ecotype), and PredScore (prediction probability for the assigned SE).
+A data frame with five columns, including CID (cell id), CellType (cell type),
+InitSE (raw prediction), SE (processed prediction), and PredScore (prediction probability for the assigned SE).
+InitSE records the raw prediction where cells are assigned into 11 init SEs discovered from MERSCOPE data.
+Cells were assigned to "NonSE" if  1) they were initially assigned to the two SEs lack of SE-specific cell states,
+or cell states do not specific to the SE or do not conserve across cancers or
+2) their prediction score is below the min probability threshold (min.score<0.6) by default.
 }
 \description{
 This function can recover SEs from scRNA-seq data or single-cell spatial data

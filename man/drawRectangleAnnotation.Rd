@@ -2,29 +2,81 @@
 % Please edit documentation in R/HeatmapView.R
 \name{drawRectangleAnnotation}
 \alias{drawRectangleAnnotation}
-\title{Draw Rectangle Annotations}
+\title{Draw Rectangular Annotations for Matching Row/Column Groups in a Heatmap}
 \usage{
-drawRectangleAnnotation(rows, columns, col = "black")
+drawRectangleAnnotation(
+  ht,
+  rows,
+  columns,
+  col = "black",
+  heatmap_name = "hmap",
+  include_na = FALSE
+)
 }
 \arguments{
-\item{rows}{A vector of row identifiers.}
+\item{rows}{A vector of row annotation labels. Length must match the number
+of rows in the heatmap.}
 
-\item{columns}{A vector of column identifiers.}
+\item{columns}{A vector of column annotation labels. Length must match the
+number of columns in the heatmap.}
+
+\item{col}{Character. Color of rectangle borders. Default is \code{"black"}.}
+
+\item{heatmap_name}{Character. Name of the heatmap used in
+\code{\link[ComplexHeatmap]{decorate_heatmap_body}}. Must match the \code{name}
+argument used when creating the heatmap. Default is \code{"hmap"}.}
+
+\item{include_na}{Logical. Whether to treat \code{NA} values as a valid group.
+If \code{FALSE} (default), \code{NA} values are ignored when drawing rectangles.
+If \code{TRUE}, \code{NA} is treated as a separate group and rectangles may be
+drawn for missing labels.}
+}
+\value{
+This function is called for its side effects and returns \code{NULL}. It adds
+graphical elements (rectangles) to an existing heatmap.
 }
 \description{
-This function draw rectangle grids based on given row and column factors.
+This function overlays rectangular boundaries on a \code{ComplexHeatmap}
+heatmap to highlight blocks where row and column annotations share the
+same group label. It detects contiguous segments (blocks) of identical
+labels in both rows and columns and draws rectangles around all matching
+row–column block pairs.
+}
+\details{
+Unlike simpler implementations, this function correctly handles cases where
+the same annotation label appears in multiple disjoint segments (e.g., after
+clustering or reordering).
+
+
+The function performs the following steps:
+\itemize{
+  \item Converts annotation vectors to character format
+  \item Identifies contiguous blocks of identical labels using run-length encoding
+  \item Maps block coordinates to the heatmap's normalized coordinate system
+  \item Draws rectangles around all row–column block pairs sharing the same label
+}
+
+All drawing is performed within \code{\link[ComplexHeatmap]{decorate_heatmap_body}},
+so the heatmap must already be drawn before calling this function.
 }
 \examples{
-library(grid)
-library(SpatialEcoTyper)
+\dontrun{
 library(ComplexHeatmap)
 
-dat = matrix(rnorm(100), 10)
-rownames(dat) = letters[1:10]
-colnames(dat) = letters[11:20]
-rowann = data.frame(Group = rep(letters[1:2], each=5), index = 1:10)
-colann = data.frame(Group = rep(letters[1:2], each=5), index = 11:20)
-HeatmapView(dat, left_ann = rowann, top_ann = colann)
-drawRectangleAnnotation(rowann$Group, colann$Group)
+mat <- matrix(rnorm(100), 10)
+row_ann <- rep(c("A", "B"), each = 5)
+col_ann <- rep(c("A", "B"), times = 5)
 
+p1 = Heatmap(mat, name = "hmap")
+p1 = draw(p1)
+drawRectangleAnnotation(p1,
+  rows = row_ann,
+  columns = col_ann,
+  col = "black"
+)
+}
+
+}
+\seealso{
+\link[ComplexHeatmap]{decorate_heatmap_body}
 }

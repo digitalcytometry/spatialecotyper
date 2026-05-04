@@ -47,8 +47,7 @@ SNF2 <- function(Wall, K = 10, t = 10,
   wall.name.check <- check_wall_names(Wall)
   wall.names <- dimnames(Wall[[1]])
   if(!wall.name.check){
-    warning("Dim names not consistent across all matrices in Wall.
-            Returned matrix will have no dim names.")
+    warning("Dim names are not consistent across all matrices in Wall. Returned matrix will have no dim names.")
   }
 
   LW <- length(Wall)

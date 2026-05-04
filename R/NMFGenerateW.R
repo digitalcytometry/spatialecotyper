@@ -8,7 +8,7 @@
 #'
 #' @param scdata Numeric matrix containing single-cell expression data.
 #' @param scmeta Data frame containing metadata information associated with single-cell data,
-#' including cell types and spatial clusters.
+#' including cell types and spatial clusters. Row names should match column names of `scdata`.
 #' @param CellType Character string specifying the column name in the metadata data
 #' frame containing cell type annotations.
 #' @param SE Character string specifying the column name in the metadata data frame
@@ -20,7 +20,7 @@
 #' performed within each sample.
 #' @param balance.sample Boolean specifying whether to perform balance the cells from all samples
 #' before training the models (default: TRUE).
-#' @param nfeature Integer specifying the top variable features for training the models (default: 2000).
+#' @param nfeature Integer specifying the top variable features for training the models (default: 300).
 #' @param nfeature.per.se Integer specifying the maximal number of features to select for each SE (default: 50).
 #' @param min.cells Integer specifying the minimal number of cells required for
 #' each SE cell state.
@@ -42,7 +42,7 @@ NMFGenerateWList <- function(scdata, scmeta,
                              scale = TRUE,
                              Sample = NULL,
                              balance.sample = TRUE,
-                             nfeature = 2000,
+                             nfeature = 300,
                              nfeature.per.se = 50,
                              min.cells = 20,
                              downsample = 2500,
@@ -53,12 +53,13 @@ NMFGenerateWList <- function(scdata, scmeta,
   }
   scmeta$CellType = scmeta[, CellType]
   scmeta$SE = scmeta[, SE]
-  if(nrow(scmeta)!=ncol(scdata)) stop("Please ensure that the rows in scmeta matches the columns in scdata.")
+  if(nrow(scmeta)!=ncol(scdata)) stop("The number of rows in scmeta must equal the number of columns in scdata. Ensure that scmeta rows correspond to cells in scdata.")
   if(min(scdata)>=0 & max(scdata)>80) scdata = log2(scdata+1)
 
   cts <- scmeta %>% count(CellType, SE) %>% filter(n>min.cells) %>%
     count(CellType) %>% filter(n>1) %>% pull(CellType)
   Ws <- mclapply(cts, function(x){
+    message(Sys.time(), " Training on ", x, " cells...")
     tmpmeta = scmeta[scmeta$CellType==x, ]
     tmpdat = scdata[, scmeta$CellType==x]
     if(is.null(Sample)){
@@ -142,7 +143,7 @@ NMFGenerateWList <- function(scdata, scmeta,
 #' @param Fracs A fraction matrix, with rows as samples.
 #' @param ExpMat A gene expression matrix with genes in rows and samples in columns.
 #' @param scale Logical indicating whether to scale the gene expression matrix. Default is TRUE.
-#' @param nfeature Integer specifying the top variable features for training the models (default: 2000).
+#' @param nfeature Integer specifying the top variable features for training the models (default: 300).
 #' @param nfeature.per.se Integer specifying the maximal number of features to select for each SE (default: 50).
 #' @param method A character string specifying the NMF method to use. Default is "brunet".
 #'
@@ -152,7 +153,7 @@ NMFGenerateWList <- function(scdata, scmeta,
 #' @export
 #'
 NMFGenerateW <- function(Fracs, ExpMat, scale = TRUE,
-                         nfeature = 2000,
+                         nfeature = 300,
                          nfeature.per.se = 50,
                          method = "brunet"){ # , "nsNMF", "snmf/r", "offset"
   require("NMF")

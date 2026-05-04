@@ -1,5 +1,5 @@
 ---
-title: "Discovery of Spatial Ecotypes from a Single Sample"
+title: "Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample"
 output:
   html_document:
     toc: true
@@ -16,19 +16,16 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # Overview
 
-In this tutorial, we will illustrate how to perform de novo discovery of spatial ecotypes from single-cell spatial transcriptomics dataset using [SpatialEcoTyper](../reference/SpatialEcoTyper.html).
+In this tutorial, we will illustrate how to perform de novo discovery of spatial ecotypes from a single-cell spatial transcriptomics dataset using [SpatialEcoTyper](../reference/SpatialEcoTyper.html).
 
-We will be analyzing single-cell spatial transcriptomics data from a melanoma sample (raw data available in [Vizgen's MERSCOPE FFPE Human Immuno-oncology](https://vizgen.com/data-release-program/)). To quickly demonstrate how [SpatialEcoTyper](../reference/SpatialEcoTyper.html) works, we've selected a subset of the sample, which can be downloaded from [`here`](https://drive.google.com/drive/folders/17K5XR7VEvxN9walV4RtaLOR2cBRG-aMh?usp=drive_link).
+We will be analyzing single-cell spatial transcriptomics data from a melanoma sample (raw data available in [Vizgen's MERSCOPE FFPE Human Immuno-oncology](https://vizgen.com/data-release-program/)). This demo data comprises the spatial expression of 500 genes across 27,907 cells, which are categorized into ten distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells (DC), fibroblasts, endothelial cells, and melanoma cells. Melanoma cells are excluded to reduce computational time.
 
-This demo data comprises the spatial expression of 500 genes across 27,907 cells, which are categorized into ten distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells (DC), fibroblasts, endothelial cells, and melanoma cells. Melanoma cells are excluded from this demonstration to reduce processing time.
+All cells are grouped into four spatial regions: tumor, inner margin, outer margin, and stroma. The tumor (tumor and inner margin) and stroma regions (stroma. and outer margin) are defined based on the density of cancer cells, as described in the [CytoSPACE paper](https://www.nature.com/articles/s41587-023-01697-9). The inner and outer margins are defined as regions extending 250 μm inside and outside the tumor boundaries, respectively. Furthermore, we quantified each cell’s distance to the tumor–stroma interface by calculating the shortest Euclidean distance to the nearest tumor region (for stromal cells) or stromal region (for tumor cells). A positive distance indicates cells located within the tumor region, while a negative distance indicates cells located within the stroma.
 
-All cells are grouped into four spatial regions: tumor, inner margin, outer margin, and stroma. The tumor and stroma regions are defined based on the density of cancer cells, as described in the [CytoSPACE paper](https://www.nature.com/articles/s41587-023-01697-9). The inner and outer margins are defined as regions extending 250 μm inside and outside the tumor boundaries, respectively. Furthermore, we quantified each cell’s distance to the tumor–stroma interface by calculating the shortest Euclidean distance to the nearest tumor region (for stromal cells) or stromal region (for tumor cells). A positive distance indicates cells located within the tumor region, while a negative distance indicates cells located within the stroma.
+[SpatialEcoTyper](../reference/SpatialEcoTyper.html) requires two input data objects:
 
-[SpatialEcoTyper](../reference/SpatialEcoTyper.html) analysis requires two input data:
-
-* __gene expression matrix__: rows represent gene names and columns represent cell IDs
-* __meta data__: a data frame with at least three columns, including "X" (X-coordinate), "Y" (Y-coordinate), and "CellType" (the cell type annotation). The row names of the meta data should match the column names (cell IDs) in the expression matrix.
-
+* __Gene expression matrix__: a numeric matrix with genes as rows and cells as columns.
+* __Metadata__: a data frame containing at least three columns: "X" (x-coordinate), "Y" (y-coordinate), and "CellType" (cell type annotation). Row names must match the column names (cell IDs) in the expression matrix.
 
 __First load required packages for this vignette__
 
@@ -38,7 +35,6 @@ suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(parallel))
 suppressPackageStartupMessages(library(Seurat))
 suppressPackageStartupMessages(library(data.table))
-suppressPackageStartupMessages(library(googledrive))
 suppressPackageStartupMessages(library(R.utils))
 
 library(SpatialEcoTyper)
@@ -46,24 +42,22 @@ library(SpatialEcoTyper)
 
 # Quick start
 ```{r download1, eval=FALSE}
-## Download an example data for the analysis
-drive_deauth() # Disable Google sign-in requirement
-drive_download(as_id("13Rc5Rsu8jbnEYYfUse-xQ7ges51LcI7n"), "HumanMelanomaPatient1_subset_counts.tsv.gz", overwrite = TRUE)
-drive_download(as_id("12xcZNhpT-xbhcG8kX1QAdTeM9TKeFAUW"), "HumanMelanomaPatient1_subset_scmeta.tsv", overwrite = TRUE)
-
-## Load the gene expression matrix
-scdata <- fread("HumanMelanomaPatient1_subset_counts.tsv.gz", 
-                sep = "\t",header = TRUE, data.table = FALSE)
+## Load single-cell gene expression matrix (genes × cells)
+url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz"
+scdata <- fread(url, sep = "\t",header = TRUE, data.table = FALSE)
 rownames(scdata) <- scdata[, 1]
 scdata <- as.matrix(scdata[, -1])
 
 ## Normalize the gene expression data
 normdata <- NormalizeData(scdata)
 
-## Load the spatial coordinates and cell type annotation of single cells
-scmeta <- read.table("HumanMelanomaPatient1_subset_scmeta.tsv", 
-                      sep = "\t",header = TRUE, row.names = 1)
+## Load single-cell metadata
+## Required columns: "X", "Y", and "CellType"
+## Row names must match the cell IDs in the expression matrix
+url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv"
+scmeta <- read.table(url, sep = "\t", header = TRUE, row.names = 1)
 scmeta <- scmeta[match(colnames(scdata), rownames(scmeta)), ]
+head(scmeta[, c("X", "Y", "CellType")])
 
 ## Discover spatial ecotypes using the SpatialEcoTyper
 se_results <- SpatialEcoTyper(normdata, scmeta, 
@@ -76,28 +70,21 @@ se_results <- SpatialEcoTyper(normdata, scmeta,
 
 <details open><summary><strong>Text files as input</strong></summary>
 
-Download the data from Google Drive
-```{r download2, eval=FALSE}
-drive_deauth() # Disable Google sign-in requirement
-drive_download(as_id("13Rc5Rsu8jbnEYYfUse-xQ7ges51LcI7n"), "HumanMelanomaPatient1_subset_counts.tsv.gz", overwrite = TRUE)
-drive_download(as_id("12xcZNhpT-xbhcG8kX1QAdTeM9TKeFAUW"), "HumanMelanomaPatient1_subset_scmeta.tsv", overwrite = TRUE)
-```
-
 Large text files can be loaded into R using the `fread` function from the `data.table` package.
 ```{r text, eval = TRUE}
-# Load single-cell gene expression matrix. Rows represent gene names and columns represent cell IDs
-scdata <- fread("HumanMelanomaPatient1_subset_counts.tsv.gz", 
-                sep = "\t",header = TRUE, data.table = FALSE)
-rownames(scdata) <- scdata[, 1]  # Setting the first column as row names
-scdata <- as.matrix(scdata[, -1]) # Dropping first column
+## Load single-cell gene expression matrix (genes × cells)
+url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz"
+scdata <- fread(url, sep = "\t",header = TRUE, data.table = FALSE)
+rownames(scdata) <- scdata[, 1]
+scdata <- as.matrix(scdata[, -1])
 head(scdata[, 1:5])
 
-# Load single-cell metadata
-# Three columns are required, including "X", "Y", and "CellType"
-# The row names should match the cell ids in the expression matrix
-scmeta <- read.table("HumanMelanomaPatient1_subset_scmeta.tsv", 
-                      sep = "\t",header = TRUE, row.names = 1)
-scmeta <- scmeta[match(colnames(scdata), rownames(scmeta)), ] # match the cell ids in scdata and scmeta
+## Load single-cell metadata
+## Required columns: "X", "Y", and "CellType"
+## Row names must match the cell IDs in the expression matrix
+url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv"
+scmeta <- read.table(url, sep = "\t", header = TRUE, row.names = 1)
+scmeta <- scmeta[match(colnames(scdata), rownames(scmeta)), ]
 head(scmeta[, c("X", "Y", "CellType")])
 ```
 </details>
@@ -108,24 +95,27 @@ head(scmeta[, c("X", "Y", "CellType")])
 [SpatialEcoTyper](../reference/SpatialEcoTyper.html) supports sparse matrix as input. Mtx files can be loaded into R using the [`ReadMtx`](https://satijalab.org/seurat/reference/readmtx) function from the Seurat package.
 
 ```{r readmtx, eval = FALSE}
-drive_download(as_id("13M3xhRxp0xK9gf5F4DE9idSBFqVQIXDT"), "HumanMelanomaPatient1_subset_counts.mtx.gz", overwrite = TRUE)
-drive_download(as_id("136feRaFjMtNvduLTm5xqa3WhyyoG4Xzo"), "HumanMelanomaPatient1_subset_cells.tsv.gz", overwrite = TRUE)
-drive_download(as_id("13QprWzJhzzUy_w3XSrjlt9pjf2n-G7HV"), "HumanMelanomaPatient1_subset_genes.tsv.gz", overwrite = TRUE)
-
-scdata <- ReadMtx(mtx = "HumanMelanomaPatient1_subset_counts.mtx.gz", 
-                  cells = "HumanMelanomaPatient1_subset_cells.tsv.gz", 
-                  features = "HumanMelanomaPatient1_subset_genes.tsv.gz",
+scdata <- ReadMtx(mtx = "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.mtx.gz", 
+                  cells = "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_cells.tsv.gz", 
+                  features = "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_genes.tsv.gz",
                   feature.column = 1, cell.column = 1)
 ```
 </details>
 
 # Data normalization
 
-The gene expression data should be normalized before [SpatialEcoTyper](../reference/SpatialEcoTyper.html) analysis. The data can be normalized using  [NormalizeData](https://satijalab.org/seurat/reference/normalizedata) or [SCTransform](https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2).
+Gene expression data should be normalized prior to [SpatialEcoTyper](../reference/SpatialEcoTyper.html) analysis. The data can be performed using either [NormalizeData](https://satijalab.org/seurat/reference/normalizedata) or [SCTransform](https://satijalab.org/seurat/articles/seurat5_spatial_vignette_2).
 
-Here, we are normalizing using SCTransform normalization. We recommend to install the glmGamPoi package for faster computation.
+Here, we are normalizing using `NormalizeData`.
+
+```{r NormalizeData, eval = TRUE}
+normdata <- NormalizeData(scdata)
+```
+
+<details><summary><strong>Using `SCTransform` for the normalization:</strong></summary>
+For `SCTransform` normalization, we recommend installing the `glmGamPoi` package to accelerate computation.
 ```{r SCTransform, eval = TRUE}
-if(!"glmGamPoi" %in% installed.packages()){
+if(!"glmGamPoi" %in% rownames(installed.packages())){
   BiocManager::install("glmGamPoi")
 }
 tmpobj <- CreateSeuratObject(scdata) %>%
@@ -137,12 +127,6 @@ if(seurat_version<5){
 }else{
   normdata <- tmpobj[["SCT"]]$data
 }
-```
-
-<details><summary><strong>Using `NormalizeData` for the normalization:</strong></summary>
-
-```{r NormalizeData, eval = FALSE}
-normdata <- NormalizeData(scdata)
 ```
 </details>
 
@@ -176,74 +160,52 @@ SpatialView(scmeta, by = "Dist2Interface") +
 knitr::include_graphics("images/SpatialEcoTyper_Workflow.png")
 ```
 
-The [SpatialEcoTyper](../reference/SpatialEcoTyper.html) function is designed to identify spatial ecotypes (SEs) from single-cell spatial transcriptomics data. The workflow begins by defining spatial neighborhoods (SNs) on a regular grid and constructing cell type–specific gene expression profiles (GEPs) for each SN. For each cell type, a similarity network is then generated based on these GEPs, where nodes represent SNs and edges denote their expression similarity.  To integrate these networks across cell types, SpatialEcoTyper applies the Similarity Network Fusion (SNF) method, originally developed for multi-omics data integration ([Wang et al., 2014](https://www.nature.com/articles/nmeth.2810)). This yields a fused similarity network that captures shared spatial transcriptomic variation across cell types, enabling the identification of SEs through clustering.
+The [SpatialEcoTyper](../reference/SpatialEcoTyper.html) function is designed to identify spatial ecotypes (SEs) from single-cell spatial transcriptomics data. The workflow begins by defining spatial neighborhoods (SNs) on a regular grid and constructing cell type–specific gene expression profiles (GEPs) for each SN. For each cell type, a similarity network is constructed, where nodes represent SNs and edges reflect transcriptional similarity. These cell type–specific networks are then integrated using Similarity Network Fusion (SNF), originally developed for multi-omics data integration ([Wang et al., 2014](https://www.nature.com/articles/nmeth.2810)). This yields a fused similarity network that captures shared spatial transcriptomic variation across cell types, enabling the identification of SEs through clustering.
+Before start, please check key arguments [here](../reference/SpatialEcoTyper.html).
 
-<details open><summary><strong>Key arguments for SpatialEcoTyper</strong></summary>
+<details><summary><strong>Selection of Spatial EcoTyper parameters</strong></summary>
 
--   `normdata` A matrix representing normalized gene expression data, where rows correspond to genes and columns correspond to cells.
--   `metadata` A data frame containing metadata associated with each cell. Must include spatial coordinates (e.g., X and Y) as well as cell type annotations. The row names must match the column names of the `normdata`.
--   `outprefix` Character string specifying the prefix for output file names.
--   `radius` Numeric specifying the radius (default: 50 µm) for defining spatial neighborhood.
--   `grid.size` Numeric specifying the grid size for spatial discretization of coordinates.
--   `resolution` Numeric specifying the resolution for Louvain clustering (default: 0.5).
--   `nfeatures` Integer specifying the number of top variable features (default: 500) used for the analysis.
--   `min.cts.per.region`  Integer specifying the minimum number of cell types (default: 2) required for a spatial neighborhood. 
--   `iterations` Integer specifying the number of iterations (default: 10) for SNF analysis.
--   `ncores` Integer specifying the number of CPU cores to use for parallel processing.
+__Choosing the radius parameter__: The optimal spatial neighborhood `radius` depends on the biological question. Larger radii capture broader regional patterns, whereas smaller radii resolve more localized cellular niches. In our analysis, we used a radius of 50 µm, which typically includes ~10–80 neighboring cells and provides a practical balance between granularity and robustness.
 
-You can type `?SpatialEcoTyper` to visualize the full manual.
+__Choosing the number of variable features__: The `nfeatures` argument should be selected according to the underlying data platform. For Vizgen MERSCOPE V1 (500-gene panel), we used 200 highly variable features, whereas for Xenium Prime data, we used 300 variable features. As single-cell spatial transcriptomics technologies continue to evolve, the number of detectable genes per cell has steadily increased. For example, the latest 10x Aera platform captures over 1,000 genes per cell on average. For such high-complexity datasets, we recommend using up to 1,000 highly variable genes for downstream analysis to better capture biological variability.
 
+__Limiting the number of cell types per spatial neighborhood__: The `min.cts.per.region` argument allows users to filter spatial regions based on cellular diversity by requiring a minimum number of distinct cell types per region (default: ≥ 2). This helps ensure that downstream analyses focus on biologically informative neighborhoods with sufficient cellular heterogeneity.
+
+__Limiting analysis to spatial neighborhoods containing specific cell types__: The `filter.region.by.celltypes` argument allows users to define a set of cell types of interest. When specified, only spatial regions that contain all of the selected cell types are retained for downstream analysis. This enables focused interrogation of neighborhoods enriched for predefined cellular compositions, facilitating the identification of multicellular ecosystems associated with the target cell types.
 </details>
 
 ```{r snf, eval = TRUE}
-## This step takes ~2 minutes to complete on macOS with an Apple M1 Pro chip and 16 GB memory.
 se_results <- SpatialEcoTyper(normdata, scmeta,
                               outprefix = "Melanoma1_subset",
                               radius = 50, ncores = 2)
 ```
 
 <details><summary><strong>Optimizing memory usage</strong></summary>
-For large single-cell spatial transcriptomics (ST) datasets with more than 100,000 cells, the analysis can be both time- and memory-intensive. To accelerate computation, you can increase the number of cores used (`ncores`), but this will also increase memory consumption.
 
-If computational memory is limited, several strategies can help reduce usage. One option is to increase the `grid.size`, which decreases the number of spatial neighborhoods and can substantially decrease memory usage. Another option is to reduce the `minibatch` size and the number of cores (`ncores`). However, the minimum memory requirement may still remain high for very large datasets.
+The similarity network fusion (Step 2 of SpatialEcoTyper) is the most computationally demanding step and its runtime increases with the number of spatial neighborhoods (SNs) per sample. Performance depends on dataset size and structure rather than tissue technology.
 
-</details>
-
-<details><summary><strong>Interested in multicellular communities associated with specific cell types?</strong></summary>
-
-If you’re interested in investigating multicellular communities associated with specific cell types, you can use the `filter.region.by.celltypes` argument to limit the analysis to spatial neighborhoods that contain at least one cell of the specified type. For example, to identify SEs associated with CD8 T cells, you can use the following command:
-```{r snf2, eval = FALSE}
-se_results <- SpatialEcoTyper(normdata, scmeta,
-                              outprefix = "Melanoma1_subset",
-                              radius = 50, ncores = 2,
-                              filter.region.by.celltypes = c("CD8T"))
+```{r resource, out.width = '100%', echo=FALSE}
+knitr::include_graphics("images/SpatialEcoTyper_Runtime_memory.png")
 ```
-</details>
+For example, an analysis involving 10 cell types and 18,564 SNs required 436 minutes of runtime and reached a peak memory usage of 169 GB. This benchmark was obtained on a computing cluster equipped with an AMD EPYC 7543 processor (2.75 GHz) and 256 GB RAM, using a single CPU core and excluding data loading time.
 
-<details><summary><strong>Interested in regions with multiple cell types?</strong></summary>
+To reduce runtime, users can increase the number of cores via the `ncores` parameter. However, this parallelization comes at the cost of increased memory consumption.
 
-If you’re interested in regions composed of multiple cell types, you can use the `min.cts.per.region` argument to restrict the analysis to spatial neighborhoods containing at least the specified minimum number of distinct cell types.
+When memory resources are limited, users can increase the `grid.size` parameter, which will reduce the number of spatial neighborhoods, thereby substantially lowering memory usage and improving computational efficiency.
 
-```{r snf3, eval = FALSE}
-se_results <- SpatialEcoTyper(normdata, scmeta,
-                              outprefix = "Melanoma1_subset",
-                              radius = 50, ncores = 2,
-                              min.cts.per.region = 2)
-```
 </details>
 
 # SpatialEcoTyper result
 
 When the `outprefix` is specified, the [SpatialEcoTyper](../reference/SpatialEcoTyper.html) result will be saved as a RDS file named `outprefix_SpatialEcoTyper_results.rds`. The result can be loaded into R using `readRDS`.
 ```{r loadres, eval=FALSE}
-## drive_download(as_id("13T8IIbgk26sokFI8F3VqI4mvz3QIp3fT"), "Melanoma1_subset_SpatialEcoTyper_results.rds", overwrite = TRUE)
 se_results <- readRDS("Melanoma1_subset_SpatialEcoTyper_results.rds")
 ```
 
-The [SpatialEcoTyper](../reference/SpatialEcoTyper.html) result is a list that includes two key components: 
+The [SpatialEcoTyper](../reference/SpatialEcoTyper.html) result is a list containing two key components: 
 
-* __a Seurat object__ constructed from the fused network embedding of spatial neighborhoods, enabling the identification of spatial ecotypes through clustering. 
-* __a data frame of the single-cell metadata__, which includes the original single-cell metadata with spatial ecotype cluster annotations added.
+* __Seurat object__ constructed from the fused network embedding of spatial neighborhoods, enabling clustering and downstream visualization of SEs. 
+* __Metadata__, single-cell metadata with SE annotations appended.
 
 ```{r seres}
 # Extract the Seurat object and updated single-cell metadata
@@ -252,7 +214,7 @@ scmeta <- se_results$metadata # Single-cell meta data, with SE annotation added
 head(scmeta)
 table(scmeta$SE) ## The number of cells in each SE
 ```
-**Note**: Spatial EcoTyper employs stringent quality control steps to exclude spatial neighborhoods with suboptimal gene expression profiles, such as those with insufficiently detected genes (`min.feature` parameter), insufficient cells (`min.cells` parameter), and underrepresented cell types (`min.cts.per.region` parameter). These low confidence regions are marked as NA by the pipeline. While regions designated as NA at one resolution (`radius` and `grid.size` parameter) may be included at a lower resolution if the larger region passes QC, we observed a negligible impact of different resolutions on overall performance. By default, NA regions are removed from the output to avoid confusion. To retain all cells in the single-cell meta data, you can set `dropcell = FALSE` in the [SpatialEcoTyper](../reference/SpatialEcoTyper.html).
+**Note**: SpatialEcoTyper applies stringent quality control to exclude low-quality spatial neighborhoods, including those with insufficient detected genes (`min.features`), too few cells (`min.cells`), or insufficient cell type diversity (`min.cts.per.region`). These regions are labeled as NA. Regions excluded at one resolution (`radius`, `grid.size`) may be retained at a lower resolution if they pass QC. In practice, different resolutions have minimal impact on overall results. By default, NA regions are removed. To retain all cells, set `dropcell = FALSE`.
 
 # Embedding of spatial architecture
 
@@ -281,15 +243,6 @@ This plot visualizes the SEs within the spatial embedding. Each SE represents a 
 
 ```{r umap_se}
 DimPlot(obj, group.by = "SE") + scale_color_manual(values = pals::kelly()[-1])
-```
-
-## Visualizing the most abundant cell types in each SN
-
-Here, we focus on visualizing the dominant cell types within each SN to highlight the characteristic cellular composition of different SEs.
-
-```{r umap_ct}
-DimPlot(obj, group.by = "CellType") +
-  scale_color_manual(values = pals::cols25())
 ```
 
 # SE characteristics
@@ -345,7 +298,7 @@ ggplot(gg, aes(SE, Dist2Interface)) +
 
 ## Differential expression analysis
 
-To identify cell-type-specific SE markers, we can perform differential expression analysis using the [`presto` package](https://github.com/immunogenomics/presto). Below is an example of how to identify fibroblast-specific markers for each SE.
+To identify cell-type-specific SE markers, differential expression analysis can be performed using the [`presto` package](https://github.com/immunogenomics/presto) package. The script below demonstrates how to identify SE-specific markers within each cell type.
 
 ```{r deg}
 if(!"presto" %in% installed.packages()){ 
@@ -354,40 +307,84 @@ if(!"presto" %in% installed.packages()){
 }
 library("presto")
 
-# Ensure the normalized data is aligned with the single-cell metadata
+# Ensure normalized data is aligned with metadata
 normdata = normdata[, rownames(scmeta)]
 
-# Perform differential expression analysis for fibroblasts across SEs
-idx = which(scmeta$CellType=="Fibroblast" & !is.na(scmeta$SE))
-degs = wilcoxauc(normdata[, idx], scmeta$SE[idx])
+# Perform differential expression analysis
+degs = lapply(unique(scmeta$CellType), function(ct){
+  idx = which(scmeta$CellType==ct & !is.na(scmeta$SE))
+  degs = wilcoxauc(normdata[, idx], scmeta$SE[idx])
+  degs$CellType = ct
+  degs
+})
+degs = do.call(rbind, degs)
 
-# Filter for significant markers with positive log-fold change
-degs = degs %>% filter(logFC>0 & pval<0.05) %>% arrange(desc(logFC))
-head(degs)
+# Example: top markers for CD4 T cells
+degs %>% filter(CellType=="CD4T") %>% 
+  filter(logFC>0 & padj<0.05) %>% 
+  arrange(desc(logFC)) %>% head()
 ```
-
-**Note**: The MERSCOPE data used for SE discovery includes a limited number of genes. To enhance the analysis, you can extend the differential expression analysis to the whole transcriptome by aligning scRNA-seq data to the spatial transcriptomics data via CytoSPACE.
 
 ## Visualizing the expression of cell state markers
 
-Once you’ve identified potential markers, you can visualize their expression across SEs. Below is an example using the ACTA2 gene.
+Once candidate markers are identified, their expression can be visualized across SEs.
 
-```{r visualizedeg}
-## Gene expression across all SEs
-gg <- scmeta[idx, ]
-gg$Expression <- normdata["ACTA2", idx]
-ggplot(gg, aes(SE, Expression)) + geom_boxplot() + 
-  theme_classic(base_size = 14) + ylab("ACTA2 expression")
+### Visualizing SE-specific markers using heatmap
+
+The example below identifies SE-specific markers in CD4 T cells and visualizes their relative expression across SEs using a heatmap.
+
+```{r deghmap}
+library(tidyr)
+# Identify significant DEGs
+sigDegs = degs %>% filter(CellType=="CD4T") %>% filter(logFC>0 & padj<0.05)
+# Identify genes with highest specificity per SE
+top_markers <- sigDegs %>% group_by(feature) %>% arrange(desc(logFC)) %>%
+  summarize(Highest_SE = first(group), Highest_logFC = first(logFC), 
+            Second_logFC = nth(logFC, 2, default = 0),
+            Delta = Highest_logFC - Second_logFC) %>% ungroup() %>%
+  # Keep top 5 markers per SE based on Delta
+  group_by(Highest_SE) %>% arrange(desc(Delta)) %>%
+  slice_head(n = 5) %>% ungroup()
+
+# Prepare logFC matrix for heatmap
+lfcs = degs %>% filter(CellType=="CD4T") %>% 
+        pivot_wider(id_cols = feature, names_from = group,
+                    values_from = logFC) %>% as.data.frame
+rownames(lfcs) = lfcs$feature
+lfcs = lfcs[, -1]
+gg <- lfcs[top_markers$feature, unique(top_markers$Highest_SE), drop = FALSE]
+
+# Scale for visualization
+gg = scale(t(scale(t(gg), center = FALSE)))
+# Plot heatmap
+HeatmapView(gg, breaks = c(0, 1, 1.5))
 ```
 
-You can also visualize the expression of a marker (e.g., ACTA2) in the tissue.
+### Visualizing an individual marker using box plot
+
+You can also visualize the expression of an individual gene across SEs.
+
+```{r visualizedeg}
+# Subset CD4 T cells with SE annotation
+idx = which(scmeta$CellType=="CD4T" & !is.na(scmeta$SE))
+gg = scmeta[idx, ]
+gg$Expression = normdata["FOXP3", idx]
+ggplot(gg, aes(SE, Expression)) + geom_boxplot(outlier.shape = NA) + 
+  theme_classic(base_size = 14) + ylab("FOXP3 expression")
+```
+
+### Visualizing expression of SE marker in the tissue
+
+You can also visualize the expression of an individual marker (e.g., FOXP3) or average expression of SE-specific markers in the tissue.
 
 ```{r viewgene}
-## Visualize gene expression in spatial
+# Visualize gene expression in tissue
 gg <- scmeta
-gg$Expression <- normdata["ACTA2", ]
-SpatialView(gg, by = "Expression") + scale_color_viridis_c() + 
-  labs(color = "ACTA2\nexpression")
+gg$Expression = normdata["FOXP3", ]
+
+SpatialView(gg, by = "Expression") +
+  scale_color_viridis_c() +
+  labs(color = "FOXP3\nexpression")
 ```
 
 # Session info
