@@ -42,7 +42,7 @@ head(bulkdata[, 1:5]) ## TPM matrix
 
 The [DeconvoluteSE](../reference/DeconvoluteSE.html) function infers SE abundances in bulk tissue samples. Users can either use the default model, which estimates the abundances of predefined SEs, or apply a custom model to infer the abundance of newly defined SEs from bulk gene expression data. Before prediction, [DeconvoluteSE](../reference/DeconvoluteSE.html) automatically applies a log₂ transformation (if the maximum value exceeds 80) and standardizes the data so that each gene has a mean of 0 and a unit variance. To ensure reliable standardization, we recommend a minimum of 20 samples. For smaller datasets, we recommend to combine them with a larger dataset for normalization prior to running [DeconvoluteSE](../reference/DeconvoluteSE.html).
 
-The default model is trained on pseudobulk gene expression data and predicts the abundances of nine predefined SEs along with a nonSE group, which primarily includes cancer cells and cells not associated with any SEs. The predicted SE and nonSE abundances for each sample sum to 1, making them comparable across samples.
+The default model is trained on pseudobulk gene expression data and predicts the abundances of nine predefined SEs along with a nonSE group, which includes cancer cells and cells not associated with any SEs. The predicted SE and nonSE abundances for each sample sum to 1, making them comparable across samples.
 
 ### Using default model
 
@@ -54,62 +54,14 @@ head(sefracs)
 
 ### Using custom model
 
-After identifying SEs using [SpatialEcoTyper](../reference/SpatialEcoTyper.html) or [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html), users can develop a Non-Negative Matrix Factorization (NMF) model to deconvolve SEs from bulk tissue samples, following the tutorial below.
-
-<details><summary><strong>Development of SE deconvolution models</strong></summary>
-
-Users can create an NMF model to deconvolve SEs from bulk gene expression data. The training data can be derived from pseudo-bulk mixtures created by aggregating single-cell transcriptomics data.
-
-The raw count for this sample is available at  [scRNAseq_demo_counts.tsv](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv) and SE recovery results are available at [scRNAseq_demo_RecoveredSEs.tsv](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_RecoveredSEs.tsv).
-
-__Loading data__
-
-
-```{r loadscrna, eval=FALSE}
-# Load single-cell gene expression matrix.
-counts = fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv", sep = "\t", data.table = FALSE)
-rownames(counts) = counts[, 1] ## Set the first column as row names
-counts = counts[, -1] ## Drop the first column
-head(counts[, 1:5])
-
-# Load SE recovery results
-SEs = read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_RecoveredSEs.tsv", sep = "\t", row.names = 1, header = TRUE)
-SEs = SEs[match(colnames(counts), rownames(SEs)), 1] # extract SE predictions
-length(SEs)
-table(SEs)
-```
-
-**Note**: For demonstration purposes, we used 1,337 cells grouped into SEs to create pseudo-bulk mixtures. While this limited cell number offers a basic example, it may not fully capture the diverse characteristics of SEs, potentially affecting the robustness of model training and subsequent SE recovery. In practice, we recommend using a more comprehensive dataset that accurately reflects the properties of SEs, ensuring that the training process results in a reliable recovery model.
-
-__Creating pseudobulk data__
-
-The [CreatePseudobulks](../reference/CreatePseudobulks.html) function will be used to create pseudo-bulk mixtures from single-cell (spatial) transcriptomics data with all cells grouped into SEs. It samples cell fractions from a Gaussian distribution, sets negative fractions to 0, and re-normalizes fractions to sum to 1 across all SEs. Based on the resulting fractions, it samples 1,000 cells per pseudo-bulk mixture with replacement, aggregates their transcriptomes in non-log linear space, and normalizes the resulting mixture to log CPM using Seurat's `NormalizeData`.
-
-```{r createpseudobulk, eval=FALSE}
-result = CreatePseudobulks(counts = counts, groups = SEs, n_mixtures = 100)
-head(result$Mixtures[, 1:5]) ## Gene expression matrix of pseudobulks
-head(result$Fracs) ## SE fractions in pseudobulks
-```
-
-__Training__
-
-The [NMFGenerateW](../reference/NMFGenerateW.html) function will be used to train an NMF model for SE deconvolution based on the provided SE fractions and gene expression matrix. Before applying NMF, each gene's expression is scaled to have a mean of 0 and unit variance (recommended). To meet the non-negativity requirement of NMF, the expression matrix is transformed using the posneg method. This transformation splits the expression matrix into two matrices: one containing only positive values and the other containing the absolute values of the negative values. These two matrices are then concatenated to form the final training data for the NMF model.
-
-```{r traindecov, eval=FALSE}
-W = NMFGenerateW(t(result$Fracs), result$Mixtures)
-## This step should be done within 1 min
-head(W)
-```
-
-The resulting W matrix can be used to infer SE abundances from bulk gene expression profiles by using the [DeconvoluteSE](../reference/DeconvoluteSE.html) function. 
-
-</details>
+After identifying SEs using [SpatialEcoTyper](../reference/SpatialEcoTyper.html) or [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html), users can develop a Non-Negative Matrix Factorization (NMF) model to deconvolve SEs from bulk tissue samples, following the [Tutorial 7](TrainDeconvModel.html).
 
 __Deconvolution__
 
 Users can train an NMF model for SE deconvolution following the tutorial above. After that, the new model can be used for SE deconvolution by specifying the `W` parameter:
 ```{r DeconvoluteSE2, eval=FALSE}
-sefracs <- DeconvoluteSE(bulkdata, W = W)
+# Do not run; replace new_model
+sefracs <- DeconvoluteSE(bulkdata, W = new_model)
 ```
 
 

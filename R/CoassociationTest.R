@@ -40,6 +40,7 @@ CoassociationTest = function(mat, nperm = 1000){
   PermSD = apply(do.call(rbind, Perms), 2, sd, na.rm = TRUE)
   PermSD[PermSD==0] <- median(PermSD, na.rm = TRUE)
   Zscores = (Obs - PermAvg) / PermSD
+  Zscores[is.na(Zscores)] = 0
   Pvals = pnorm(abs(Zscores), lower.tail = FALSE) * 2
 
   return(Pvals)

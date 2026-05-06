@@ -40,8 +40,8 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
-    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
     <li><a class="dropdown-item" href="../articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
@@ -204,7 +204,7 @@ testing the scripts below.</p>
 <span>                         nmf_ranks <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fl">15</span>, <span class="co"># Number of clusters to test</span></span>
 <span>                         nrun.per.rank <span class="op">=</span> <span class="fl">10</span>,  <span class="co"># recommend 30 or higher for robust results</span></span>
 <span>                         ncores <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Choosing louvain clustering resolution</strong>: Louvain
+<p><strong>Choosing Louvain clustering resolution</strong>: Louvain
 clustering was applied to group spatial neighborhoods into clusters
 within each sample, which improves computational efficiency for
 integrative analysis of samples. We recommend using as high a clustering

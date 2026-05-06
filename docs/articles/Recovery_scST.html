@@ -40,8 +40,8 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
-    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
     <li><a class="dropdown-item" href="../articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
@@ -221,8 +221,9 @@ argument.</p>
 <code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">scmeta</span><span class="op">$</span><span class="va">CellType</span>, Ws <span class="op">=</span> <span class="va">Ws</span><span class="op">)</span></span></code></pre></div>
 <p>After prediction, we recommend retaining only assignments
 corresponding to SE-specific cell states identified in <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html">Tutorial
-3</a>. Cells not assigned to these SE-specific states should be grouped
-as “NonSE,” as they cannot be robustly mapped to corresponding SE.</p>
+4</a>. Cells not assigned to these SE-specific states should be grouped
+as “NonSE,” as they cannot be robustly mapped to the corresponding
+SE.</p>
 <p>The SE recovery output contains five columns: cell ID (CID), cell
 type (CellType), initial SE assignment (InitSE), final SE assignment
 (SE), and prediction score (PredScore). By default, assignments with
@@ -266,26 +267,26 @@ groupings from the cell state names.</p>
 <span>                           radius <span class="op">=</span> <span class="fl">50</span>, nperm <span class="op">=</span> <span class="fl">100</span>, </span>
 <span>                           test <span class="op">=</span> <span class="cn">TRUE</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Matrix of colocalization indices between all cell states</span></span></code></pre></div>
-<pre><code><span><span class="co">##                        NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC</span></span>
-<span><span class="co">## NonSE_B            3.146708943 -0.1837297 -2.3370661 -2.875896</span></span>
-<span><span class="co">## NonSE_CD4T        -0.005433037  1.3183316 -0.3110048 -3.352328</span></span>
-<span><span class="co">## NonSE_CD8T        -2.161508372 -0.3444205  1.6461961 -3.151810</span></span>
-<span><span class="co">## NonSE_DC          -2.686851268 -2.8431600 -2.8859635 -1.432672</span></span>
-<span><span class="co">## NonSE_Endothelial -2.070218320  2.3883913 -0.2743873  1.079237</span></span>
-<span><span class="co">## NonSE_Fibroblast  -8.895869825  4.0639649 -3.0744469  3.868362</span></span>
+<pre><code><span><span class="co">##                       NonSE_B NonSE_CD4T NonSE_CD8T   NonSE_DC</span></span>
+<span><span class="co">## NonSE_B            3.09147672 -0.1588246 -1.9841234 -2.7744221</span></span>
+<span><span class="co">## NonSE_CD4T         0.01544078  1.4628284 -0.5462065 -2.8627726</span></span>
+<span><span class="co">## NonSE_CD8T        -1.81584758 -0.6001604  1.6105688 -2.8230713</span></span>
+<span><span class="co">## NonSE_DC          -2.65192708 -2.4644378 -2.6362772 -1.3610106</span></span>
+<span><span class="co">## NonSE_Endothelial -1.66773629  2.1933968 -0.3630268  0.7131143</span></span>
+<span><span class="co">## NonSE_Fibroblast  -8.64131757  4.0601813 -2.1981727  3.5433955</span></span>
 <span><span class="co">##                   NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B                  -2.0697256</span></span>
-<span><span class="co">## NonSE_CD4T                2.1320779</span></span>
-<span><span class="co">## NonSE_CD8T               -0.5011759</span></span>
-<span><span class="co">## NonSE_DC                  1.5377568</span></span>
-<span><span class="co">## NonSE_Endothelial         1.3836232</span></span>
-<span><span class="co">## NonSE_Fibroblast          3.7487930</span></span></code></pre>
+<span><span class="co">## NonSE_B                  -1.6730002</span></span>
+<span><span class="co">## NonSE_CD4T                2.0427257</span></span>
+<span><span class="co">## NonSE_CD8T               -0.6345835</span></span>
+<span><span class="co">## NonSE_DC                  1.0870444</span></span>
+<span><span class="co">## NonSE_Endothelial         1.3874898</span></span>
+<span><span class="co">## NonSE_Fibroblast          4.1054841</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span> <span class="co">## Vector of p-values for colocalization significance</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 1.356444e-01 1.042266e-06 2.984003e-03 1.432073e-03 2.948727e-13 3.856528e-02 </span></span>
+<span><span class="co">## 1.461682e-01 9.760781e-07 6.247030e-03 1.225764e-03 1.717512e-13 3.300560e-02 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 2.747517e-04 1.094008e-04 2.030443e-05 5.527659e-02</span></span></code></pre>
+<span><span class="co">## 2.832993e-04 1.223313e-04 2.070023e-05 6.407761e-02</span></span></code></pre>
 <p>You can visualize the results using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">

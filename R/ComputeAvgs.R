@@ -106,7 +106,6 @@ ComputeAvgs <- function(normdata, scmeta, cluster = "SE",
 #'
 #'
 #' @import Seurat
-#' @export
 #'
 ComputeFCs <- function(normdata, scmeta, cluster = "SE",
                        Region = NULL, scale = FALSE,

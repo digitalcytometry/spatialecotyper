@@ -21,7 +21,8 @@
 #' @importFrom RANN nn2
 #' @importFrom Matrix Matrix drop0
 #' @importFrom parallel mclapply
-#' @export
+#'
+
 getSN <- function(emb, npcs = 20, k = 50){
   tmpK = min(k, ncol(emb)-1)
   knn = RANN::nn2(data = t(emb), query = t(emb), k = tmpK)
@@ -80,7 +81,8 @@ getSN <- function(emb, npcs = 20, k = 50){
 #' @importFrom RANN nn2
 #' @importFrom Matrix Matrix drop0
 #' @importFrom parallel mclapply
-#' @export
+#'
+
 GetSNList <- function(emb_list,
                       npcs = 20,
                       k = 50,
@@ -121,7 +123,6 @@ GetSNList <- function(emb_list,
 #' with zero similarity values. This step is crucial for downstream analyses that require consistent
 #' dimensions across samples.
 #'
-#' @export
 fillspots <- function(snlist){
   ### consider missing cell types as 0
   spots <- unique(unlist(lapply(snlist, colnames)))

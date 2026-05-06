@@ -11,14 +11,14 @@
 
 -   **Tutorial 1**: [Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample](https://digitalcytometry.github.io/spatialecotyper/articles/SingleSample.html)
 -   **Tutorial 2**: [Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples](https://digitalcytometry.github.io/spatialecotyper/articles/Integration.html)
--   **Tutorial 3**: [Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html)
--   **Tutorial 4**: [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](https://digitalcytometry.github.io/spatialecotyper/articles/TrainRecoveryModel.html)
+-   **Tutorial 3**: [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](https://digitalcytometry.github.io/spatialecotyper/articles/TrainRecoveryModel.html)
+-   **Tutorial 4**: [Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html)
 -   **Tutorial 5**: [Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scST.html)
 -   **Tutorial 6**: [Recovering Spatial Ecotypes from Single-Cell RNA-seq Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html)
 -   **Tutorial 7**: [NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data](https://digitalcytometry.github.io/spatialecotyper/articles/TrainDeconvModel.html)
 -   **Tutorial 8**: [Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Bulk.html)
 
-**Spatial EcoTyper** is also available as a web application at https://spatialecotyper.stanford.edu/, enabling recovery of spatial ecotypes from single-cell RNA-seq and single-cell spatial transcriptomics data, as well as inference of spatial ecotype abundances from Visium spatial transcriptomics and bulk RNA-seq data.
+**Spatial EcoTyper** and its companion method Liquid EcoTyper are available as a web application at https://spatialecotyper.stanford.edu/. This platform enables recovery of spatial ecotypes from single-cell RNA-seq and single-cell spatial transcriptomics data, as well as inference of spatial ecotype abundances from Visium spatial transcriptomics, bulk RNA-seq, and tumor and plasma methylation profiles.
 
 **Note**: Spatial EcoTyper depends extensively on Seurat for key processes like dimensionality reduction, UMAP embedding, clustering, and visualization. Initially developed using Seurat v4.3, the tool has been thoroughly tested and validated with Seurat v5. Although UMAP embeddings and clustering results show slight differences between Seurat v4 and v5, the overall consistency remains strong, ensuring that core biological insights are preserved across both versions.
 
@@ -110,7 +110,7 @@ install.packages("SpatialEcoTyper.tar.gz", repos = NULL)
 If you encounter any bugs or have suggestions for improvements, please feel free to open an [issue](https://github.com/digitalcytometry/spatialecotyper/issues) or submit a pull request. Your feedback and contributions help us make the tool better for everyone.
 
 ## License
-Please see the <a href="LICENSE.html" target="_blank">LICENSE</a> file.
+Please see the <a href="https://digitalcytometry.github.io/spatialecotyper/LICENSE.html" target="_blank">LICENSE</a> file.
 
 
 ## Citation

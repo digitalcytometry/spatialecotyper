@@ -178,7 +178,7 @@ Colocalization <- function(scmeta, coords = c("X", "Y"),
 
   # ---- Z-score ----
   Zscores <- (Obs - PermuteAvg) / PermuteSD
-
+  Zscores[is.na(Zscores)] = 0
   if (test) {
     Pval <- CoassociationTest(Zscores, nperm = nperm)
     return(list(ColocIndex = Zscores, Pval = Pval))

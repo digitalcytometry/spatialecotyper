@@ -34,10 +34,10 @@ navbar:
         href: articles/SingleSample.html
       - text: Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples
         href: articles/Integration.html
-      - text: Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation
-        href: articles/Discovery_SE_CellStates.html
       - text: NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data
         href: articles/TrainRecoveryModel.html
+      - text: Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation
+        href: articles/Discovery_SE_CellStates.html
       - text: Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data
         href: articles/Recovery_scST.html
       - text: Recovering Spatial Ecotypes from Single-Cell RNA-seq Data
@@ -59,8 +59,8 @@ reference:
   - MultiSpatialEcoTyper
   - IntegrateSpatialEcoTyper
   - GetSpatialMetacells
-  - ComputeFCs
   - SNF2
+  - ComputeFCs
   - GetPCList
   - getSN
   - GetSNList

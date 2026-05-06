@@ -16,7 +16,6 @@
 #' @param seed An integer used to seed the random number generator.
 #'
 #' @return Integrated similarity matrix of spatial clusters across all samples.
-#' @export
 #'
 Integrate <- function(avgexprs, Region = NULL,
                       downsample.by.region = TRUE,

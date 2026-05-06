@@ -22,7 +22,6 @@
 #' cell type. Cell types with insufficient data are excluded from the result.
 #'
 #' @import parallel Seurat
-#' @export
 #'
 GetPCList <- function(mergedncem,
                       min.cells = 3,

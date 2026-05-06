@@ -123,7 +123,7 @@ SE_cellstates = rownames(gg)
 SE_cellstates ## SE-specific cell states
 ```
 
-**Note** This tutorial uses two small datasets for demonstration purposes only. As a result, the identified spatial ecotypes (SEs) and cell states may not generalize due to the limited sample size. We recommend applying this workflow to larger, well-powered datasets and validating findings using independent or held-out data.
+**Note**: This tutorial uses two small datasets for demonstration purposes only. As a result, the identified spatial ecotypes (SEs) and cell states may not generalize due to the limited sample size. We recommend applying this workflow to larger, well-powered datasets and validating findings using independent or held-out data.
 
 Because model training involves stochastic subsampling of cells, we further recommend repeating the LOOCV procedure multiple times with different random seeds to ensure robustness. For each repetition, compute performance metrics (e.g., F1 scores) and average them across runs.
 
@@ -183,7 +183,7 @@ Rscript run_loocv_pred.R $SLURM_ARRAY_TASK_ID
 
 # Next step
 
-Following the identification of SE-specific cell states, users can finalize an SE recovery model to enable SE recovery from held-out single-cell datasets (e.g., scRNA-seq or single-cell spatial transcriptomics), as described in [Tutorial 4](TrainRecoveryModel.html).
+Following the identification of SE-specific cell states, spatial ecotypes can be recovered in held-out single-cell datasets (e.g., scRNA-seq or single-cell spatial transcriptomics) using the model derived in [Tutorial 3](TrainRecoveryModel.html). The recovered spatial ecotypes can then be validated by assessing the co-occurrence of cell states within each SE, as described in [Tutorial 5](Recovery_scST.html) and [Tutorial 6](Recovery_scRNA.html), focusing on SE-specific cell state assignments.
 
 # Session info
 

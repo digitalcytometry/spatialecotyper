@@ -40,8 +40,8 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
-    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
     <li><a class="dropdown-item" href="../articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
@@ -69,14 +69,14 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</h1>
-            
-      
+
+
       <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/vignettes/Discovery_SE_CellStates.Rmd" class="external-link"><code>vignettes/Discovery_SE_CellStates.Rmd</code></a></small>
       <div class="d-none name"><code>Discovery_SE_CellStates.Rmd</code></div>
     </div>
 
-    
-    
+
+
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -233,7 +233,7 @@ biologically meaningful programs shared across microenvironments.</p>
 <span><span class="co">##  [9] "SE4_CD8T"        "SE4_DC"          "SE7_CD8T"        "SE7_DC"         </span></span>
 <span><span class="co">## [13] "SE7_Endothelial" "SE7_Fibroblast"  "SE7_Macrophage"  "SE7_Plasma"     </span></span>
 <span><span class="co">## [17] "SE8_Endothelial"</span></span></code></pre>
-<p><strong>Note</strong> This tutorial uses two small datasets for
+<p><strong>Note</strong>: This tutorial uses two small datasets for
 demonstration purposes only. As a result, the identified spatial
 ecotypes (SEs) and cell states may not generalize due to the limited
 sample size. We recommend applying this workflow to larger, well-powered
@@ -256,7 +256,7 @@ example Slurm array script is provided below.</p>
 <span><span class="co"># ============================================================</span></span>
 <span></span>
 <span><span class="co"># ---- Parse command-line argument (task index) ----</span></span>
-<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/commandArgs.html" class="external-link">commandArgs</a></span><span class="op">(</span>trailingOnly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://henrikbengtsson.github.io/R.utils/reference/commandArgs.html" class="external-link">commandArgs</a></span><span class="op">(</span>trailingOnly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">args</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Usage: Rscript run_loocv_pred.R &lt;task_id&gt;"</span><span class="op">)</span></span>
@@ -298,10 +298,7 @@ example Slurm array script is provided below.</p>
 <div class="section level2">
 <h2 id="next-step">Next step<a class="anchor" aria-label="anchor" href="#next-step"></a>
 </h2>
-<p>Following the identification of SE-specific cell states, users can
-finalize an SE recovery model to enable SE recovery from held-out
-single-cell datasets (e.g., scRNA-seq or single-cell spatial
-transcriptomics), as described in <a href="TrainRecoveryModel.html">Tutorial 4</a>.</p>
+<p>Following the identification of SE-specific cell states, users can recover spatial ecotypes from held-out single-cell datasets (e.g., scRNA-seq or single-cell spatial transcriptomics), using the model derived in <a href="TrainRecoveryModel.html">Tutorial 3</a>. The recovered spatial ecotypes can then be validated by assessing the co-occurrence of cell states within each SE, as described in <a href="Recovery_scST.html">Tutorial 5</a> and <a href="Recovery_scRNA.html">Tutorial 6</a>, focusing on SE-specific cell state assignments.</p>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>

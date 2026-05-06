@@ -152,12 +152,12 @@ head(Ws[[1]]) ## feature by SE matrix
 ```
 
 Using custom models for SE recovery by specifying the `Ws` argument.
-```{r scrna_recov2, eval=TRUE}
+```{r scrna_recov2, eval=FALSE}
 sepreds <- RecoverSE(normdata, celltypes = ctann, Ws = Ws, min.score = 0.6)
 head(sepreds)
 ```
 
-After prediction, we recommend retaining only assignments corresponding to SE-specific cell states identified in [Tutorial 3](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html). Cells not assigned to these SE-specific states should be grouped as "NonSE," as they cannot be robustly mapped to corresponding SE. 
+After prediction, we recommend retaining only assignments corresponding to SE-specific cell states identified in [Tutorial 4](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html). Cells not assigned to these SE-specific states should be grouped as "NonSE," as they cannot be robustly mapped to the corresponding SE. 
 
 The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore). By default, assignments with PredScore ≥ 0.6 are retained as high-confidence results. For custom models, users are encouraged to determine the optimal threshold based on leave-one-sample-out cross-validation performance.
 
@@ -170,21 +170,17 @@ After recovering SE-specific cell states from single-cell RNA-seq data, users ca
 
 **Note**: By default (`test = TRUE`), the function evaluates the significance of cell state co-localization within each SE and returns a vector of p-values. This analysis requires cell state names to follow the format “SE1_CD4T”, where an underscore separates the SE label from the cell type, enabling extraction of SE groupings from the cell state names.
 
-scRNA-seq data from multiple samples are required for the co-association analysis, here for demonstration, we randomly partition the cells into 10 samples.
+scRNA-seq data from multiple samples are required for the co-association analysis. For demonstration here, we randomly partition the cells into 10 samples.
+
 ```{r coassociation, eval=TRUE}
 sepreds$Sample = paste0("S", sample(1:10, nrow(sepreds), replace = TRUE))
-result = Coassociation(sepreds, Sample = "Sample", SE = "SE", CellType = "CellType", nperm = 10, test = TRUE)
+result = Coassociation(sepreds, Sample = "Sample", SE = "SE", 
+                       CellType = "CellType", nperm = 10, test = TRUE)
 head(result$CoassociationIndex[, 1:5])
 result$Pval
-
-## Set test = FALSE, the function will just return a matrix of coassociation indices.
-CoassociationIndex = Coassociation(sepreds, Sample = "Sample", 
-                                   SE = "SE", CellType = "CellType", 
-                                   nperm = 10, test = FALSE)
-head(CoassociationIndex[, 1:5])
 ```
 
-You can visualize the results using the [CooccurrenceHeatmapView](../reference/CooccurrenceHeatmapView.html) function, as described in the [Tutorial 5](Recovery_scST.html).
+The results can be visualized on a heatmap using the [CooccurrenceHeatmapView](../reference/CooccurrenceHeatmapView.html) function, as described in the [Tutorial 5](Recovery_scST.html).
 
 # Validation: average expression of SE markers
 

@@ -40,8 +40,8 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
-    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
     <li><a class="dropdown-item" href="../articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
@@ -89,12 +89,13 @@ Human Immuno-oncology</a>). This demo data comprises the spatial
 expression of 500 genes across 27,907 cells, which are categorized into
 ten distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells,
 plasma cells, macrophages, dendritic cells (DC), fibroblasts,
-endothelial cells, and melanoma cells. Melanoma cells are excluded to
-reduce computational time.</p>
-<p>All cells are grouped into four spatial regions: tumor, inner margin,
-outer margin, and stroma. The tumor (tumor and inner margin) and stroma
-regions (stroma. and outer margin) are defined based on the density of
-cancer cells, as described in the <a href="https://www.nature.com/articles/s41587-023-01697-9" class="external-link">CytoSPACE
+endothelial cells, and melanoma cells. For this tutorial, melanoma cells
+are excluded to reduce computational time; in practice, any cell types
+can be included.</p>
+<p>All cells in this demo data are grouped into four spatial regions:
+tumor, inner margin, outer margin, and stroma. The tumor (tumor and
+inner margin) and stroma regions (stroma. and outer margin) are defined
+based on the density of cancer cells, as described in the <a href="https://www.nature.com/articles/s41587-023-01697-9" class="external-link">CytoSPACE
 paper</a>. The inner and outer margins are defined as regions extending
 250 μm inside and outside the tumor boundaries, respectively.
 Furthermore, we quantified each cell’s distance to the tumor–stroma

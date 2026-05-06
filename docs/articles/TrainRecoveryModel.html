@@ -40,8 +40,8 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
 <li><a class="dropdown-item" href="../articles/SingleSample.html">Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample</a></li>
     <li><a class="dropdown-item" href="../articles/Integration.html">Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples</a></li>
-    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Discovery_SE_CellStates.html">Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scST.html">Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data</a></li>
     <li><a class="dropdown-item" href="../articles/Recovery_scRNA.html">Recovering Spatial Ecotypes from Single-Cell RNA-seq Data</a></li>
     <li><a class="dropdown-item" href="../articles/TrainDeconvModel.html">NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data</a></li>
@@ -233,15 +233,11 @@ Ecotypes from Single-Cell Spatial Transcriptomics Data</a>.</p>
 performing multiple runs and constructing an ensemble. In our analysis
 (Zhang et al.), we repeated the training 50 times and averaged the
 resulting basis matrices to generate an ensemble matrix W for each cell
-type. For feature selection, we identified genes with the highest and
-most specific expression in each cell state from each run, and retained
-those consistently selected for the same cell state in more than half of
-the runs.</p>
+type.</p>
 <p>The NMF model training can be time-consuming. To improve efficiency,
 we recommend running training jobs as Slurm array jobs and and
 allocating sufficient computational resources (e.g., CPU cores) to each
-task. the resulting W matrices according to the procedure described
-above. An example Slurm array script is provided below.</p>
+task. An example Slurm array script is provided below.</p>
 <p><strong>nmf_trainings.R</strong></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ============================================================</span></span>
@@ -290,11 +286,12 @@ above. An example Slurm array script is provided below.</p>
 <span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#SBATCH --time=24:00:00</span></span>
 <span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#SBATCH --output=logs/nmf_%A_%a.out</span></span>
 <span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="ex">Rscript</span> nmf_trainings.R <span class="va">$SLURM_ARRAY_TASK_ID</span></span></code></pre></div>
-<p>After all jobs finish, you can average the resulting basis matrices.
-For feature selection, genes showing the highest and most specific
-expression in each cell state were identified from each basis matrix as
-described, and then genes that were selected for the same cell state in
-over half of the repetitions were retained in the ensemble matrix.</p>
+<p>After all jobs are completed, the resulting basis matrices can be
+averaged for each cell type. To retain the most informative genes in the
+ensemble matrix, identify genes with the highest and most specific
+expression in each cell state from each basis matrix, and select those
+that are consistently chosen for the same cell state in more than half
+of the repetitions.</p>
 </div>
 </div>
 <div class="section level2">

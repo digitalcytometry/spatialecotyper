@@ -106,7 +106,7 @@ Using custom model for SE recovery by specifying the `Ws` argument.
 sepreds <- RecoverSE(normdata, celltypes = scmeta$CellType, Ws = Ws)
 ```
 
-After prediction, we recommend retaining only assignments corresponding to SE-specific cell states identified in [Tutorial 3](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html). Cells not assigned to these SE-specific states should be grouped as "NonSE," as they cannot be robustly mapped to corresponding SE. 
+After prediction, we recommend retaining only assignments corresponding to SE-specific cell states identified in [Tutorial 4](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html). Cells not assigned to these SE-specific states should be grouped as "NonSE," as they cannot be robustly mapped to the corresponding SE. 
 
 The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore). By default, assignments with PredScore ≥ 0.6 are retained as high-confidence results. For custom models, users are encouraged to determine the optimal threshold based on leave-one-sample-out cross-validation performance.
 

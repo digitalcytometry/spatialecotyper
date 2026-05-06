@@ -91,9 +91,9 @@ head(Ws[[2]])
 The resulting W matrices could be used to recover SEs from spatial transcriptomics and single-cell RNA-seq using the [RecoverSE](../reference/RecoverSE.html) function. The detailed documentation for SE recovery is available at [Recovering Spatial Ecotypes from Single-Cell RNA-seq Data](Recovery_scRNA.html) and [Recovering Spatial Ecotypes from Single-Cell Spatial Transcriptomics Data](Recovery_scST.html).
 
 
-**Note**: To obtain a robust model, we recommend performing multiple runs and constructing an ensemble. In our analysis (Zhang et al.), we repeated the training 50 times and averaged the resulting basis matrices to generate an ensemble matrix W for each cell type. For feature selection, we identified genes with the highest and most specific expression in each cell state from each run, and retained those consistently selected for the same cell state in more than half of the runs. 
+**Note**: To obtain a robust model, we recommend performing multiple runs and constructing an ensemble. In our analysis (Zhang et al.), we repeated the training 50 times and averaged the resulting basis matrices to generate an ensemble matrix W for each cell type.
 
-The NMF model training can be time-consuming. To improve efficiency, we recommend running training jobs as Slurm array jobs and and allocating sufficient computational resources (e.g., CPU cores) to each task. the resulting W matrices according to the procedure described above. An example Slurm array script is provided below.
+The NMF model training can be time-consuming. To improve efficiency, we recommend running training jobs as Slurm array jobs and and allocating sufficient computational resources (e.g., CPU cores) to each task. An example Slurm array script is provided below.
 
 __nmf_trainings.R__
 ```{r train, eval=FALSE}
@@ -148,7 +148,7 @@ __submit_slurm_jobs_nmf.sh__
 Rscript nmf_trainings.R $SLURM_ARRAY_TASK_ID
 ```
 
-After all jobs finish, you can average the resulting basis matrices.  For feature selection, genes showing the highest and most specific expression in each cell state were identified from each basis matrix as described, and then genes that were selected for the same cell state in over half of the repetitions were retained in the ensemble matrix. 
+After all jobs are completed, the resulting basis matrices can be averaged for each cell type. To retain the most informative genes in the ensemble matrix, identify genes with the highest and most specific expression in each cell state from each basis matrix, and select those that are consistently chosen for the same cell state in more than half of the repetitions.
 
 # Next step
 
