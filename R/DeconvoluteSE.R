@@ -31,7 +31,7 @@
 #'
 DeconvoluteSE <- function(dat, scale = TRUE, W = NULL,
                           nsample.per.run = 500,
-                          sum2one = TRUE, ncores = 1){
+                          sum2one = TRUE, ncores = 8){
   if(is.null(W)){
     W <- readRDS(file.path(system.file("extdata", package = "SpatialEcoTyper"),
                            "Bulk_SE_Recovery_W.rds"))

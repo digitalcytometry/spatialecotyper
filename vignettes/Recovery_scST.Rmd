@@ -80,6 +80,8 @@ sepreds <- RecoverSE(normdata,
 head(sepreds)
 ```
 
+The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore).
+
 </details>
 
 <details><summary><strong>Using custom models</strong></summary>
@@ -104,7 +106,9 @@ Using custom model for SE recovery by specifying the `Ws` argument.
 sepreds <- RecoverSE(normdata, celltypes = scmeta$CellType, Ws = Ws)
 ```
 
-After prediction, we recommend retaining only assignments corresponding to SE-specific cell states identified in [Tutorial 3](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html). Cells not assigned to these SE-specific states should be grouped as "non-SE," as they cannot be robustly mapped to corresponding SE.
+After prediction, we recommend retaining only assignments corresponding to SE-specific cell states identified in [Tutorial 3](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html). Cells not assigned to these SE-specific states should be grouped as "NonSE," as they cannot be robustly mapped to corresponding SE. 
+
+The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore). By default, assignments with PredScore ≥ 0.6 are retained as high-confidence results. For custom models, users are encouraged to determine the optimal threshold based on leave-one-sample-out cross-validation performance.
 
 </details>
 
@@ -123,23 +127,26 @@ After recovering SE-specific cell states from single-cell ST data, users can val
 
 ```{r coloc, eval=TRUE}
 # Verify the four columns required for the analysis.
-head(scmeta[, c("X", "Y", "SE", "CellType")]) 
-## For quick test run, 10 permutations were performed.
+head(scmeta[, c("X", "Y", "SE", "CellType")])
+
+## For quick test run, 100 permutations were performed to compute the colocalization scores.
 coloc_res = Colocalization(scmeta, coords = c("X", "Y"), 
                            SE = "SE", CellType = "CellType",
-                           radius = 50, nperm = 10, 
+                           radius = 50, nperm = 100, 
                            test = TRUE, ncores = 8)
 head(coloc_res$ColocIndex[, 1:5]) ## Matrix of colocalization indices between all cell states
 coloc_res$Pval ## Vector of p-values for colocalization significance
 ```
 
-You can visualize the results using the [ColocalizationHeatmapView](../reference/ColocalizationHeatmapView.html) function.
+You can visualize the results using the [CooccurrenceHeatmapView](../reference/CooccurrenceHeatmapView.html) function.
 ```{r visualcoloc}
-p = ColocalizationHeatmapView(coloc_res$ColocIndex, coloc_res$Pval)
+p = CooccurrenceHeatmapView(coloc_res$ColocIndex, coloc_res$Pval)
 p = ComplexHeatmap::draw(p)
 ses = gsub("_.*", "", rownames(coloc_res$ColocIndex))
 drawRectangleAnnotation(p, ses, ses)
 ```
+
+Here, in this small demo data, we can see strong colocalization of cell states within most SEs, whereas SE9 shows a weaker pattern, although it approaches statistical significance (P < 0.1). In contrast, the NonSE group, serving as a negative control, does not exhibit spatial colocalization.
 
 # Validation: spatial autocorrelation
 
@@ -153,32 +160,43 @@ morani_zscore = ComputeNormalizedMoranI(scmeta, coords = c("X", "Y"),
 morani_zscore
 ```
 
+
 # Validation: average expression of SE markers
 
-Users can also validate the SEs by visualizing the average expression of SE consensus markers across recovered SEs using the [AverageConsensusMarkers](../reference/AverageConsensusMarkers.html) function.
+Users can also validate the SEs by visualizing the average expression of SE consensus markers across recovered SEs using the [AverageMarkerExpression](../reference/AverageMarkerExpression.html) function.
 
 ```{r visualconsensus}
 ## The function is built on Seurat functions, so first create a Seurat object.
 obj = CreateSeuratObject(scdata, meta.data = scmeta)
 obj = NormalizeData(obj)
-## Visualize the SE consensus markers across recovered SEs
-res = AverageConsensusMarkers(obj, group.by = "SE")
+```
+
+By default, the [AverageMarkerExpression](../reference/AverageMarkerExpression.html) function compute the average expression of SE consensus markers from [Zhang et al., Nature 2026 paper](https://www.nature.com/articles/s41586-026-10452-4).
+
+```{r visualconsensus2}
+## Visualize average expression of SE consensus markers across recovered SEs
+res = AverageMarkerExpression(obj, group.by = "SE")
 plot(res$p)
 
 # Underlying data
 res$AvgExp
 ```
 
-The [AverageConsensusMarkers](../reference/AverageConsensusMarkers.html) function can also be used to visualize average expression of other gene lists by specifying the `markers` parameter, which should be a list of gene sets.
+The [AverageMarkerExpression](../reference/AverageMarkerExpression.html) function can also be used to visualize the average expression of user-defined gene sets by specifying the `markers` parameter as a list of gene lists.
+
 ```{r othermarkers}
-markers = list(set1 = c("FOS", "EGR1", "DUSP1", "JUNB", "JUN", "FOSB"),
-               set2 = c("STAT1", "TAP1", "HLA-A", "HLA-B", "HLA-C", "B2M"),
-               set3 = c("GZMA", "GZMB", "PRF1"),
-               set4 = c("PDCD1", "CTLA4", "LAG3", "	HAVCR2", "TIGIT"))
-res = AverageConsensusMarkers(obj, group.by = "SE", markers = markers)
+genesets = list(set1 = c("FOS", "EGR1", "DUSP1", "JUNB", "JUN", "FOSB"),
+                set2 = c("SPP1", "CCL2", "MMP9"),
+                set3 = c("CXCL12", "TGFBR2", "PDK4", "HLA-DMA"),
+                set4 = c("ACTA2", "CAV1", "CLDN5"),
+                set5 = c("LRP1", "MAFB"),
+                set6 = c("CXCL2", "NFKBIA", "CDKN1A"),
+                set7 = c("STAT1", "TAP1", "HLA-A", "HLA-B", "HLA-C", "B2M"),
+                set8 = c("PKM", "PCNA", "BST2"),
+                set9 = c("NRP1", "ITGB1", "CD276"))
+res = AverageMarkerExpression(obj, group.by = "SE", genesets = genesets)
 plot(res$p)
 ```
-
 
 # Session info
 

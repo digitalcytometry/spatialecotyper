@@ -46,7 +46,7 @@ NMFGenerateWList <- function(scdata, scmeta,
                              nfeature.per.se = 50,
                              min.cells = 20,
                              downsample = 2500,
-                             ncores = 1,
+                             ncores = 8,
                              seed = 2024){
   if(!(is.matrix(scdata) | is(scdata, "sparseMatrix"))){
     scdata = as.matrix(scdata)

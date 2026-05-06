@@ -90,11 +90,10 @@ reference:
   desc:  Validating spatial ecotypes in held-out single-cell or spatial transcriptomics data by testing the co-association or spatial autocorrelation of recovered SE-specific cell states.
   contents:
   - Colocalization
-  - ColocalizationHeatmapView
-  - CoassociationTest
   - Coassociation
+  - CoassociationTest
   - ComputeNormalizedMoranI
-  - AverageConsensusMarkers
+  - AverageMarkerExpression
 
 - title: Clustering Analysis
   desc:  Clustering via NMF.
@@ -105,6 +104,7 @@ reference:
   contents:
   - SpatialView
   - HeatmapView
+  - CooccurrenceHeatmapView
   - drawRectangleAnnotation
   - getColors
 

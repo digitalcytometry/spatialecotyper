@@ -82,13 +82,12 @@
 </h2>
 <p>To identify cell states specifically enriched in each SE and
 conserved across discovery samples, we can perform leave-one-sample-out
-cross-validation (LOOCV). This procedure builds upon the <a href="../reference/TrainRecoveryModel.html">NMF Model Development for
-Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics
-Data</a>. In each LOOCV iteration, an NMF model is trained using all but
-one sample and then applied to predict cell state labels in the held-out
-sample. The enrichment of each cell state within each SE is quantified
-based on its ability to correctly assign cells to that SE, measured by
-F1 score.</p>
+cross-validation (LOOCV). This procedure builds upon the <a href="TrainRecoveryModel.html">NMF Model Development for Spatial Ecotype
+Recovery from Single-Cell and Spatial Transcriptomics Data</a>. In each
+LOOCV iteration, an NMF model is trained using all but one sample and
+then applied to predict cell state labels in the held-out sample. The
+enrichment of each cell state within each SE is quantified based on its
+ability to correctly assign cells to that SE, measured by F1 score.</p>
 <p>A cell state is considered SE-specific if 1) Its F1 score for the
 assigned SE is the highest across all SEs; 2) The difference between the
 top F1 score and the second-highest F1 score exceeds a predefined
@@ -101,7 +100,7 @@ samples profiled by Vizgen MERSCOPE.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://renozao.github.io/NMF/" class="external-link">NMF</a></span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://digitalcytometry.github/spatialecotyper" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/digitalcytometry/spatialecotyper/" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="loading-data">Loading data<a class="anchor" aria-label="anchor" href="#loading-data"></a>
@@ -113,17 +112,17 @@ samples profiled by Vizgen MERSCOPE.</p>
 <span>                sep <span class="op">=</span> <span class="st">"\t"</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, data.table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">scdata</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>  <span class="co">## set the first column as row names</span></span>
 <span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="va">scdata</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>  <span class="co">## drop the first column</span></span>
-<span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span>  <span class="co">## Normalize the expression matrix</span></span>
+<span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span>  <span class="co">## Normalize the expression matrix</span></span>
 <span></span>
 <span><span class="co">## Read the expression matrix for the second sample</span></span>
 <span><span class="va">scdata2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=CRC2_subset_counts.tsv.gz"</span>,</span>
 <span>                sep <span class="op">=</span> <span class="st">"\t"</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, data.table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scdata2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">scdata2</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>  <span class="co">## set the first column as row names</span></span>
 <span><span class="va">scdata2</span> <span class="op">&lt;-</span> <span class="va">scdata2</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span>  <span class="co">## drop the first column</span></span>
-<span><span class="va">scdata2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Seurat/man/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata2</span><span class="op">)</span>  <span class="co">## Normalize the expression matrix</span></span>
+<span><span class="va">scdata2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata2</span><span class="op">)</span>  <span class="co">## Normalize the expression matrix</span></span>
 <span></span>
 <span><span class="co">## Combine the two expression matrices</span></span>
-<span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/generics/man/setops.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scdata2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scdata2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">[</span><span class="va">genes</span>, <span class="op">]</span>, <span class="va">scdata2</span><span class="op">[</span><span class="va">genes</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##          HumanMelanomaPatient1__cell_3655 HumanMelanomaPatient1__cell_3657</span></span>
@@ -155,7 +154,7 @@ samples profiled by Vizgen MERSCOPE.</p>
 <span><span class="va">scmeta</span><span class="op">$</span><span class="va">SE</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">$</span><span class="va">SE</span><span class="op">)</span><span class="op">]</span> <span class="op">=</span> <span class="st">"NonSE"</span> <span class="co">## cells with NA predictions were assigned into the nonSE group</span></span>
 <span></span>
 <span><span class="co">## Matches the row names of meta data and column names of expression matrix</span></span>
-<span><span class="va">cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/generics/man/setops.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">scdata</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="va">scdata</span><span class="op">[</span>, <span class="va">cells</span><span class="op">]</span></span>
 <span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="va">scmeta</span><span class="op">[</span><span class="va">cells</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="st">"CellType"</span>, <span class="st">"SE"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
@@ -271,7 +270,7 @@ example Slurm array script is provided below.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"LOOCV iteration: "</span>, <span class="va">i</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ---- Load required libraries and data (user-defined) ----</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://digitalcytometry.github/spatialecotyper" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/digitalcytometry/spatialecotyper/" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span>
 <span><span class="co"># scdata &lt;- ...</span></span>
 <span><span class="co"># scmeta &lt;- ...</span></span>
 <span></span>

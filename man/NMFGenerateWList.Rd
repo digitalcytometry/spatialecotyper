@@ -16,7 +16,7 @@ NMFGenerateWList(
   nfeature.per.se = 50,
   min.cells = 20,
   downsample = 2500,
-  ncores = 1,
+  ncores = 8,
   seed = 2024
 )
 }

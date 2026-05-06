@@ -17,6 +17,7 @@
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/news/index.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/AnnotateCells.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/AverageConsensusMarkers.html</loc></url>
+<url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/AverageMarkerExpression.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/Coassociation.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/CoassociationTest.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/Colocalization.html</loc></url>
@@ -25,6 +26,7 @@
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/ComputeFCs.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/ComputeMetrics.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/ComputeNormalizedMoranI.html</loc></url>
+<url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/CooccurrenceHeatmapView.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/CreatePseudobulks.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/DeconvoluteSE.html</loc></url>
 <url><loc>https://digitalcytometry.github.io/spatialecotyper/reference/GetPCList.html</loc></url>

@@ -7,13 +7,13 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-2233-299X"))
   )
 Depends: R (>= 4.2.0), Seurat (>= 4.2.0), Matrix (>= 1.5), RANN (>= 2.6), 
-    dplyr, parallel, NMF (>= 0.25)
-Imports: ggplot2, pals, circlize (>= 0.4), RColorBrewer, data.table (>= 1.14),
-    grDevices, ComplexHeatmap (>= 2.12)
+    parallel, NMF (>= 0.25)
+Imports: ggplot2, pals, tidyr, dplyr, circlize (>= 0.4), RColorBrewer, data.table (>= 1.14),
+    grDevices, ComplexHeatmap (>= 2.12), spdep (>= 1.4.2)
 Description: SpatialEcoTyper is an unsupervised machine learning framework for 
   discovering spatial ecotypes (multi-cellular communities) from single-cell spatial data.
 License: STANFORD NON-COMMERCIAL SOFTWARE LICENSE AGREEMENT
-URL: https://digitalcytometry.github/spatialecotyper
+URL: https://github.com/digitalcytometry/spatialecotyper/
 BugReports: https://github.com/digitalcytometry/spatialecotyper/issues
 Encoding: UTF-8
 LazyData: true

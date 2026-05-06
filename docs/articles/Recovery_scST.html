@@ -91,7 +91,7 @@ HD.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://digitalcytometry.github/spatialecotyper" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/digitalcytometry/spatialecotyper/" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
@@ -197,6 +197,9 @@ sensitive. All the other cell types will be assigned to NonSE.</p>
 <span><span class="co">## HumanColonCancerPatient2__cell_1625 Macrophage   SE07   SE6 0.6164063</span></span>
 <span><span class="co">## HumanColonCancerPatient2__cell_1629 Macrophage   SE08 NonSE 0.5823971</span></span>
 <span><span class="co">## HumanColonCancerPatient2__cell_1639 Macrophage   SE11   SE9 0.8711407</span></span></code></pre>
+<p>The SE recovery output contains five columns: cell ID (CID), cell
+type (CellType), initial SE assignment (InitSE), final SE assignment
+(SE), and prediction score (PredScore).</p>
 </details><details><summary><strong>Using custom models</strong>
 </summary><p>To use custom model, users should first develop a model following the
 tutorial <a href="TrainRecoveryModels.html">NMF Model Development for
@@ -219,7 +222,13 @@ argument.</p>
 <p>After prediction, we recommend retaining only assignments
 corresponding to SE-specific cell states identified in <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html">Tutorial
 3</a>. Cells not assigned to these SE-specific states should be grouped
-as “non-SE,” as they cannot be robustly mapped to corresponding SE.</p>
+as “NonSE,” as they cannot be robustly mapped to corresponding SE.</p>
+<p>The SE recovery output contains five columns: cell ID (CID), cell
+type (CellType), initial SE assignment (InitSE), final SE assignment
+(SE), and prediction score (PredScore). By default, assignments with
+PredScore ≥ 0.6 are retained as high-confidence results. For custom
+models, users are encouraged to determine the optimal threshold based on
+leave-one-sample-out cross-validation performance.</p>
 </details><p><strong>Combine SE recovery results into metadata</strong></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add SE assignments into the metadata</span></span>
@@ -242,7 +251,7 @@ separates the SE label from the cell type, enabling extraction of SE
 groupings from the cell state names.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Verify the four columns required for the analysis.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="st">"SE"</span>, <span class="st">"CellType"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> </span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="st">"SE"</span>, <span class="st">"CellType"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                            X         Y    SE   CellType</span></span>
 <span><span class="co">## HumanColonCancerPatient2__cell_1085 5057.912 -1721.871   SE9 Macrophage</span></span>
 <span><span class="co">## HumanColonCancerPatient2__cell_1205 5035.339 -1783.352 NonSE Macrophage</span></span>
@@ -251,40 +260,45 @@ groupings from the cell state names.</p>
 <span><span class="co">## HumanColonCancerPatient2__cell_1629 5030.235 -1867.441 NonSE Macrophage</span></span>
 <span><span class="co">## HumanColonCancerPatient2__cell_1639 5020.448 -1882.751   SE9 Macrophage</span></span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## For quick test run, 10 permutations were performed.</span></span>
+<code class="sourceCode R"><span><span class="co">## For quick test run, 100 permutations were performed to compute the colocalization scores.</span></span>
 <span><span class="va">coloc_res</span> <span class="op">=</span> <span class="fu"><a href="../reference/Colocalization.html">Colocalization</a></span><span class="op">(</span><span class="va">scmeta</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span><span class="op">)</span>, </span>
 <span>                           SE <span class="op">=</span> <span class="st">"SE"</span>, CellType <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>                           radius <span class="op">=</span> <span class="fl">50</span>, nperm <span class="op">=</span> <span class="fl">10</span>, </span>
+<span>                           radius <span class="op">=</span> <span class="fl">50</span>, nperm <span class="op">=</span> <span class="fl">100</span>, </span>
 <span>                           test <span class="op">=</span> <span class="cn">TRUE</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Matrix of colocalization indices between all cell states</span></span></code></pre></div>
-<pre><code><span><span class="co">##                        NonSE_B NonSE_CD4T  NonSE_CD8T  NonSE_DC</span></span>
-<span><span class="co">## NonSE_B             6.99868028 -0.1088442 -1.26127962 -2.481705</span></span>
-<span><span class="co">## NonSE_CD4T          0.01198789  1.0876716 -0.27916629 -2.693859</span></span>
-<span><span class="co">## NonSE_CD8T         -1.13257146 -0.4715074  1.93495806 -3.688940</span></span>
-<span><span class="co">## NonSE_DC           -2.19144921 -2.5835766 -3.63125229 -1.089487</span></span>
-<span><span class="co">## NonSE_Endothelial  -2.00235783  2.0257263 -0.06124556  1.092382</span></span>
-<span><span class="co">## NonSE_Fibroblast  -12.86098291  4.3604439 -2.84485824  4.309132</span></span>
+<pre><code><span><span class="co">##                        NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC</span></span>
+<span><span class="co">## NonSE_B            3.146708943 -0.1837297 -2.3370661 -2.875896</span></span>
+<span><span class="co">## NonSE_CD4T        -0.005433037  1.3183316 -0.3110048 -3.352328</span></span>
+<span><span class="co">## NonSE_CD8T        -2.161508372 -0.3444205  1.6461961 -3.151810</span></span>
+<span><span class="co">## NonSE_DC          -2.686851268 -2.8431600 -2.8859635 -1.432672</span></span>
+<span><span class="co">## NonSE_Endothelial -2.070218320  2.3883913 -0.2743873  1.079237</span></span>
+<span><span class="co">## NonSE_Fibroblast  -8.895869825  4.0639649 -3.0744469  3.868362</span></span>
 <span><span class="co">##                   NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B                  -1.9353359</span></span>
-<span><span class="co">## NonSE_CD4T                1.9644019</span></span>
-<span><span class="co">## NonSE_CD8T               -0.2698798</span></span>
-<span><span class="co">## NonSE_DC                  1.8692459</span></span>
-<span><span class="co">## NonSE_Endothelial         1.3615706</span></span>
-<span><span class="co">## NonSE_Fibroblast          3.9068697</span></span></code></pre>
+<span><span class="co">## NonSE_B                  -2.0697256</span></span>
+<span><span class="co">## NonSE_CD4T                2.1320779</span></span>
+<span><span class="co">## NonSE_CD8T               -0.5011759</span></span>
+<span><span class="co">## NonSE_DC                  1.5377568</span></span>
+<span><span class="co">## NonSE_Endothelial         1.3836232</span></span>
+<span><span class="co">## NonSE_Fibroblast          3.7487930</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span> <span class="co">## Vector of p-values for colocalization significance</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 3.682687e-01 5.522735e-15 4.121595e-03 1.959896e-03 5.406980e-08 2.303532e-02 </span></span>
+<span><span class="co">## 1.356444e-01 1.042266e-06 2.984003e-03 1.432073e-03 2.948727e-13 3.856528e-02 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 1.615148e-02 4.001441e-07 5.090381e-08 9.746007e-02</span></span></code></pre>
-<p>You can visualize the results using the <a href="../reference/ColocalizationHeatmapView.html">ColocalizationHeatmapView</a>
+<span><span class="co">## 2.747517e-04 1.094008e-04 2.030443e-05 5.527659e-02</span></span></code></pre>
+<p>You can visualize the results using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/ColocalizationHeatmapView.html">ColocalizationHeatmapView</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span>, <span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span>, <span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span><span class="op">)</span></span>
 <span><span class="va">p</span> <span class="op">=</span> <span class="fu">ComplexHeatmap</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/draw-dispatch.html" class="external-link">draw</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span>
 <span><span class="va">ses</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"_.*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/drawRectangleAnnotation.html">drawRectangleAnnotation</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">ses</span>, <span class="va">ses</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Recovery_scST_files/figure-html/visualcoloc-1.png" width="700"></p>
+<p>Here, in this small demo data, we can see strong colocalization of
+cell states within most SEs, whereas SE9 shows a weaker pattern,
+although it approaches statistical significance (P &lt; 0.1). In
+contrast, the NonSE group, serving as a negative control, does not
+exhibit spatial colocalization.</p>
 </div>
 <div class="section level2">
 <h2 id="validation-spatial-autocorrelation">Validation: spatial autocorrelation<a class="anchor" aria-label="anchor" href="#validation-spatial-autocorrelation"></a>
@@ -300,26 +314,30 @@ function.</p>
 <span>                                        SE <span class="op">=</span> <span class="st">"SE"</span>, CellType <span class="op">=</span> <span class="st">"CellType"</span>, </span>
 <span>                                        nperm <span class="op">=</span> <span class="fl">10</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="va">morani_zscore</span></span></code></pre></div>
-<pre><code><span><span class="co">##      NonSE        SE1        SE2        SE3        SE4        SE5        SE6 </span></span>
-<span><span class="co">##  17.707991  83.251639  27.769887  14.100131 128.408053  13.101159  18.912067 </span></span>
-<span><span class="co">##        SE7        SE8        SE9 </span></span>
-<span><span class="co">##  16.739382  57.931111   8.569262</span></span></code></pre>
+<pre><code><span><span class="co">##     NonSE       SE1       SE2       SE3       SE4       SE5       SE6       SE7 </span></span>
+<span><span class="co">##  12.71255 106.88797  34.95432  24.53143 110.12950  13.09989  14.99281  23.38682 </span></span>
+<span><span class="co">##       SE8       SE9 </span></span>
+<span><span class="co">##  83.04186  10.32977</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="validation-average-expression-of-se-markers">Validation: average expression of SE markers<a class="anchor" aria-label="anchor" href="#validation-average-expression-of-se-markers"></a>
 </h2>
 <p>Users can also validate the SEs by visualizing the average expression
-of SE consensus markers across recovered SEs using the <a href="../reference/AverageConsensusMarkers.html">AverageConsensusMarkers</a>
+of SE consensus markers across recovered SEs using the <a href="../reference/AverageMarkerExpression.html">AverageMarkerExpression</a>
 function.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## The function is built on Seurat functions, so first create a Seurat object.</span></span>
 <span><span class="va">obj</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">scdata</span>, meta.data <span class="op">=</span> <span class="va">scmeta</span><span class="op">)</span></span>
-<span><span class="va">obj</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
-<span><span class="co">## Visualize the SE consensus markers across recovered SEs</span></span>
-<span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/AverageConsensusMarkers.html">AverageConsensusMarkers</a></span><span class="op">(</span><span class="va">obj</span>, group.by <span class="op">=</span> <span class="st">"SE"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Recovery_scST_files/figure-html/visualconsensus-1.png" width="700"></p>
+<span><span class="va">obj</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span></code></pre></div>
+<p>By default, the <a href="../reference/AverageMarkerExpression.html">AverageMarkerExpression</a>
+function compute the average expression of SE consensus markers from <a href="https://www.nature.com/articles/s41586-026-10452-4" class="external-link">Zhang et al.,
+Nature 2026 paper</a>.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Visualize average expression of SE consensus markers across recovered SEs</span></span>
+<span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/AverageMarkerExpression.html">AverageMarkerExpression</a></span><span class="op">(</span><span class="va">obj</span>, group.by <span class="op">=</span> <span class="st">"SE"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Recovery_scST_files/figure-html/visualconsensus2-1.png" width="700"></p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Underlying data</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">AvgExp</span></span></code></pre></div>
 <pre><code><span><span class="co">##             SE1        SE2        SE3        SE4         SE5         SE6</span></span>
@@ -342,16 +360,21 @@ function.</p>
 <span><span class="co">## SE7  1.36375460  0.6531338 -0.2058864</span></span>
 <span><span class="co">## SE8  0.58219283  1.9611643 -0.8013322</span></span>
 <span><span class="co">## SE9 -0.38983885  1.1548420  1.6524713</span></span></code></pre>
-<p>The <a href="../reference/AverageConsensusMarkers.html">AverageConsensusMarkers</a>
-function can also be used to visualize average expression of other gene
-lists by specifying the <code>markers</code> parameter, which should be
-a list of gene sets.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">markers</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>set1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FOS"</span>, <span class="st">"EGR1"</span>, <span class="st">"DUSP1"</span>, <span class="st">"JUNB"</span>, <span class="st">"JUN"</span>, <span class="st">"FOSB"</span><span class="op">)</span>,</span>
-<span>               set2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"STAT1"</span>, <span class="st">"TAP1"</span>, <span class="st">"HLA-A"</span>, <span class="st">"HLA-B"</span>, <span class="st">"HLA-C"</span>, <span class="st">"B2M"</span><span class="op">)</span>,</span>
-<span>               set3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GZMA"</span>, <span class="st">"GZMB"</span>, <span class="st">"PRF1"</span><span class="op">)</span>,</span>
-<span>               set4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PDCD1"</span>, <span class="st">"CTLA4"</span>, <span class="st">"LAG3"</span>, <span class="st">" HAVCR2"</span>, <span class="st">"TIGIT"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/AverageConsensusMarkers.html">AverageConsensusMarkers</a></span><span class="op">(</span><span class="va">obj</span>, group.by <span class="op">=</span> <span class="st">"SE"</span>, markers <span class="op">=</span> <span class="va">markers</span><span class="op">)</span></span>
+<p>The <a href="../reference/AverageMarkerExpression.html">AverageMarkerExpression</a>
+function can also be used to visualize the average expression of
+user-defined gene sets by specifying the <code>markers</code> parameter
+as a list of gene lists.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">genesets</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>set1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FOS"</span>, <span class="st">"EGR1"</span>, <span class="st">"DUSP1"</span>, <span class="st">"JUNB"</span>, <span class="st">"JUN"</span>, <span class="st">"FOSB"</span><span class="op">)</span>,</span>
+<span>                set2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPP1"</span>, <span class="st">"CCL2"</span>, <span class="st">"MMP9"</span><span class="op">)</span>,</span>
+<span>                set3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CXCL12"</span>, <span class="st">"TGFBR2"</span>, <span class="st">"PDK4"</span>, <span class="st">"HLA-DMA"</span><span class="op">)</span>,</span>
+<span>                set4 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ACTA2"</span>, <span class="st">"CAV1"</span>, <span class="st">"CLDN5"</span><span class="op">)</span>,</span>
+<span>                set5 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LRP1"</span>, <span class="st">"MAFB"</span><span class="op">)</span>,</span>
+<span>                set6 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CXCL2"</span>, <span class="st">"NFKBIA"</span>, <span class="st">"CDKN1A"</span><span class="op">)</span>,</span>
+<span>                set7 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"STAT1"</span>, <span class="st">"TAP1"</span>, <span class="st">"HLA-A"</span>, <span class="st">"HLA-B"</span>, <span class="st">"HLA-C"</span>, <span class="st">"B2M"</span><span class="op">)</span>,</span>
+<span>                set8 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PKM"</span>, <span class="st">"PCNA"</span>, <span class="st">"BST2"</span><span class="op">)</span>,</span>
+<span>                set9 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NRP1"</span>, <span class="st">"ITGB1"</span>, <span class="st">"CD276"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/AverageMarkerExpression.html">AverageMarkerExpression</a></span><span class="op">(</span><span class="va">obj</span>, group.by <span class="op">=</span> <span class="st">"SE"</span>, genesets <span class="op">=</span> <span class="va">genesets</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Recovery_scST_files/figure-html/othermarkers-1.png" width="700"></p>
 </div>
@@ -361,7 +384,7 @@ a list of gene sets.</p>
 <p>The session info allows users to replicate the exact environment and
 identify potential discrepancies in package versions or configurations
 that might be causing problems.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>

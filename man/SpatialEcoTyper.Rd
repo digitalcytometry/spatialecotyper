@@ -17,7 +17,7 @@ SpatialEcoTyper(
   min.features = 10,
   iterations = 10,
   minibatch = 5000,
-  ncores = 1,
+  ncores = 4,
   grid.size = round(radius * 1.4),
   filter.region.by.celltypes = NULL,
   k = 20,

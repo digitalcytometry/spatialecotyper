@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # Overview
 
-To identify cell states specifically enriched in each SE and conserved across discovery samples, we can perform leave-one-sample-out cross-validation (LOOCV). This procedure builds upon the [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](../reference/TrainRecoveryModel.html). In each LOOCV iteration, an NMF model is trained using all but one sample and then applied to predict cell state labels in the held-out sample. The enrichment of each cell state within each SE is quantified based on its ability to correctly assign cells to that SE, measured by F1 score.
+To identify cell states specifically enriched in each SE and conserved across discovery samples, we can perform leave-one-sample-out cross-validation (LOOCV). This procedure builds upon the [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](TrainRecoveryModel.html). In each LOOCV iteration, an NMF model is trained using all but one sample and then applied to predict cell state labels in the held-out sample. The enrichment of each cell state within each SE is quantified based on its ability to correctly assign cells to that SE, measured by F1 score.
 
 A cell state is considered SE-specific if 1) Its F1 score for the assigned SE is the highest across all SEs; 2) The difference between the top F1 score and the second-highest F1 score exceeds a predefined threshold.
 

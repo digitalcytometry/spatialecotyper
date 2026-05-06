@@ -220,12 +220,12 @@ Colocalization <- function(scmeta, coords = c("X", "Y"),
 #' rownames(col_matrix) <- c("SE1_CD4T", "SE1_CD8T", "SE2_CD4T", "SE2_CD8T", "SE3_CD4T")
 #' colnames(col_matrix) <- c("SE1_CD4T", "SE1_CD8T", "SE2_CD4T", "SE2_CD8T", "SE3_CD4T")
 #' pvals <- c(SE1 = 0.01, SE2 = 0.2, SE3 = 0.0005)
-#' ColocalizationHeatmapView(col_matrix, Pval = pvals)
+#' CooccurrenceHeatmapView(col_matrix, Pval = pvals)
 #'
 #' @import ComplexHeatmap
 #' @importFrom grid grid.text
 #' @export
-ColocalizationHeatmapView <- function(ColocIndex, Pval = NULL,
+CooccurrenceHeatmapView <- function(ColocIndex, Pval = NULL,
                                       breaks = quantile(ColocIndex, c(0.55, 0.75, 0.9)),
                                       colors = c("#f2f0f7", "#cbc9e2", "#54278f"),
                                       legend_height = 1,

@@ -10,7 +10,7 @@ nmfClustering(
   nrun.per.rank = 30,
   min.coph = 0.95,
   nmf.method = "brunet",
-  ncores = 1,
+  ncores = 8,
   plot = FALSE,
   seed = 2024,
   ...

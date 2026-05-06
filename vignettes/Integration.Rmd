@@ -80,6 +80,8 @@ url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=M
 download.file(url, destfile = "Melanoma1_subset_SpatialEcoTyper_results.rds", mode = "wb")
 ```
 
+**Note**: If you are using Seurat v4 (rather than Seurat v5), please follow [Tutorial 1](SingleSample.html) to generate Spatial EcoTyper results for the two demo samples before testing the scripts below.
+
 ```{r integrate, eval = TRUE}
 data_list <- list(SKCM = normdata1, CRC = normdata2)
 SpatialEcoTyper_list <- list(SKCM = readRDS("Melanoma1_subset_SpatialEcoTyper_results.rds"),

@@ -10,7 +10,7 @@ DeconvoluteSE(
   W = NULL,
   nsample.per.run = 500,
   sum2one = TRUE,
-  ncores = 1
+  ncores = 8
 )
 }
 \arguments{

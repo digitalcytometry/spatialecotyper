@@ -7,11 +7,7 @@
 
 **Spatial EcoTyper** is a versatile framework for identifying spatially distinct multicellular communities, termed spatial ecotypes, from single-cell spatial transcriptomics data. In addition, it provides unified methods for the recovery of spatial ecotypes across multiple data modalities, including spatial transcriptomics, single-cell RNA-seq, and bulk transcriptomic datasets.
 
-## Overview of Spatial EcoTyper
-
-**Spatial EcoTyper** is available as an R package, with comprehensive documentation accessible at https://digitalcytometry.github.io/spatialecotyper.
-
-We provide eight comprehensive tutorials illustrating the key functionalities of Spatial EcoTyper framework:
+**Spatial EcoTyper** is available as an R package, with comprehensive documentation accessible at https://digitalcytometry.github.io/spatialecotyper, including eight tutorials illustrating the key functionalities of the framework:
 
 -   **Tutorial 1**: [Discovering Spatial Ecotypes from a Single Spatial Transcriptomics Sample](https://digitalcytometry.github.io/spatialecotyper/articles/SingleSample.html)
 -   **Tutorial 2**: [Discovering Conserved Spatial Ecotypes Across Multiple Spatial Transcriptomics Samples](https://digitalcytometry.github.io/spatialecotyper/articles/Integration.html)
@@ -21,6 +17,8 @@ We provide eight comprehensive tutorials illustrating the key functionalities of
 -   **Tutorial 6**: [Recovering Spatial Ecotypes from Single-Cell RNA-seq Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html)
 -   **Tutorial 7**: [NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data](https://digitalcytometry.github.io/spatialecotyper/articles/TrainDeconvModel.html)
 -   **Tutorial 8**: [Inferring Spatial Ecotype Abundances from Bulk Gene Expression Data](https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_Bulk.html)
+
+**Spatial EcoTyper** is also available as a web application at https://spatialecotyper.stanford.edu/, enabling recovery of spatial ecotypes from single-cell RNA-seq and single-cell spatial transcriptomics data, as well as inference of spatial ecotype abundances from Visium spatial transcriptomics and bulk RNA-seq data.
 
 **Note**: Spatial EcoTyper depends extensively on Seurat for key processes like dimensionality reduction, UMAP embedding, clustering, and visualization. Initially developed using Seurat v4.3, the tool has been thoroughly tested and validated with Seurat v5. Although UMAP embeddings and clustering results show slight differences between Seurat v4 and v5, the overall consistency remains strong, ensuring that core biological insights are preserved across both versions.
 
@@ -33,33 +31,54 @@ We provide eight comprehensive tutorials illustrating the key functionalities of
 
 ## Installation
 
-**Spatial EcoTyper** is available as an R package and can be installed via the `BiocManager` package directly from the R console.
+**Spatial EcoTyper** is available as an R package. 
 
-``` r
-if(!"BiocManager" %in% installed.packages()){
-  install.packages("BiocManager")
-}
+<details open><summary>Install in an existing R environment</summary>
 
-## Install dependencies
-BiocManager::install(c("remotes", "Seurat", "NMF", "dplyr", "tidyr", "pals",
-                       "parallel", "data.table", "ComplexHeatmap", 
-                       "glmGamPoi", "immunogenomics/presto"))
+  If you already have Seurat installed, you can install `Spatial EcoTyper` and its dependencies directly in R:
+  
+  ``` r
+  ## Install dependencies
+  BiocManager::install(c("remotes", "NMF", "dplyr", "tidyr", "pals", "parallel", 
+                         "data.table", "spdep", "ComplexHeatmap",
+                         "immunogenomics/presto"))
+  
+  ## Install SpatialEcoTyper
+  BiocManager::install("digitalcytometry/spatialecotyper")
+  ```
+</details>
 
-## Install SpatialEcoTyper
-BiocManager::install("digitalcytometry/spatialecotyper")
-```
+<details open><summary>Install in a conda environment (recommended for servers)</summary>
 
+* Create environment and install core dependencies
+
+  ```bash
+  conda create -n spatialecotyper -y
+  conda activate spatialecotyper
+  conda install -y -c conda-forge r-base r-seurat r-spdep r-nmf
+  conda install -y -c bioconda bioconductor-complexheatmap
+  ```
+
+* Install R packages
+  
+  ```r
+  if(!"BiocManager" %in% installed.packages()){
+    install.packages("BiocManager")
+  }
+  
+  ## Install dependencies
+  BiocManager::install("immunogenomics/presto")
+  
+  ## Install SpatialEcoTyper
+  BiocManager::install("digitalcytometry/spatialecotyper")
+  ```
+</details>
 
 <details><summary>Troubleshooting dependency installation</summary>
 
 * ERROR: dependency ‘GetoptLong’ is not available for package ‘ComplexHeatmap’
 
   If the installation within R console fails, you can try installing the necessary packages via `conda install` or `mamba install`.
-  
-  ```bash
-  conda install bioconda::bioconductor-complexheatmap
-  ```
-
 
 * Failed to install 'presto' from GitHub: HTTP error 401. Bad credentials
 
@@ -76,6 +95,7 @@ BiocManager::install("digitalcytometry/spatialecotyper")
 
 
 <details><summary>Install SpatialEcoTyper from source code</summary>
+
 The source code of **Spatial EcoTyper** is available at https://github.com/digitalcytometry/spatialecotyper. After downloading the package, you can install it from the source code using the command:
 
 ``` r

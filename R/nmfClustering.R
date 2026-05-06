@@ -44,7 +44,7 @@ nmfClustering <- function(mat, ranks = 10,
                           nrun.per.rank = 30,
                           min.coph = 0.95,
                           nmf.method = "brunet",
-                          ncores = 1, plot = FALSE,
+                          ncores = 8, plot = FALSE,
                           seed = 2024, ...){
   ## Preprocess the data
   mat = as.matrix(mat)
