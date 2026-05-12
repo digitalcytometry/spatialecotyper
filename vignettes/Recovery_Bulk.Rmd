@@ -121,6 +121,19 @@ SpatialView(gg, by = "SE7", X = "imagerow", Y = "imagecol", pt.size = 2) +
   coord_fixed()
 ```
 
+## Aggregating SE abundances across Visium spots
+
+To compute sample-level SE abundances, Spatial EcoTyper calculates a weighted average of SE abundances across all Visium spots, where each spot is weighted by its inferred number of cells. The resulting SE abundances are then normalized to sum to 1.
+
+```{r samplelevel}
+ncells = InferNCells(visiumdat)
+
+se_abundance = colSums(sefracs * ncells)
+se_abundance = se_abundance / sum(se_abundance)
+
+se_abundance
+```
+
 
 # Session info
 

@@ -69,14 +69,14 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Identifying SE-Specific Cell States via Leave-One-Sample-Out Cross-Validation</h1>
-
-
+            
+      
       <small class="dont-index">Source: <a href="https://github.com/digitalcytometry/spatialecotyper/blob/main/vignettes/Discovery_SE_CellStates.Rmd" class="external-link"><code>vignettes/Discovery_SE_CellStates.Rmd</code></a></small>
       <div class="d-none name"><code>Discovery_SE_CellStates.Rmd</code></div>
     </div>
 
-
-
+    
+    
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -183,13 +183,19 @@ this procedure and returns predicted SE labels for all cells.</p>
 <span>                           repeats <span class="op">=</span> <span class="fl">1</span>, ncores <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Note:</strong> The default parameters in <a href="../reference/LoocvPredict.html">LoocvPredict</a> are optimized for
 pan-cancer SEs (Zhang et al., Nature 2026). For user-defined datasets,
-parameter tuning is recommended: <code>scale</code>: apply unit-variance
-normalization <code>balance.sample</code>: balance cell numbers across
-samples <code>nfeature</code>: number of variable genes per cell type
-<code>nfeature.per.se</code>: number of genes retained per SE
-<code>downsample</code>: number of cells used for training
-<code>repeats</code>: number of model training iterations (for
-robustness)</p>
+parameter tuning is recommended:</p>
+<ul>
+<li>
+<code>repeats</code>: number of model training iterations
+(recommended: ≥30 for robust results)</li>
+<li>
+<code>downsample</code>: number of cells sampled for training
+(recommended: ≥2500; larger values generally improve robustness)</li>
+<li>
+<code>nfeature</code>: number of variable genes selected per cell
+type for defining cell states, which should be tailored to the
+dataset.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="identifying-se-specific-cell-states">Identifying SE-specific cell states<a class="anchor" aria-label="anchor" href="#identifying-se-specific-cell-states"></a>
@@ -201,18 +207,22 @@ SE-associated cell states.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Compute F1 matrix </span></span>
 <span><span class="va">F1s</span> <span class="op">=</span> <span class="fu"><a href="../reference/ComputeMetrics.html">ComputeMetrics</a></span><span class="op">(</span><span class="va">loocv_preds</span>, SE <span class="op">=</span> <span class="st">"SE"</span>, Pred <span class="op">=</span> <span class="st">"cvPred"</span>, </span>
-<span>                     CellType <span class="op">=</span> <span class="st">"CellType"</span>, Sample <span class="op">=</span> <span class="st">"Sample"</span>, metric <span class="op">=</span> <span class="st">"F1"</span><span class="op">)</span></span></code></pre></div>
+<span>                     CellType <span class="op">=</span> <span class="st">"CellType"</span>, Sample <span class="op">=</span> <span class="st">"Sample"</span>, metric <span class="op">=</span> <span class="st">"F1"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Visualize the F1 scores before filtering</span></span>
+<span><span class="fu"><a href="../reference/HeatmapView.html">HeatmapView</a></span><span class="op">(</span><span class="va">F1s</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Discovery_SE_CellStates_files/figure-html/metrics-1.png" width="700"></p>
 <p>We then define specificity based on:</p>
 <ul>
 <li>Maximum F1 score corresponds to the assigned SE</li>
 <li>Difference between top two F1 scores exceeds 0.1</li>
 </ul>
 <p>Cell states that meet these criteria are considered SE-specific and
-conserved across samples.</p>
-<p>Cell states that do not meet these criteria could be broadly
-distributed across multiple SEs, or not conserved across samples. Such
-states are excluded from SE-specific analyses but may still represent
-biologically meaningful programs shared across microenvironments.</p>
+conserved across samples in our analysis. Cell states that do not meet
+these criteria could be broadly distributed across multiple SEs, or not
+conserved across samples. Such states are excluded from SE-specific
+analyses but may still represent biologically meaningful programs shared
+across microenvironments.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Filter for the specific cell states and visualize the F1 matrix</span></span>
 <span><span class="va">delta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">F1s</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
@@ -256,7 +266,7 @@ example Slurm array script is provided below.</p>
 <span><span class="co"># ============================================================</span></span>
 <span></span>
 <span><span class="co"># ---- Parse command-line argument (task index) ----</span></span>
-<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://henrikbengtsson.github.io/R.utils/reference/commandArgs.html" class="external-link">commandArgs</a></span><span class="op">(</span>trailingOnly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/commandArgs.html" class="external-link">commandArgs</a></span><span class="op">(</span>trailingOnly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">args</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Usage: Rscript run_loocv_pred.R &lt;task_id&gt;"</span><span class="op">)</span></span>
@@ -298,7 +308,13 @@ example Slurm array script is provided below.</p>
 <div class="section level2">
 <h2 id="next-step">Next step<a class="anchor" aria-label="anchor" href="#next-step"></a>
 </h2>
-<p>Following the identification of SE-specific cell states, users can recover spatial ecotypes from held-out single-cell datasets (e.g., scRNA-seq or single-cell spatial transcriptomics), using the model derived in <a href="TrainRecoveryModel.html">Tutorial 3</a>. The recovered spatial ecotypes can then be validated by assessing the co-occurrence of cell states within each SE, as described in <a href="Recovery_scST.html">Tutorial 5</a> and <a href="Recovery_scRNA.html">Tutorial 6</a>, focusing on SE-specific cell state assignments.</p>
+<p>Following the identification of SE-specific cell states, users can
+recover spatial ecotypes from held-out single-cell datasets (e.g.,
+scRNA-seq or single-cell spatial transcriptomics), using the model
+derived in <a href="TrainRecoveryModel.html">Tutorial 3</a>. The
+recovered spatial ecotypes can then be validated by assessing the
+co-occurrence of cell states within each SE, as described in <a href="Recovery_scST.html">Tutorial 5</a> and <a href="Recovery_scRNA.html">Tutorial 6</a>, focusing on SE-specific cell
+state assignments.</p>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>

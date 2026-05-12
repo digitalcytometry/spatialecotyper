@@ -259,6 +259,25 @@ can be used to visualize SE levels across Visium spots.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_fixed</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Recovery_Bulk_files/figure-html/DeconvoluteSE4-1.png" width="700"></p>
 </div>
+<div class="section level3">
+<h3 id="aggregating-se-abundances-across-visium-spots">Aggregating SE abundances across Visium spots<a class="anchor" aria-label="anchor" href="#aggregating-se-abundances-across-visium-spots"></a>
+</h3>
+<p>To compute sample-level SE abundances, Spatial EcoTyper calculates a
+weighted average of SE abundances across all Visium spots, where each
+spot is weighted by its inferred number of cells. The resulting SE
+abundances are then normalized to sum to 1.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ncells</span> <span class="op">=</span> <span class="fu"><a href="../reference/InferNCells.html">InferNCells</a></span><span class="op">(</span><span class="va">visiumdat</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">se_abundance</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums-methods.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">sefracs</span> <span class="op">*</span> <span class="va">ncells</span><span class="op">)</span></span>
+<span><span class="va">se_abundance</span> <span class="op">=</span> <span class="va">se_abundance</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">se_abundance</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">se_abundance</span></span></code></pre></div>
+<pre><code><span><span class="co">##      NonSE        SE1        SE2        SE3        SE4        SE5        SE6 </span></span>
+<span><span class="co">## 0.14040316 0.10273022 0.10877979 0.07961907 0.08949085 0.10648323 0.06536729 </span></span>
+<span><span class="co">##        SE7        SE8        SE9 </span></span>
+<span><span class="co">## 0.10937720 0.09877262 0.09897657</span></span></code></pre>
+</div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
@@ -266,7 +285,7 @@ can be used to visualize SE levels across Visium spots.</p>
 <p>The session info allows users to replicate the exact environment and
 identify potential discrepancies in package versions or configurations
 that might be causing problems.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>

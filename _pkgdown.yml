@@ -117,9 +117,10 @@ reference:
   - matrixMultiply
   - fillspots
   - mostFrequent
+  - InferNCells
 
 news:
   releases:
-  - text: "Version 1.0.2"
+  - text: "Version 1.0.2.1"
     href:
 

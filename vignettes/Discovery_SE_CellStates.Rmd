@@ -80,12 +80,11 @@ loocv_preds = LoocvPredict(scdata = scdata, scmeta = scmeta,
 ```
 
 **Note:** The default parameters in [LoocvPredict](../reference/LoocvPredict.html) are optimized for pan-cancer SEs (Zhang et al., Nature 2026). For user-defined datasets, parameter tuning is recommended:
-`scale`: apply unit-variance normalization
-`balance.sample`: balance cell numbers across samples
-`nfeature`: number of variable genes per cell type
-`nfeature.per.se`: number of genes retained per SE
-`downsample`: number of cells used for training
-`repeats`: number of model training iterations (for robustness)
+
+- `repeats`: number of model training iterations (recommended: ≥30 for robust results)
+- `downsample`: number of cells sampled for training (recommended: ≥2500; larger values generally improve robustness)
+- `nfeature`: number of variable genes selected per cell type for defining cell states, which should be tailored to the dataset.
+
 
 # Identifying SE-specific cell states
 
@@ -96,6 +95,8 @@ After LOOCV, we compare original SE assignments with predicted labels. The [Comp
 F1s = ComputeMetrics(loocv_preds, SE = "SE", Pred = "cvPred", 
                      CellType = "CellType", Sample = "Sample", metric = "F1")
 
+## Visualize the F1 scores before filtering
+HeatmapView(F1s, c(0, 0.1, 0.3))
 ```
 
 We then define specificity based on:
@@ -103,9 +104,8 @@ We then define specificity based on:
   * Maximum F1 score corresponds to the assigned SE
   * Difference between top two F1 scores exceeds 0.1
   
-Cell states that meet these criteria are considered SE-specific and conserved across samples. 
-  
-Cell states that do not meet these criteria could be broadly distributed across multiple SEs, or not conserved across samples. Such states are excluded from SE-specific analyses but may still represent biologically meaningful programs shared across microenvironments.
+Cell states that meet these criteria are considered SE-specific and conserved across samples in our analysis. Cell states that do not meet these criteria could be broadly distributed across multiple SEs, or not conserved across samples. Such states are excluded from SE-specific analyses but may still represent biologically meaningful programs shared across microenvironments.
+
 
 ```{r specificity}
 ## Filter for the specific cell states and visualize the F1 matrix
@@ -183,7 +183,8 @@ Rscript run_loocv_pred.R $SLURM_ARRAY_TASK_ID
 
 # Next step
 
-Following the identification of SE-specific cell states, spatial ecotypes can be recovered in held-out single-cell datasets (e.g., scRNA-seq or single-cell spatial transcriptomics) using the model derived in [Tutorial 3](TrainRecoveryModel.html). The recovered spatial ecotypes can then be validated by assessing the co-occurrence of cell states within each SE, as described in [Tutorial 5](Recovery_scST.html) and [Tutorial 6](Recovery_scRNA.html), focusing on SE-specific cell state assignments.
+Following the identification of SE-specific cell states, users can recover spatial ecotypes from held-out single-cell datasets (e.g., scRNA-seq or single-cell spatial transcriptomics), using the model derived in [Tutorial 3](TrainRecoveryModel.html). The recovered spatial ecotypes can then be validated by assessing the co-occurrence of cell states within each SE, as described in [Tutorial 5](Recovery_scST.html) and [Tutorial 6](Recovery_scRNA.html), focusing on SE-specific cell state assignments.
+
 
 # Session info
 

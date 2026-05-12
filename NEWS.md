@@ -1,3 +1,8 @@
+# SpatialEcoTyper 1.0.2.1
+
+  * Add function to aggregate SE abundances across Visium spots
+
+
 # SpatialEcoTyper 1.0.2
 
   * Add tutorial for SE recovery from single-cell ST data

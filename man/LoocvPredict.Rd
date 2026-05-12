@@ -10,7 +10,7 @@ LoocvPredict(
   Sample = "Sample",
   CellType = "CellType",
   SE = "SE",
-  repeats = 1,
+  repeats = 30,
   ncores = 4,
   scale = TRUE,
   verbose = TRUE,
