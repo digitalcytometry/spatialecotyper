@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -209,9 +209,8 @@ SE-associated cell states.</p>
 <span><span class="va">F1s</span> <span class="op">=</span> <span class="fu"><a href="../reference/ComputeMetrics.html">ComputeMetrics</a></span><span class="op">(</span><span class="va">loocv_preds</span>, SE <span class="op">=</span> <span class="st">"SE"</span>, Pred <span class="op">=</span> <span class="st">"cvPred"</span>, </span>
 <span>                     CellType <span class="op">=</span> <span class="st">"CellType"</span>, Sample <span class="op">=</span> <span class="st">"Sample"</span>, metric <span class="op">=</span> <span class="st">"F1"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## Visualize the F1 scores before filtering</span></span>
-<span><span class="fu"><a href="../reference/HeatmapView.html">HeatmapView</a></span><span class="op">(</span><span class="va">F1s</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Discovery_SE_CellStates_files/figure-html/metrics-1.png" width="700"></p>
+<span><span class="co"># ## Visualize the F1 scores before filtering</span></span>
+<span><span class="co"># HeatmapView(F1s, c(0, 0.1, 0.3))</span></span></code></pre></div>
 <p>We then define specificity based on:</p>
 <ul>
 <li>Maximum F1 score corresponds to the assigned SE</li>
@@ -266,7 +265,7 @@ example Slurm array script is provided below.</p>
 <span><span class="co"># ============================================================</span></span>
 <span></span>
 <span><span class="co"># ---- Parse command-line argument (task index) ----</span></span>
-<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/commandArgs.html" class="external-link">commandArgs</a></span><span class="op">(</span>trailingOnly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://henrikbengtsson.github.io/R.utils/reference/commandArgs.html" class="external-link">commandArgs</a></span><span class="op">(</span>trailingOnly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">args</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Usage: Rscript run_loocv_pred.R &lt;task_id&gt;"</span><span class="op">)</span></span>
@@ -343,7 +342,7 @@ that might be causing problems.</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] SpatialEcoTyper_1.0.2 RANN_2.6.2            Matrix_1.7-0         </span></span>
+<span><span class="co">##  [1] SpatialEcoTyper_1.0.3 RANN_2.6.2            Matrix_1.7-0         </span></span>
 <span><span class="co">##  [4] dplyr_1.1.4           data.table_1.16.0     NMF_0.28             </span></span>
 <span><span class="co">##  [7] Biobase_2.64.0        BiocGenerics_0.50.0   cluster_2.1.6        </span></span>
 <span><span class="co">## [10] rngtools_1.5.2        registry_0.5-1        Seurat_5.1.0         </span></span>

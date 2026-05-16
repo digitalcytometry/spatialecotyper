@@ -166,7 +166,7 @@ The SE recovery output contains five columns: cell ID (CID), cell type (CellType
 
 # Validation: co-association of SE cell states across samples
 
-After recovering SE-specific cell states from single-cell RNA-seq data, users can validate the SEs by testing whether cell states belonging to the same SE are more co-occur than expected by random chance using the [Coassociation](../reference/Coassociation.html) function. The sample, cell type, and SE annotations are required for the analysis.
+After recovering SE-specific cell states from single-cell RNA-seq data, users can validate the recovered SEs by testing whether cell states belonging to the same SE co-occur more frequently than expected by random chance using the [Coassociation](../reference/Coassociation.html) function. The analysis requires sample, cell type, and SE annotations for each cell.
 
 **Note**: By default (`test = TRUE`), the function evaluates the significance of cell state co-localization within each SE and returns a vector of p-values. This analysis requires cell state names to follow the format “SE1_CD4T”, where an underscore separates the SE label from the cell type, enabling extraction of SE groupings from the cell state names.
 

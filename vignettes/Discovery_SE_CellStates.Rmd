@@ -95,8 +95,8 @@ After LOOCV, we compare original SE assignments with predicted labels. The [Comp
 F1s = ComputeMetrics(loocv_preds, SE = "SE", Pred = "cvPred", 
                      CellType = "CellType", Sample = "Sample", metric = "F1")
 
-## Visualize the F1 scores before filtering
-HeatmapView(F1s, c(0, 0.1, 0.3))
+# ## Visualize the F1 scores before filtering
+# HeatmapView(F1s, c(0, 0.1, 0.3))
 ```
 
 We then define specificity based on:

@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -267,26 +267,19 @@ groupings from the cell state names.</p>
 <span>                           radius <span class="op">=</span> <span class="fl">50</span>, nperm <span class="op">=</span> <span class="fl">100</span>, </span>
 <span>                           test <span class="op">=</span> <span class="cn">TRUE</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Matrix of colocalization indices between all cell states</span></span></code></pre></div>
-<pre><code><span><span class="co">##                       NonSE_B NonSE_CD4T NonSE_CD8T   NonSE_DC</span></span>
-<span><span class="co">## NonSE_B            3.09147672 -0.1588246 -1.9841234 -2.7744221</span></span>
-<span><span class="co">## NonSE_CD4T         0.01544078  1.4628284 -0.5462065 -2.8627726</span></span>
-<span><span class="co">## NonSE_CD8T        -1.81584758 -0.6001604  1.6105688 -2.8230713</span></span>
-<span><span class="co">## NonSE_DC          -2.65192708 -2.4644378 -2.6362772 -1.3610106</span></span>
-<span><span class="co">## NonSE_Endothelial -1.66773629  2.1933968 -0.3630268  0.7131143</span></span>
-<span><span class="co">## NonSE_Fibroblast  -8.64131757  4.0601813 -2.1981727  3.5433955</span></span>
-<span><span class="co">##                   NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B                  -1.6730002</span></span>
-<span><span class="co">## NonSE_CD4T                2.0427257</span></span>
-<span><span class="co">## NonSE_CD8T               -0.6345835</span></span>
-<span><span class="co">## NonSE_DC                  1.0870444</span></span>
-<span><span class="co">## NonSE_Endothelial         1.3874898</span></span>
-<span><span class="co">## NonSE_Fibroblast          4.1054841</span></span></code></pre>
+<pre><code><span><span class="co">##                       NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC NonSE_Endothelial</span></span>
+<span><span class="co">## NonSE_B            3.01174416 -0.2102741 -2.2000525 -2.681307        -1.5647727</span></span>
+<span><span class="co">## NonSE_CD4T        -0.06220006  1.3188909 -0.5695535 -3.205059         2.3044942</span></span>
+<span><span class="co">## NonSE_CD8T        -2.06183422 -0.6006242  1.5412525 -2.834613        -0.6084004</span></span>
+<span><span class="co">## NonSE_DC          -2.55477282 -2.8741464 -2.6402594 -1.087720         1.5709218</span></span>
+<span><span class="co">## NonSE_Endothelial -1.52837741  2.4579076 -0.3516146  1.082650         1.4090700</span></span>
+<span><span class="co">## NonSE_Fibroblast  -7.95787513  3.9103787 -2.5321960  3.884304         4.0734886</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span> <span class="co">## Vector of p-values for colocalization significance</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 1.461682e-01 9.760781e-07 6.247030e-03 1.225764e-03 1.717512e-13 3.300560e-02 </span></span>
+<span><span class="co">## 1.522871e-01 9.554951e-07 9.689269e-03 1.530086e-03 2.024212e-13 3.044392e-02 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 2.832993e-04 1.223313e-04 2.070023e-05 6.407761e-02</span></span></code></pre>
+<span><span class="co">## 2.583275e-04 1.000966e-04 1.212722e-05 6.765377e-02</span></span></code></pre>
 <p>You can visualize the results using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -406,7 +399,7 @@ that might be causing problems.</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] pals_1.9              SpatialEcoTyper_1.0.2 NMF_0.28             </span></span>
+<span><span class="co">##  [1] pals_1.9              SpatialEcoTyper_1.0.3 NMF_0.28             </span></span>
 <span><span class="co">##  [4] Biobase_2.64.0        BiocGenerics_0.50.0   cluster_2.1.6        </span></span>
 <span><span class="co">##  [7] rngtools_1.5.2        registry_0.5-1        RANN_2.6.2           </span></span>
 <span><span class="co">## [10] Matrix_1.7-0          data.table_1.16.0     Seurat_5.1.0         </span></span>

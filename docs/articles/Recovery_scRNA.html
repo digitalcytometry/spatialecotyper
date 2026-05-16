@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -301,10 +301,11 @@ leave-one-sample-out cross-validation performance.</p>
 <h2 id="validation-co-association-of-se-cell-states-across-samples">Validation: co-association of SE cell states across samples<a class="anchor" aria-label="anchor" href="#validation-co-association-of-se-cell-states-across-samples"></a>
 </h2>
 <p>After recovering SE-specific cell states from single-cell RNA-seq
-data, users can validate the SEs by testing whether cell states
-belonging to the same SE are more co-occur than expected by random
-chance using the <a href="../reference/Coassociation.html">Coassociation</a> function. The
-sample, cell type, and SE annotations are required for the analysis.</p>
+data, users can validate the recovered SEs by testing whether cell
+states belonging to the same SE co-occur more frequently than expected
+by random chance using the <a href="../reference/Coassociation.html">Coassociation</a> function. The
+analysis requires sample, cell type, and SE annotations for each
+cell.</p>
 <p><strong>Note</strong>: By default (<code>test = TRUE</code>), the
 function evaluates the significance of cell state co-localization within
 each SE and returns a vector of p-values. This analysis requires cell
@@ -425,7 +426,7 @@ that might be causing problems.</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] SpatialEcoTyper_1.0.2 NMF_0.28              Biobase_2.64.0       </span></span>
+<span><span class="co">##  [1] SpatialEcoTyper_1.0.3 NMF_0.28              Biobase_2.64.0       </span></span>
 <span><span class="co">##  [4] BiocGenerics_0.50.0   cluster_2.1.6         rngtools_1.5.2       </span></span>
 <span><span class="co">##  [7] registry_0.5-1        RANN_2.6.2            Matrix_1.7-0         </span></span>
 <span><span class="co">## [10] data.table_1.16.0     Seurat_5.1.0          SeuratObject_5.0.2   </span></span>

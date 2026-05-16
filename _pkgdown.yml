@@ -78,6 +78,7 @@ reference:
   - CreatePseudobulks
   - NMFGenerateW
   - NMFGenerateWList
+  - AggregateRecoverModels
 
 - title: Recovering Spatial Ecotypes
   desc:  Recovering spatial ecotypes from single-cell spatial transcriptomics, scRNA-seq, Visium, or bulk tumor expression data.
@@ -121,6 +122,6 @@ reference:
 
 news:
   releases:
-  - text: "Version 1.0.2.1"
+  - text: "Version 1.0.3"
     href:
 

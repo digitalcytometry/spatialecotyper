@@ -1,7 +1,7 @@
-# SpatialEcoTyper 1.0.2.1
+# SpatialEcoTyper 1.0.3
 
   * Add function to aggregate SE abundances across Visium spots
-
+  * Add function to aggregate SE recovery models across runs
 
 # SpatialEcoTyper 1.0.2
 
