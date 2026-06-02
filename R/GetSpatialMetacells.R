@@ -19,7 +19,7 @@
 #' @param bin.X Character string specifying the column name in \code{metadata} containing the X spatial coordinates of spatial neighborhoods.
 #' @param bin.Y Character string specifying the column name in \code{metadata} containing the Y spatial coordinates of spatial neighborhoods.
 #' @param min.cells.per.region Integer specifying the minimum number of cells required in each spatial neighborhood to compute metacells.
-#' @param ncores Integer specifying the number of CPU cores to use for parallel processing (default: 1).
+#' @param ncores Integer specifying the number of CPU cores to use for parallel processing (default: 4).
 #'
 #' @return A matrix containing the spatial metacell expression profiles, with rows representing individual genes
 #'         and columns representing metacells.
@@ -44,7 +44,6 @@
 #' @importFrom parallel detectCores mclapply
 #' @export
 #'
-
 GetSpatialMetacells <- function(normdata, metadata,
                                 X = "X", Y = "Y",
                                 CellType = "CellType",
@@ -53,22 +52,23 @@ GetSpatialMetacells <- function(normdata, metadata,
                                 bin.X = "Spot.X",
                                 bin.Y = "Spot.Y",
                                 min.cells.per.region = 1,
-                                ncores = 1){
+                                ncores = 4){
 
-  if(!all(c("X", "Y", "CellType") %in% colnames(metadata))){
-    missing_cols = setdiff(c("X", "Y", "CellType"), colnames(metadata))
+  if(!all(c(X, Y, CellType) %in% colnames(metadata))){
+    missing_cols = setdiff(c(X, Y, CellType), colnames(metadata))
     stop("Required metadata columns missing: ", paste0(missing_cols, collapse = ", "), ". Metadata must include X, Y, and CellType.")
   }
   metadata <- as.data.frame(metadata)
+  metadata$CellType <- metadata[, CellType]
+  metadata$X <- metadata[, X]
+  metadata$Y <- metadata[, Y]
   metadata <- metadata[match(colnames(normdata), rownames(metadata)), ]
 
   if(!(is.matrix(normdata) | is(normdata, "sparseMatrix"))){
     normdata <- as.matrix(normdata)
   }
-  metadata$CellType <- metadata[, CellType]
+
   if(!all(c(bin, bin.X, bin.Y) %in% colnames(metadata))){
-    metadata$X = metadata[, X]
-    metadata$Y = metadata[, Y]
     binsize = round(radius*1.4)
     metadata$SpotID <- paste0("X", round(metadata[, X] / binsize),
                               "_Y", round(metadata[, Y] / binsize))
@@ -77,8 +77,12 @@ GetSpatialMetacells <- function(normdata, metadata,
     bin.X = "Spot.X"
     bin.Y = "Spot.Y"
     bin = "SpotID"
+  }else{
+    metadata$SpotID <- metadata[, bin]
+    metadata$Spot.X <- metadata[, bin.X]
+    metadata$Spot.Y <- metadata[, bin.Y]
   }
-  metadata$SpotID <- metadata[, bin]
+
   celltypes <- metadata %>% dplyr::count(CellType, SpotID) %>%
     dplyr::count(CellType) %>% filter(n>4) %>% pull(CellType)
   exclude <- setdiff(unique(metadata$CellType), celltypes)
@@ -100,7 +104,6 @@ GetSpatialMetacells <- function(normdata, metadata,
   metacell <- do.call(cbind, metacell_list)
   return(metacell)
 }
-
 
 GetKnnWeights <- function(metadata, k = 20, radius = 50,
                           X = "X", Y = "Y",

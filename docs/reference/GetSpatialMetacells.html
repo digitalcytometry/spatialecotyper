@@ -70,7 +70,7 @@ and generate metacell expression profiles for each cell type.</p>
 <span>  bin.X <span class="op">=</span> <span class="st">"Spot.X"</span>,</span>
 <span>  bin.Y <span class="op">=</span> <span class="st">"Spot.Y"</span>,</span>
 <span>  min.cells.per.region <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  ncores <span class="op">=</span> <span class="fl">1</span></span>
+<span>  ncores <span class="op">=</span> <span class="fl">4</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -126,7 +126,7 @@ annotations. The row names of the <code>metadata</code> must match the column na
 
 
 <dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
-<dd><p>Integer specifying the number of CPU cores to use for parallel processing (default: 1).</p></dd>
+<dd><p>Integer specifying the number of CPU cores to use for parallel processing (default: 4).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -138,6 +138,8 @@ annotations. The row names of the <code>metadata</code> must match the column na
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> data.table 1.16.0 using 5 threads (see ?getDTthreads).  </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Latest news: r-datatable.com</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/digitalcytometry/spatialecotyper/" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz"</span>,</span></span>

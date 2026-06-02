@@ -16,7 +16,7 @@ GetSpatialMetacells(
   bin.X = "Spot.X",
   bin.Y = "Spot.Y",
   min.cells.per.region = 1,
-  ncores = 1
+  ncores = 4
 )
 }
 \arguments{
@@ -45,7 +45,7 @@ annotations. The row names of the \code{metadata} must match the column names of
 
 \item{min.cells.per.region}{Integer specifying the minimum number of cells required in each spatial neighborhood to compute metacells.}
 
-\item{ncores}{Integer specifying the number of CPU cores to use for parallel processing (default: 1).}
+\item{ncores}{Integer specifying the number of CPU cores to use for parallel processing (default: 4).}
 }
 \value{
 A matrix containing the spatial metacell expression profiles, with rows representing individual genes
