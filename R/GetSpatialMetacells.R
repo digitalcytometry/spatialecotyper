@@ -13,11 +13,10 @@
 #' @param X Character string specifying the column name in \code{metadata} containing the X spatial coordinates.
 #' @param Y Character string specifying the column name in \code{metadata} containing the Y spatial coordinates.
 #' @param CellType Character string specifying the column name in \code{metadata} containing the cell type annotations.
+#' @param spotCoord A data frame containing the spatial coordinates (\code{X} and \code{Y}) of each spatial neighborhood,
+#' with neighborhood identifiers as row names.
 #' @param k Integer specifying the number of nearest spatial neighbors for constructing metacells.
 #' @param radius Numeric value specifying the radius (in units of spatial coordinates) within which neighboring cells are considered.
-#' @param bin Character string specifying the column name in \code{metadata} containing the spatial neighborhood identifier.
-#' @param bin.X Character string specifying the column name in \code{metadata} containing the X spatial coordinates of spatial neighborhoods.
-#' @param bin.Y Character string specifying the column name in \code{metadata} containing the Y spatial coordinates of spatial neighborhoods.
 #' @param min.cells.per.region Integer specifying the minimum number of cells required in each spatial neighborhood to compute metacells.
 #' @param ncores Integer specifying the number of CPU cores to use for parallel processing (default: 4).
 #'
@@ -36,27 +35,31 @@
 #' scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv",
 #'                       sep = "\t",header = TRUE, row.names = 1)
 #'
-#' # Construct spatial metacells from single-cell spatial data
-#' metacells <- GetSpatialMetacells(normdata = normdata, metadata = scmeta,
-#'                                  X = "X", Y = "Y", CellType = "CellType")
+#' # Construct spatial metacells around B cells
+#' snmeta = scmeta[scmeta$CellType=="B", c("X", "Y")]
+#' metacells <- GetSpatialMetacells(normdata = normdata,
+#'                                  metadata = scmeta,
+#'                                  X = "X", Y = "Y",
+#'                                  CellType = "CellType",
+#'                                  spotCoord = snmeta)
 #' head(metacells)
 #'
 #' @importFrom parallel detectCores mclapply
 #' @export
 #'
-GetSpatialMetacells <- function(normdata, metadata,
+GetSpatialMetacells <- function(normdata,
+                                metadata,
                                 X = "X", Y = "Y",
                                 CellType = "CellType",
+                                spotCoord = NULL,
                                 k = 20, radius = 50,
-                                bin = "SpotID",
-                                bin.X = "Spot.X",
-                                bin.Y = "Spot.Y",
                                 min.cells.per.region = 1,
                                 ncores = 4){
 
   if(!all(c(X, Y, CellType) %in% colnames(metadata))){
     missing_cols = setdiff(c(X, Y, CellType), colnames(metadata))
-    stop("Required metadata columns missing: ", paste0(missing_cols, collapse = ", "), ". Metadata must include X, Y, and CellType.")
+    stop("Required metadata columns missing: ", paste0(missing_cols, collapse = ", "),
+         ". Metadata must include X, Y, and CellType.")
   }
   metadata <- as.data.frame(metadata)
   metadata$CellType <- metadata[, CellType]
@@ -68,32 +71,26 @@ GetSpatialMetacells <- function(normdata, metadata,
     normdata <- as.matrix(normdata)
   }
 
-  if(!all(c(bin, bin.X, bin.Y) %in% colnames(metadata))){
+  if(is.null(spotCoord)){
     binsize = round(radius*1.4)
-    metadata$SpotID <- paste0("X", round(metadata[, X] / binsize),
-                              "_Y", round(metadata[, Y] / binsize))
-    metadata <- metadata %>% group_by(SpotID) %>%
-      mutate(Spot.X = median(X), Spot.Y = median(Y)) %>% as.data.frame
-    bin.X = "Spot.X"
-    bin.Y = "Spot.Y"
-    bin = "SpotID"
+    spotCoord = metadata
+    spotCoord$SpotID <- paste0("X", round(spotCoord[, X] / binsize),
+                              "_Y", round(spotCoord[, Y] / binsize))
+    spotCoord <- spotCoord %>% group_by(SpotID) %>%
+      summarize(X = median(X), Y = median(Y)) %>% as.data.frame
+    rownames(spotCoord) = spotCoord$SpotID
   }else{
-    metadata$SpotID <- metadata[, bin]
-    metadata$Spot.X <- metadata[, bin.X]
-    metadata$Spot.Y <- metadata[, bin.Y]
+    spotCoord$X <- spotCoord[, X]
+    spotCoord$Y <- spotCoord[, Y]
   }
 
-  celltypes <- metadata %>% dplyr::count(CellType, SpotID) %>%
-    dplyr::count(CellType) %>% filter(n>4) %>% pull(CellType)
-  exclude <- setdiff(unique(metadata$CellType), celltypes)
-  if(length(exclude)>0) message("Excluding cell types due to insufficient spatial metacells: ", paste0(exclude, collapse = ", "), ".")
-
+  celltypes = table(metadata$CellType)
+  celltypes = names(celltypes)[celltypes>k]
   metacell_list <- mclapply(celltypes, function(ct){
     tmpmeta <- metadata[metadata$CellType==ct, ]
     tmpgcm <- normdata[, metadata$CellType==ct]
-    weights <- GetKnnWeights(metadata = tmpmeta, k = k, radius = radius,
-                             X = X, Y = Y, bin = bin,
-                             bin.X = bin.X, bin.Y = bin.Y,
+    weights <- GetKnnWeights(scmeta = tmpmeta, spotCoord,
+                             k = k, radius = radius,
                              min.cells.per.region = min.cells.per.region)
     if(is.null(weights)) return(NULL)
     metacell <- tmpgcm %*% weights
@@ -101,29 +98,34 @@ GetSpatialMetacells <- function(normdata, metadata,
     colnames(metacell) <- paste0(colnames(weights), "..", ct)
     return(metacell)
   }, mc.cores = ncores)
+  names(metacell_list) = celltypes
+  metacell_list = metacell_list[lengths(metacell_list)>0]
+  ncols = unlist(lapply(metacell_list, ncol))
+  metacell_list = metacell_list[ncols>2]
+  exclude = setdiff(unique(metadata$CellType), names(metacell_list))
+  if(length(exclude)>0) message("Excluding cell types due to insufficient spatial metacells: ",
+                                paste0(exclude, collapse = ", "), ".")
   metacell <- do.call(cbind, metacell_list)
   return(metacell)
 }
 
-GetKnnWeights <- function(metadata, k = 20, radius = 50,
+GetKnnWeights <- function(scmeta, spotmeta,
+                          k = 20, radius = 50,
                           X = "X", Y = "Y",
-                          bin = "SpotID",
-                          bin.X = "Spot.X",
-                          bin.Y = "Spot.Y",
                           min.cells.per.region = 1){
   set.seed(39)
   require("Matrix")
   require("RANN")
   require("dplyr")
-  locs <- as.data.frame(metadata[, c(X, Y, bin, bin.X, bin.Y)])
-  colnames(locs) <- c("X", "Y", "SpotID", "Spot.X", "Spot.Y")
-  spot_locs <- locs %>% distinct(SpotID, .keep_all = TRUE) %>% as.data.frame
-  rownames(spot_locs) <- spot_locs$SpotID
+  locs <- as.data.frame(scmeta[, c(X, Y)])
+  colnames(locs) <- c("X", "Y")
+  spot_locs = as.data.frame(spotmeta[, c(X, Y)])
+  colnames(spot_locs) <- c("X", "Y")
   if(nrow(spot_locs)<3) return(NULL)
 
   ## sparse distance matrix
   if(k>nrow(locs)) k <- nrow(locs)-1
-  knn <- RANN::nn2(data = as.matrix(locs[, 1:2]), query = as.matrix(spot_locs[,4:5]), k = k)
+  knn <- RANN::nn2(data = as.matrix(locs), query = as.matrix(spot_locs), k = k)
   weights <- as(matrix(0, nrow = nrow(locs), ncol = nrow(spot_locs)), "sparseMatrix")
   rownames(weights) <- rownames(locs)
   colnames(weights) <- rownames(spot_locs)

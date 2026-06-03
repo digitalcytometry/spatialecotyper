@@ -268,18 +268,18 @@ groupings from the cell state names.</p>
 <span>                           test <span class="op">=</span> <span class="cn">TRUE</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Matrix of colocalization indices between all cell states</span></span></code></pre></div>
 <pre><code><span><span class="co">##                       NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B            3.01174416 -0.2102741 -2.2000525 -2.681307        -1.5647727</span></span>
-<span><span class="co">## NonSE_CD4T        -0.06220006  1.3188909 -0.5695535 -3.205059         2.3044942</span></span>
-<span><span class="co">## NonSE_CD8T        -2.06183422 -0.6006242  1.5412525 -2.834613        -0.6084004</span></span>
-<span><span class="co">## NonSE_DC          -2.55477282 -2.8741464 -2.6402594 -1.087720         1.5709218</span></span>
-<span><span class="co">## NonSE_Endothelial -1.52837741  2.4579076 -0.3516146  1.082650         1.4090700</span></span>
-<span><span class="co">## NonSE_Fibroblast  -7.95787513  3.9103787 -2.5321960  3.884304         4.0734886</span></span></code></pre>
+<span><span class="co">## NonSE_B            3.18843246 -0.1784760 -2.1737143 -2.756295        -1.9655429</span></span>
+<span><span class="co">## NonSE_CD4T        -0.01592805  1.2379209 -0.5288105 -2.875265         2.2267407</span></span>
+<span><span class="co">## NonSE_CD8T        -1.96295281 -0.5945103  1.2906665 -2.966688        -0.6493981</span></span>
+<span><span class="co">## NonSE_DC          -2.62075807 -2.4939184 -2.7167440 -1.083081         1.5084734</span></span>
+<span><span class="co">## NonSE_Endothelial -1.91782411  2.3176783 -0.4211655  1.156495         1.1230716</span></span>
+<span><span class="co">## NonSE_Fibroblast  -8.01381776  4.0348790 -2.3484170  4.246143         3.6656337</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span> <span class="co">## Vector of p-values for colocalization significance</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 1.522871e-01 9.554951e-07 9.689269e-03 1.530086e-03 2.024212e-13 3.044392e-02 </span></span>
+<span><span class="co">## 1.120871e-01 8.112740e-07 3.311359e-03 1.654475e-03 1.853847e-13 3.100424e-02 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 2.583275e-04 1.000966e-04 1.212722e-05 6.765377e-02</span></span></code></pre>
+<span><span class="co">## 2.404323e-04 9.967732e-05 1.353476e-05 7.299136e-02</span></span></code></pre>
 <p>You can visualize the results using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">

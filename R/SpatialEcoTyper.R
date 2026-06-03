@@ -104,38 +104,41 @@ SpatialEcoTyper <- function(normdata, metadata,
   if(!"Y" %in% colnames(metadata)) stop("Metadata must include both 'X' and 'Y' coordinate columns.")
 
   ncmeta = metadata
-  ncmeta$SpotID <- paste0("X", round(ncmeta$X / grid.size), "_Y", round(ncmeta$Y / grid.size))
+  ncmeta$SpotID <- paste0("X", round(ncmeta$X / grid.size),
+                          "_Y", round(ncmeta$Y / grid.size))
   ncmeta <- ncmeta %>% group_by(SpotID) %>%
-    mutate(Spot.X = median(X), Spot.Y = median(Y)) %>% as.data.frame
-  rownames(ncmeta) = rownames(metadata)
+    mutate(X = median(X), Y = median(Y)) %>% as.data.frame
+  ## spatial neighborhood level meta data
+  ncmeta <- ncmeta[, colnames(ncmeta)!="CID"]
+  ## If categorical, take the most frequent category, if numeric, take median.
+  tmpmedian <- ncmeta %>% group_by(SpotID, X, Y) %>%
+    summarise(across(where(is.numeric), median))
+  tmp_freq <- ncmeta %>% group_by(SpotID, X, Y) %>%
+    summarise(across(where(is.character) | where(is.factor) | where(is.logical), mostFrequent))
+  ncmeta <- merge(tmpmedian, tmp_freq, by = c("SpotID", "X", "Y"), all = TRUE) %>% as.data.frame
+  rownames(ncmeta) <- ncmeta$SpotID
 
   ### Get spatial meta cells for each cell type
   message(Sys.time(), " Construct spatial meta cells for each cell type")
   if(max(normdata)>50) normdata <- log1p(normdata+1)
-  ncem <- GetSpatialMetacells(normdata, ncmeta, k = k, radius = radius,
+  ncem <- GetSpatialMetacells(normdata, metadata,
+                              spotCoord = ncmeta,
+                              k = k, radius = radius,
                               ncores = ncores)
   ### Only interested in spatial regions include a certain cell type?
   if(!is.null(filter.region.by.celltypes)){
     spots = unlist(lapply(filter.region.by.celltypes, function(x){
-      idx = gsub(".*\\.+", "", colnames(ncem)) %in% filter.region.by.celltypes
+      idx = gsub(".*\\.+", "", colnames(ncem)) %in% x
       spots = gsub("\\.+.*", "", colnames(ncem)[idx])
       spots
     }))
     spots = table(spots)
     spots = names(spots)[spots==length(filter.region.by.celltypes)]
-    idx = gsub("\\.+.*", "", colnames(ncem))%in%spots
+    idx = gsub("\\.+.*", "", colnames(ncem)) %in% spots
     if(sum(idx)<20) stop("Fewer than 20 spatial neighborhoods contain ",
                          paste0(filter.region.by.celltypes, collapse = ", "))
     ncem = ncem[, idx]
   }
-  ## spatial neighborhood level meta data
-  ncmeta <- ncmeta[, colnames(ncmeta)!="CID"]
-  ## If categorical, take the most frequent category, if numeric, take median.
-  tmpmedian <- ncmeta %>% group_by(SpotID, Spot.X, Spot.Y) %>% summarise(across(where(is.numeric), median))
-  tmp_freq <- ncmeta %>% group_by(SpotID, Spot.X, Spot.Y) %>%
-    summarise(across(where(is.character) | where(is.factor) | where(is.logical), mostFrequent))
-  ncmeta <- merge(tmpmedian, tmp_freq, by = c("SpotID", "Spot.X", "Spot.Y"), all = TRUE) %>% as.data.frame
-  rownames(ncmeta) <- ncmeta$SpotID
 
   spots = unique(gsub("\\.+.*", "", colnames(ncem)))
   message("Total spatial neighborhoods: ", length(spots),

@@ -10,11 +10,9 @@ GetSpatialMetacells(
   X = "X",
   Y = "Y",
   CellType = "CellType",
+  spotCoord = NULL,
   k = 20,
   radius = 50,
-  bin = "SpotID",
-  bin.X = "Spot.X",
-  bin.Y = "Spot.Y",
   min.cells.per.region = 1,
   ncores = 4
 )
@@ -33,15 +31,12 @@ annotations. The row names of the \code{metadata} must match the column names of
 
 \item{CellType}{Character string specifying the column name in \code{metadata} containing the cell type annotations.}
 
+\item{spotCoord}{A data frame containing the spatial coordinates (\code{X} and \code{Y}) of each spatial neighborhood,
+with neighborhood identifiers as row names.}
+
 \item{k}{Integer specifying the number of nearest spatial neighbors for constructing metacells.}
 
 \item{radius}{Numeric value specifying the radius (in units of spatial coordinates) within which neighboring cells are considered.}
-
-\item{bin}{Character string specifying the column name in \code{metadata} containing the spatial neighborhood identifier.}
-
-\item{bin.X}{Character string specifying the column name in \code{metadata} containing the X spatial coordinates of spatial neighborhoods.}
-
-\item{bin.Y}{Character string specifying the column name in \code{metadata} containing the Y spatial coordinates of spatial neighborhoods.}
 
 \item{min.cells.per.region}{Integer specifying the minimum number of cells required in each spatial neighborhood to compute metacells.}
 
@@ -69,9 +64,13 @@ normdata = NormalizeData(scdata)
 scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv",
                       sep = "\t",header = TRUE, row.names = 1)
 
-# Construct spatial metacells from single-cell spatial data
-metacells <- GetSpatialMetacells(normdata = normdata, metadata = scmeta,
-                                 X = "X", Y = "Y", CellType = "CellType")
+# Construct spatial metacells around B cells
+snmeta = scmeta[scmeta$CellType=="B", c("X", "Y")]
+metacells <- GetSpatialMetacells(normdata = normdata,
+                                 metadata = scmeta,
+                                 X = "X", Y = "Y",
+                                 CellType = "CellType",
+                                 spotCoord = snmeta)
 head(metacells)
 
 }
