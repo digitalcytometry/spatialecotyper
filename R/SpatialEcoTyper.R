@@ -183,6 +183,7 @@ SpatialEcoTyper <- function(normdata, metadata,
                             "_min.features", min.features,
                             "_min.cts.per.region", min.cts.per.region,
                             "_iterations", iterations, "_grid.size", grid.size)
+  obj@meta.data = obj@meta.data[, !colnames(obj@meta.data)%in%c("orig.ident", "nCount_RNA", "nFeature_RNA")]
   metadata = AnnotateCells(metadata, obj, dropcell = dropcell)
   results <- list(obj = obj, metadata = metadata)
   if(!is.null(outprefix)){

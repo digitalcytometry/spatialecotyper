@@ -372,17 +372,17 @@ appended.</li>
 <span><span class="co">## HumanMelanomaPatient1__cell_3661 1742.939 -6374.851 Fibroblast  Fibroblasts</span></span>
 <span><span class="co">## HumanMelanomaPatient1__cell_3663 1921.683 -6383.309 Fibroblast  Fibroblasts</span></span>
 <span><span class="co">##                                  Region Dist2Interface  SE</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3655 Stroma      -883.1752 SE3</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3657 Stroma      -894.8463 SE6</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3658 Stroma      -904.1115 SE6</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3660 Stroma      -907.8909 SE6</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3661 Stroma      -874.2712 SE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3663 Stroma      -903.6559 SE3</span></span></code></pre>
+<span><span class="co">## HumanMelanomaPatient1__cell_3655 Stroma      -883.1752 SE4</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3657 Stroma      -894.8463 SE7</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3658 Stroma      -904.1115 SE7</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3660 Stroma      -907.8909 SE7</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3661 Stroma      -874.2712 SE0</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3663 Stroma      -903.6559 SE4</span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">$</span><span class="va">SE</span><span class="op">)</span> <span class="co">## The number of cells in each SE</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##  SE0  SE1  SE2  SE3  SE4  SE5  SE6  SE7 </span></span>
-<span><span class="co">## 4067 2480 6907 4297 3952 1232 1801 2244</span></span></code></pre>
+<span><span class="co">## 2952 3320 7006 4772 3077 1216 3344 1715</span></span></code></pre>
 <p><strong>Note</strong>: SpatialEcoTyper applies stringent quality
 control to exclude low-quality spatial neighborhoods, including those
 with insufficient detected genes (<code>min.features</code>), too few
@@ -531,20 +531,20 @@ SE-specific markers within each cell type.</p>
 <span><span class="va">degs</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">CellType</span><span class="op">==</span><span class="st">"CD4T"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">logFC</span><span class="op">&gt;</span><span class="fl">0</span> <span class="op">&amp;</span> <span class="va">padj</span><span class="op">&lt;</span><span class="fl">0.05</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">logFC</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   feature group  avgExpr     logFC statistic       auc         pval</span></span>
-<span><span class="co">## 1     FN1   SE0 1.806530 0.6629562 1183830.0 0.6591026 2.224246e-31</span></span>
-<span><span class="co">## 2     FOS   SE7 1.925442 0.6490756 1075864.0 0.7009114 5.421664e-41</span></span>
-<span><span class="co">## 3   DUSP1   SE1 1.395032 0.6396178   72771.5 0.7583841 9.937244e-06</span></span>
-<span><span class="co">## 4  CTNNB1   SE5 1.354324 0.6391400  214553.5 0.7757488 1.038918e-15</span></span>
-<span><span class="co">## 5     PKM   SE5 2.373492 0.5948805  214342.5 0.7749859 8.231702e-15</span></span>
-<span><span class="co">## 6     FOS   SE3 1.803486 0.4922663  608225.5 0.6483962 9.791820e-15</span></span>
+<pre><code><span><span class="co">##   feature group   avgExpr     logFC statistic       auc         pval</span></span>
+<span><span class="co">## 1  CTNNB1   SE5 1.4430236 0.7282956  222619.0 0.8033539 1.099665e-18</span></span>
+<span><span class="co">## 2     FOS   SE6 1.9681507 0.7117793 1289787.0 0.7165499 4.195123e-55</span></span>
+<span><span class="co">## 3     FN1   SE1 1.8704914 0.7071840  876265.5 0.6689581 4.663829e-26</span></span>
+<span><span class="co">## 4     PKM   SE5 2.4066543 0.6276660  217859.0 0.7861767 6.478136e-16</span></span>
+<span><span class="co">## 5   FOXP3   SE7 0.9651999 0.6073174   61573.5 0.7011170 1.113723e-04</span></span>
+<span><span class="co">## 6    CDK2   SE5 0.7398827 0.5866178  202262.5 0.7298944 1.772995e-20</span></span>
 <span><span class="co">##           padj    pct_in  pct_out CellType</span></span>
-<span><span class="co">## 1 4.581948e-29  83.26446 63.97198     CD4T</span></span>
-<span><span class="co">## 2 2.233725e-38  96.04938 79.36675     CD4T</span></span>
-<span><span class="co">## 3 4.094145e-03  86.95652 64.76510     CD4T</span></span>
-<span><span class="co">## 4 4.280343e-13  94.02985 68.19283     CD4T</span></span>
-<span><span class="co">## 5 1.695731e-12 100.00000 97.31105     CD4T</span></span>
-<span><span class="co">## 6 8.068460e-13  93.67089 80.21728     CD4T</span></span></code></pre>
+<span><span class="co">## 1 2.265311e-16  92.53731 68.23017     CD4T</span></span>
+<span><span class="co">## 2 1.728391e-52  96.28099 78.94595     CD4T</span></span>
+<span><span class="co">## 3 9.607489e-24  84.66077 64.54451     CD4T</span></span>
+<span><span class="co">## 4 8.896640e-14 100.00000 97.31625     CD4T</span></span>
+<span><span class="co">## 5 1.529513e-02  61.90476 31.58776     CD4T</span></span>
+<span><span class="co">## 6 7.304738e-18  58.20896 19.48743     CD4T</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="visualizing-the-expression-of-cell-state-markers">Visualizing the expression of cell state markers<a class="anchor" aria-label="anchor" href="#visualizing-the-expression-of-cell-state-markers"></a>
@@ -624,7 +624,7 @@ that might be causing problems.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">## Running under: macOS 26.4.1</span></span>
+<span><span class="co">## Running under: macOS 26.5.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>
@@ -642,7 +642,7 @@ that might be causing problems.</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
 <span><span class="co">##  [1] tidyr_1.3.1           presto_1.0.0          Rcpp_1.0.13          </span></span>
-<span><span class="co">##  [4] SpatialEcoTyper_1.0.2 NMF_0.28              Biobase_2.64.0       </span></span>
+<span><span class="co">##  [4] SpatialEcoTyper_1.0.3 NMF_0.28              Biobase_2.64.0       </span></span>
 <span><span class="co">##  [7] BiocGenerics_0.50.0   cluster_2.1.6         rngtools_1.5.2       </span></span>
 <span><span class="co">## [10] registry_0.5-1        RANN_2.6.2            Matrix_1.7-0         </span></span>
 <span><span class="co">## [13] R.utils_2.12.3        R.oo_1.26.0           R.methodsS3_1.8.2    </span></span>

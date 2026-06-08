@@ -33,12 +33,12 @@ AnnotateCells <- function(scmeta, obj, col = "SE", dropcell = TRUE){
   if(!all(c("X", "Y") %in% colnames(scmeta))){
     stop("Required columns missing from scmeta: ", paste0(c("X", "Y"), collapse = ", "), ". Please include X and Y coordinates.")
   }
-  if(!all(c("Spot.X", "Spot.Y") %in% colnames(obj@meta.data))){
-    stop("The provided Seurat object does not appear to be a valid SpatialEcoTyper result. It must include 'Spot.X' and 'Spot.Y' in obj@meta.data.")
+  if(!all(c("X", "Y") %in% colnames(obj@meta.data))){
+    stop("The provided Seurat object does not appear to be a valid SpatialEcoTyper result. It must include 'X' and 'Y' in obj@meta.data.")
   }
   radius = as.numeric(gsub("_.*", "", gsub(".*radius", "", obj@project.name)))
   ### One nearest neighbor
-  knn <- RANN::nn2(data = as.matrix(obj@meta.data[, c("Spot.X", "Spot.Y")]),
+  knn <- RANN::nn2(data = as.matrix(obj@meta.data[, c("X", "Y")]),
                    query = as.matrix(scmeta[, c("X", "Y")]), k = 1)
   scmeta[, col] <- obj@meta.data[knn$nn.idx[,1], col]
   scmeta[knn$nn.dists[,1]>radius, col] <- NA
