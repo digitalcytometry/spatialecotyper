@@ -158,13 +158,13 @@ samples profiled by Vizgen MERSCOPE.</p>
 <span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="va">scdata</span><span class="op">[</span>, <span class="va">cells</span><span class="op">]</span></span>
 <span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="va">scmeta</span><span class="op">[</span><span class="va">cells</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="st">"CellType"</span>, <span class="st">"SE"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                  Sample   CellType  SE</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3655   SKCM Fibroblast SE7</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3657   SKCM Fibroblast SE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3658   SKCM Fibroblast SE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3660   SKCM Fibroblast SE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3661   SKCM Fibroblast SE7</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3663   SKCM Fibroblast SE7</span></span></code></pre>
+<pre><code><span><span class="co">##                                  Sample   CellType     SE</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3655   SKCM Fibroblast NewSE7</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3657   SKCM Fibroblast NewSE1</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3658   SKCM Fibroblast NewSE1</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3660   SKCM Fibroblast NewSE1</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3661   SKCM Fibroblast NewSE7</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3663   SKCM Fibroblast NewSE7</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="leave-one-sample-out-cross-validation">Leave-one-sample-out cross validation<a class="anchor" aria-label="anchor" href="#leave-one-sample-out-cross-validation"></a>
@@ -237,11 +237,12 @@ across microenvironments.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">SE_cellstates</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">gg</span><span class="op">)</span></span>
 <span><span class="va">SE_cellstates</span> <span class="co">## SE-specific cell states</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1] "SE3_CD4T"        "SE3_CD8T"        "SE3_DC"          "SE3_Endothelial"</span></span>
-<span><span class="co">##  [5] "SE3_Fibroblast"  "SE3_Macrophage"  "SE3_NK"          "SE4_CD4T"       </span></span>
-<span><span class="co">##  [9] "SE4_CD8T"        "SE4_DC"          "SE7_CD8T"        "SE7_DC"         </span></span>
-<span><span class="co">## [13] "SE7_Endothelial" "SE7_Fibroblast"  "SE7_Macrophage"  "SE7_Plasma"     </span></span>
-<span><span class="co">## [17] "SE8_Endothelial"</span></span></code></pre>
+<pre><code><span><span class="co">##  [1] "NewSE3_CD4T"        "NewSE3_CD8T"        "NewSE3_DC"         </span></span>
+<span><span class="co">##  [4] "NewSE3_Endothelial" "NewSE3_Fibroblast"  "NewSE3_Macrophage" </span></span>
+<span><span class="co">##  [7] "NewSE3_NK"          "NewSE4_CD4T"        "NewSE4_CD8T"       </span></span>
+<span><span class="co">## [10] "NewSE4_DC"          "NewSE7_CD8T"        "NewSE7_DC"         </span></span>
+<span><span class="co">## [13] "NewSE7_Endothelial" "NewSE7_Fibroblast"  "NewSE7_Macrophage" </span></span>
+<span><span class="co">## [16] "NewSE7_Plasma"      "NewSE8_Endothelial"</span></span></code></pre>
 <p><strong>Note</strong>: This tutorial uses two small datasets for
 demonstration purposes only. As a result, the identified spatial
 ecotypes (SEs) and cell states may not generalize due to the limited
@@ -325,7 +326,7 @@ that might be causing problems.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">## Running under: macOS 26.4.1</span></span>
+<span><span class="co">## Running under: macOS 26.5.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>

@@ -73,7 +73,7 @@
 #' @export
 #'
 SpatialEcoTyper <- function(normdata, metadata,
-                            outprefix = "SE",
+                            outprefix = "Denovo",
                             radius = 50,
                             resolution = 0.5,
                             nfeatures = 300,
@@ -177,7 +177,7 @@ SpatialEcoTyper <- function(normdata, metadata,
     RunPCA(verbose = FALSE) %>% RunUMAP(dims = 1:10, verbose = FALSE) %>%
     FindNeighbors(dims = 1:10, verbose = FALSE) %>%
     FindClusters(resolution = resolution, verbose = FALSE)
-  obj$SE = paste0("SE", obj$seurat_clusters)
+  obj$SE = paste0("NewSE", as.numeric(as.character(obj$seurat_clusters)) + 1)
   obj@project.name = paste0(outprefix, "_radius", radius, "_nfeatures", nfeatures, "_npcs", npcs,
                             "_k.sn", k.sn, "_k", k, "_min.cells", min.cells,
                             "_min.features", min.features,

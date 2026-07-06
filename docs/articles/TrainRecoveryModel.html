@@ -160,13 +160,13 @@ data.</p>
 <span><span class="va">scdata</span> <span class="op">&lt;-</span> <span class="va">scdata</span><span class="op">[</span>, <span class="va">cells</span><span class="op">]</span></span>
 <span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="va">scmeta</span><span class="op">[</span><span class="va">cells</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="st">"CellType"</span>, <span class="st">"SE"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                  Sample   CellType  SE</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3655   SKCM Fibroblast SE7</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3657   SKCM Fibroblast SE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3658   SKCM Fibroblast SE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3660   SKCM Fibroblast SE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3661   SKCM Fibroblast SE7</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3663   SKCM Fibroblast SE7</span></span></code></pre>
+<pre><code><span><span class="co">##                                  Sample   CellType     SE</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3655   SKCM Fibroblast NewSE7</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3657   SKCM Fibroblast NewSE1</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3658   SKCM Fibroblast NewSE1</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3660   SKCM Fibroblast NewSE1</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3661   SKCM Fibroblast NewSE7</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3663   SKCM Fibroblast NewSE7</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="training">Training<a class="anchor" aria-label="anchor" href="#training"></a>
@@ -210,14 +210,14 @@ dataset using a simplified, built-in feature selection strategy.</p>
 <span><span class="co">## [6] "Fibroblast"  "Macrophage"  "NK"          "Plasma"</span></span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Ws</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                   SE7       SE3       SE4       SE8       SE6       SE1</span></span>
+<pre><code><span><span class="co">##                NewSE7    NewSE3    NewSE4    NewSE8    NewSE6    NewSE1</span></span>
 <span><span class="co">## FOXP3__pos  0.5004127 0.6673784 0.3470760 0.6797704 0.4872819 1.0338540</span></span>
 <span><span class="co">## CXCR4__neg  0.2357855 0.6635520 0.2114708 1.0913564 0.3938264 0.6861448</span></span>
 <span><span class="co">## ICAM3__neg  0.4751354 0.5266059 0.4683919 0.6175067 0.4831921 0.5026104</span></span>
 <span><span class="co">## STAT3__neg  0.4748124 0.5139846 0.4922895 0.6149234 0.5547521 0.5395274</span></span>
 <span><span class="co">## CCL5__neg   0.5197869 0.5246213 0.4483178 0.5640050 0.5111583 0.6468350</span></span>
 <span><span class="co">## BCL2L1__pos 0.5060547 0.5936575 0.4228397 0.6190426 0.5072450 0.4724431</span></span>
-<span><span class="co">##                   SE9       SE5       SE2</span></span>
+<span><span class="co">##                NewSE9    NewSE5    NewSE2</span></span>
 <span><span class="co">## FOXP3__pos  0.5133462 0.5363018 0.7832876</span></span>
 <span><span class="co">## CXCR4__neg  0.2967064 0.5645048 0.9790789</span></span>
 <span><span class="co">## ICAM3__neg  0.4267446 0.6177860 0.8404026</span></span>
@@ -246,7 +246,7 @@ example Slurm array script is provided below.</p>
 <span><span class="co"># ============================================================</span></span>
 <span></span>
 <span><span class="co"># ---- Parse command-line argument (task index) ----</span></span>
-<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/commandArgs.html" class="external-link">commandArgs</a></span><span class="op">(</span>trailingOnly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://henrikbengtsson.github.io/R.utils/reference/commandArgs.html" class="external-link">commandArgs</a></span><span class="op">(</span>trailingOnly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">args</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Usage: Rscript nmf_trainings.R &lt;task_id&gt;"</span><span class="op">)</span></span>
@@ -319,7 +319,7 @@ that might be causing problems.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">## Running under: macOS 26.4.1</span></span>
+<span><span class="co">## Running under: macOS 26.5.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>
@@ -336,7 +336,7 @@ that might be causing problems.</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] SpatialEcoTyper_1.0.2 RANN_2.6.2            Matrix_1.7-0         </span></span>
+<span><span class="co">##  [1] SpatialEcoTyper_1.0.3 RANN_2.6.2            Matrix_1.7-0         </span></span>
 <span><span class="co">##  [4] dplyr_1.1.4           data.table_1.16.0     NMF_0.28             </span></span>
 <span><span class="co">##  [7] Biobase_2.64.0        BiocGenerics_0.50.0   cluster_2.1.6        </span></span>
 <span><span class="co">## [10] rngtools_1.5.2        registry_0.5-1        Seurat_5.1.0         </span></span>

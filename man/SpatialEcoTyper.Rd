@@ -7,7 +7,7 @@
 SpatialEcoTyper(
   normdata,
   metadata,
-  outprefix = "SE",
+  outprefix = "Denovo",
   radius = 50,
   resolution = 0.5,
   nfeatures = 300,

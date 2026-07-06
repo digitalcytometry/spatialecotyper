@@ -267,19 +267,19 @@ groupings from the cell state names.</p>
 <span>                           radius <span class="op">=</span> <span class="fl">50</span>, nperm <span class="op">=</span> <span class="fl">100</span>, </span>
 <span>                           test <span class="op">=</span> <span class="cn">TRUE</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Matrix of colocalization indices between all cell states</span></span></code></pre></div>
-<pre><code><span><span class="co">##                       NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B            3.18843246 -0.1784760 -2.1737143 -2.756295        -1.9655429</span></span>
-<span><span class="co">## NonSE_CD4T        -0.01592805  1.2379209 -0.5288105 -2.875265         2.2267407</span></span>
-<span><span class="co">## NonSE_CD8T        -1.96295281 -0.5945103  1.2906665 -2.966688        -0.6493981</span></span>
-<span><span class="co">## NonSE_DC          -2.62075807 -2.4939184 -2.7167440 -1.083081         1.5084734</span></span>
-<span><span class="co">## NonSE_Endothelial -1.91782411  2.3176783 -0.4211655  1.156495         1.1230716</span></span>
-<span><span class="co">## NonSE_Fibroblast  -8.01381776  4.0348790 -2.3484170  4.246143         3.6656337</span></span></code></pre>
+<pre><code><span><span class="co">##                     NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC NonSE_Endothelial</span></span>
+<span><span class="co">## NonSE_B            3.253816 -0.3505007 -1.8086164 -2.632404        -1.7828710</span></span>
+<span><span class="co">## NonSE_CD4T        -0.138188  1.4703037 -0.4006679 -2.750424         1.9274886</span></span>
+<span><span class="co">## NonSE_CD8T        -1.647653 -0.4205784  1.4241810 -2.511908        -0.5119336</span></span>
+<span><span class="co">## NonSE_DC          -2.507992 -2.3209720 -2.3566101 -1.381524         1.3626262</span></span>
+<span><span class="co">## NonSE_Endothelial -1.738847  1.9895524 -0.2883835  0.961936         1.4622108</span></span>
+<span><span class="co">## NonSE_Fibroblast  -9.383085  3.7639556 -2.4126698  3.789657         4.1442528</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span> <span class="co">## Vector of p-values for colocalization significance</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 1.120871e-01 8.112740e-07 3.311359e-03 1.654475e-03 1.853847e-13 3.100424e-02 </span></span>
+<span><span class="co">## 1.454644e-01 1.101037e-06 1.019892e-02 2.015248e-03 2.527602e-13 3.830359e-02 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 2.404323e-04 9.967732e-05 1.353476e-05 7.299136e-02</span></span></code></pre>
+<span><span class="co">## 1.095381e-03 1.077820e-04 1.694254e-05 7.259204e-02</span></span></code></pre>
 <p>You can visualize the results using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -382,7 +382,7 @@ that might be causing problems.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">## Running under: macOS 26.4.1</span></span>
+<span><span class="co">## Running under: macOS 26.5.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>

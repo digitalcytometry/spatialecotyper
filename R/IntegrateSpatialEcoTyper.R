@@ -178,7 +178,7 @@ IntegrateSpatialEcoTyper <- function(SpatialEcoTyper_list,
   ses <- ses[rownames(gg)]
   ses <- factor(ses, levels = unique(ses))
   ann <- data.frame(Sample = gsub("\\.\\..*", "", rownames(gg)),
-                    SE = paste0("SE", as.integer(ses)),
+                    SE = paste0("NewSE", as.integer(ses)),
                     row.names = rownames(gg))
   if(!is.null(Region)){
     ann$Region = clustmetas[rownames(gg), Region]
