@@ -267,19 +267,26 @@ groupings from the cell state names.</p>
 <span>                           radius <span class="op">=</span> <span class="fl">50</span>, nperm <span class="op">=</span> <span class="fl">100</span>, </span>
 <span>                           test <span class="op">=</span> <span class="cn">TRUE</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Matrix of colocalization indices between all cell states</span></span></code></pre></div>
-<pre><code><span><span class="co">##                     NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B            3.253816 -0.3505007 -1.8086164 -2.632404        -1.7828710</span></span>
-<span><span class="co">## NonSE_CD4T        -0.138188  1.4703037 -0.4006679 -2.750424         1.9274886</span></span>
-<span><span class="co">## NonSE_CD8T        -1.647653 -0.4205784  1.4241810 -2.511908        -0.5119336</span></span>
-<span><span class="co">## NonSE_DC          -2.507992 -2.3209720 -2.3566101 -1.381524         1.3626262</span></span>
-<span><span class="co">## NonSE_Endothelial -1.738847  1.9895524 -0.2883835  0.961936         1.4622108</span></span>
-<span><span class="co">## NonSE_Fibroblast  -9.383085  3.7639556 -2.4126698  3.789657         4.1442528</span></span></code></pre>
+<pre><code><span><span class="co">##                       NonSE_B NonSE_CD4T NonSE_CD8T   NonSE_DC</span></span>
+<span><span class="co">## NonSE_B            3.78447319 -0.1547000  -2.278928 -3.1119886</span></span>
+<span><span class="co">## NonSE_CD4T         0.02292382  1.2579270  -0.478930 -2.9812598</span></span>
+<span><span class="co">## NonSE_CD8T        -2.12901951 -0.5503194   1.794967 -2.8652054</span></span>
+<span><span class="co">## NonSE_DC          -2.97195953 -2.5886097  -2.592335 -1.3747765</span></span>
+<span><span class="co">## NonSE_Endothelial -1.78234245  2.3366991  -0.315686  0.9800543</span></span>
+<span><span class="co">## NonSE_Fibroblast  -7.95618450  3.7950010  -2.561991  3.6814257</span></span>
+<span><span class="co">##                   NonSE_Endothelial</span></span>
+<span><span class="co">## NonSE_B                  -1.8055930</span></span>
+<span><span class="co">## NonSE_CD4T                2.1596509</span></span>
+<span><span class="co">## NonSE_CD8T               -0.5037391</span></span>
+<span><span class="co">## NonSE_DC                  1.3827064</span></span>
+<span><span class="co">## NonSE_Endothelial         1.1242856</span></span>
+<span><span class="co">## NonSE_Fibroblast          3.1035788</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span> <span class="co">## Vector of p-values for colocalization significance</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 1.454644e-01 1.101037e-06 1.019892e-02 2.015248e-03 2.527602e-13 3.830359e-02 </span></span>
+<span><span class="co">## 1.284426e-01 1.143052e-06 9.112515e-03 1.172521e-03 1.332144e-13 1.935048e-02 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 1.095381e-03 1.077820e-04 1.694254e-05 7.259204e-02</span></span></code></pre>
+<span><span class="co">## 6.761329e-04 1.227044e-04 1.333532e-05 4.984573e-02</span></span></code></pre>
 <p>You can visualize the results using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
