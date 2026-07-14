@@ -11,7 +11,9 @@
 #' Default is 1000.
 #'
 #' @return A named numeric vector of two-sided P-values for each SE,
-#' representing the significance of within-SE co-association.
+#' representing the significance of within-SE co-association. The signed
+#' Z-scores underlying these P-values are attached as the `"Zscore"`
+#' attribute (`attr(result, "Zscore")`).
 #'
 #' @export
 CoassociationTest = function(mat, nperm = 1000){
@@ -42,6 +44,12 @@ CoassociationTest = function(mat, nperm = 1000){
   Zscores = (Obs - PermAvg) / PermSD
   Zscores[is.na(Zscores)] = 0
   Pvals = pnorm(abs(Zscores), lower.tail = FALSE) * 2
+
+  # Preserve the signed Z-scores alongside the (sign-less) two-sided P-values,
+  # so downstream meta-analysis can recover both the correct magnitude and the
+  # direction of the effect instead of having to reverse-engineer a Z-score
+  # from the P-value alone.
+  attr(Pvals, "Zscore") <- Zscores
 
   return(Pvals)
 }

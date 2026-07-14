@@ -27,8 +27,8 @@
 #'
 #' @keywords internal
 PartitionTissue <- function(meta, nrow = 2, ncol = 2, X = "X", Y = "Y"){
-  xlen = max(meta[, X]) - min(meta[, X])
-  ylen = max(meta[, Y]) - min(meta[, Y])
+  xlen = (max(meta[, X]) - min(meta[, X])) * 1.000001
+  ylen = (max(meta[, Y]) - min(meta[, Y])) * 1.000001
   row_width = xlen / nrow
   col_width = ylen / ncol
   row_group = floor((meta[, X] - min(meta[, X])) / row_width)

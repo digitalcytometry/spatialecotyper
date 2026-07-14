@@ -4,14 +4,11 @@
 \alias{getSN}
 \title{Construct Similarity Network}
 \usage{
-getSN(emb, npcs = 20, k = 50)
+getSN(emb, k = 50)
 }
 \arguments{
 \item{emb}{A matrix contains the embedding, with rows correspond to principal
 components (PCs) or features, and columns correspond to spatial neighborhoods.}
-
-\item{npcs}{An integer specifying the number of principal components or features
-for the analysis. Default is 20.}
 
 \item{k}{An integer specifying the number of nearest neighbors to consider when constructing the KNN graph.
 Default is 50.}

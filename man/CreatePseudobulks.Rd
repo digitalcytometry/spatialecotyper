@@ -37,6 +37,7 @@ This function generates pseudobulk samples by aggregating single-cell transcript
 }
 \examples{
 library(SpatialEcoTyper)
+library(data.table)
 counts <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv",
                 sep = "\t", header = TRUE, data.table = FALSE)
 rownames(counts) = counts[, 1]

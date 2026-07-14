@@ -11,7 +11,7 @@
 #' @param nmf_ranks Integer or a vector specifying the number of clusters (10 by default).
 #' When an integer vector is supplied, the function will test all supplied numbers and
 #' select the optimal number, which takes time.
-#' @param nrun.per.rank An integer specifying the the number of runs per rank for NMF (default: 30).
+#' @param nrun.per.rank An integer specifying the number of runs per rank for NMF (default: 30).
 #' @param min.coph Numeric specifying the minimum cophenetic coefficient required for a rank to be optimal.
 #' @param nfeatures An integer specifying the maximum number of top variable genes to select for each cell type.
 #' @param min.features An integer specifying the minimum number of shared features (genes) required across samples.
@@ -31,8 +31,7 @@
 #' @export
 #'
 #' @importFrom parallel mclapply
-#' @import Seurat
-#' @import ComplexHeatmap
+#' @import ComplexHeatmap Seurat dplyr tidyr
 #'
 IntegrateSpatialEcoTyper <- function(SpatialEcoTyper_list,
                                      data_list,
@@ -49,7 +48,6 @@ IntegrateSpatialEcoTyper <- function(SpatialEcoTyper_list,
                                      minibatch = 5000,
                                      ncores = 4,
                                      seed = 1){
-
   dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
   if(length(SpatialEcoTyper_list)!=length(data_list)){
     stop("SpatialEcoTyper_list and data_list must have the same length.")

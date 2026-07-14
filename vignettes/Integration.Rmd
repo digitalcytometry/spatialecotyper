@@ -25,6 +25,21 @@ The analysis is performed in two stages:
 -   **Determination of sample-level spatial clusters** (Steps 1-4): Spatial neighborhood clusters from each single-cell ST sample can be identified using the [SpatialEcoTyper](../reference/SpatialEcoTyper.html) function. Check [Tutorial 1](SingleSample.html) for details.
 -   **Identification of conserved spatial ecotypes** (Steps 5-9): Spatial neighborhood clusters discovered from individual single-cell ST samples are represented by gene expression profiles (GEPs) of their associated cell states, and clusters with similar GEPs are aggregated across samples to identify conserved SEs.
 
+
+# Input requirement
+
+All single-cell-scale ST datasets can be used to discover spatial ecotypes. In our study ([Zhang et al., Nature](https://www.nature.com/articles/s41586-026-10452-4)), we applied SpatialEcoTyper to both MERSCOPE and Xenium datasets and identified highly consistent pan-cancer spatial ecotypes across the two platforms.
+
+Single-cell ST gene expression profiles are inherently affected by transcript spillover. In our study, we addressed this issue by constructing a whitelist of genes expressed in each cell type using a pan-cancer scRNA-seq atlas and removing transcripts that were not included in the corresponding cell-type whitelist. Alternatively, computational methods such as [SPLIT](https://github.com/bdsc-tds/SPLIT) have been developed to decontaminate single-cell ST data by correcting transcript spillover. We recommend applying either a whitelist-based filtering strategy or a dedicated decontamination method before SE discovery, as improving data quality can substantially enhance the robustness and biological interpretability of the discovered spatial ecotypes.
+
+# Example data
+
+For the demonstration of the integrative analysis of multiple single-cell ST samples, we have selected a subset of regions from a melanoma sample and a colon cancer sample profiled by Vizgen MERSCOPE. 
+
+The melanoma sample includes spatial expression data for 500 genes across 27,907 cells, while the colon cancer sample contains data for 38,080 cells. In both samples, cells were categorized into ten distinct cell types: B cells, CD4 T cells, CD8 T cells, NK cells, plasma cells, macrophages, dendritic cells (DC), fibroblasts, endothelial cells, and cancer cells. Cancer cells are excluded from this demonstration to reduce processing time.
+
+All cells are grouped into tumor (tumor and inner margin) and stroma regions (stroma and outer margin) based on the density of cancer cells, as described in the [CytoSPACE paper](https://www.nature.com/articles/s41587-023-01697-9). The inner and outer margins are defined as regions extending 250 μm inside and outside the tumor boundaries, respectively.
+
 __Load required packages for this vignette__
 
 ```{r lib}
@@ -38,15 +53,26 @@ suppressPackageStartupMessages(library(ComplexHeatmap))
 library(SpatialEcoTyper)
 ```
 
-# Loading data
+# Start with SpatialEcoTyper results from individual single-cell ST samples
 
-For the demonstration of the integrative analysis of multiple single-cell ST samples, we have selected a subset of regions from a melanoma sample and a colon cancer sample profiled by Vizgen MERSCOPE. 
+Multiple samples can be integrated to identify conserved spatial ecotypes using [IntegrateSpatialEcoTyper](../reference/IntegrateSpatialEcoTyper.html). Before integration, each sample must be analyzed individually following [Tutorial 1](SingleSample.html) using identical analysis settings. To ensure robust integration, cell types included in the analysis should present in more than 50% of the samples.
 
-The melanoma sample includes spatial expression data for 500 genes across 27,907 cells, while the colon cancer sample contains data for 38,080 cells. In both samples, cells were categorized into ten distinct cell types: B cells, CD4 T cells, CD8 T cells, NK cells, plasma cells, macrophages, dendritic cells (DC), fibroblasts, endothelial cells, and cancer cells. Cancer cells are excluded from this demonstration to reduce processing time.
+This [IntegrateSpatialEcoTyper](../reference/IntegrateSpatialEcoTyper.html) function requires two input data objects per sample:
 
-All cells are grouped into four spatial regions: tumor, inner margin, outer margin, and stroma. The tumor (tumor and inner margin) and stroma regions (stroma. and outer margin) are defined based on the density of cancer cells, as described in the [CytoSPACE paper](https://www.nature.com/articles/s41587-023-01697-9). The inner and outer margins are defined as regions extending 250 μm inside and outside the tumor boundaries, respectively.
+* __Gene expression matrix__: a numeric matrix with genes as rows and cells as columns. The data should be already analyzed with [SpatialEcoTyper](../reference/SpatialEcoTyper.html).
 
-First, download the demo data and load them into R. You can use `read.table` for small files or `data.table::fread` for larger files.
+* __[SpatialEcoTyper](../reference/SpatialEcoTyper.html) output__: a list object obtained from single-sample analysis with [SpatialEcoTyper](../reference/SpatialEcoTyper.html). If you don't have the results yet, please follow [Tutorial 1](SingleSample.html) for the analysis.
+
+
+Load the demo data
+
+```{r downloadse}
+url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=CRC2_subset_SpatialEcoTyper_results.rds"
+download.file(url, destfile = "CRC2_subset_SpatialEcoTyper_results.rds", mode = "wb")
+url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_SpatialEcoTyper_results.rds"
+download.file(url, destfile = "Melanoma1_subset_SpatialEcoTyper_results.rds", mode = "wb")
+```
+
 
 ```{r loaddata}
 # Load single-cell gene expression data. Rows represent gene names and columns represent cell IDs
@@ -65,28 +91,15 @@ head(scdata1[,1:5])
 ## Normalize the data as needed
 normdata1 <- NormalizeData(scdata1)
 normdata2 <- NormalizeData(scdata2)
-```
-</details>
 
-
-# Start with SpatialEcoTyper results from individual single-cell ST samples
-
-The [IntegrateSpatialEcoTyper](../reference/IntegrateSpatialEcoTyper.html) function provides a convenient way to integrate Spatial EcoTyper results across samples or cancer types to identify conserved spatial ecotypes. This function assumes that [SpatialEcoTyper](../reference/SpatialEcoTyper.html) has been run on each sample using consistent settings. Before proceeding, please review the full manual of the `IntegrateSpatialEcoTyper` function [here](../reference/IntegrateSpatialEcoTyper.html).
-
-```{r downloadse}
-url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=CRC2_subset_SpatialEcoTyper_results.rds"
-download.file(url, destfile = "CRC2_subset_SpatialEcoTyper_results.rds", mode = "wb")
-url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_SpatialEcoTyper_results.rds"
-download.file(url, destfile = "Melanoma1_subset_SpatialEcoTyper_results.rds", mode = "wb")
+data_list <- list(SKCM = normdata1, CRC = normdata2)
+SpatialEcoTyper_results_list <- list(SKCM = readRDS("Melanoma1_subset_SpatialEcoTyper_results.rds"),
+                             CRC = readRDS("CRC2_subset_SpatialEcoTyper_results.rds"))
 ```
 
-**Note**: If you are using Seurat v4 (rather than Seurat v5), please follow [Tutorial 1](SingleSample.html) to generate Spatial EcoTyper results for the two demo samples before testing the scripts below.
 
 ```{r integrate, eval = TRUE}
-data_list <- list(SKCM = normdata1, CRC = normdata2)
-SpatialEcoTyper_list <- list(SKCM = readRDS("Melanoma1_subset_SpatialEcoTyper_results.rds"),
-                             CRC = readRDS("CRC2_subset_SpatialEcoTyper_results.rds"))
-IntegrateSpatialEcoTyper(SpatialEcoTyper_list, data_list, 
+IntegrateSpatialEcoTyper(SpatialEcoTyper_results_list, data_list, 
                          outdir = "SpatialEcoTyper_results/",
                          normalization.method = "None", 
                          nfeatures = 300, # Number of top variable genes to use
@@ -95,17 +108,21 @@ IntegrateSpatialEcoTyper(SpatialEcoTyper_list, data_list,
                          ncores = 16)
 ```
 
-__Choosing Louvain clustering resolution__: Louvain clustering was applied to group spatial neighborhoods into clusters within each sample, which improves computational efficiency for integrative analysis of samples. We recommend using as high a clustering resolution as feasible (30 or higher) to better preserve fine-grained biological structure and ensure robustness to parameter variation.
-
 __Choosing the optimal number of SEs__: NMF clustering is used to identify conserved spatial ecotypes across samples. To determine the optimal number of SEs, users can specify the `nmf_ranks` and `nrun.per.rank` arguments to evaluate multiple candidate ranks, each with a defined number of runs (we recommend ≥30 runs per rank to ensure robustness, as NMF uses random initialization). For each rank, the cophenetic coefficient is computed to assess clustering stability. This metric ranges from 0 to 1, with higher values indicating greater stability. Typically, the cophenetic coefficient exhibits a multi-modal pattern across ranks, and we selected the optimal number of SEs as the highest rank at which the cophenetic coefficient exceeds 0.95 (controlled by the `min.coph` argument) and is followed by the largest subsequent decrease, indicating a transition to less stable solutions.
 
 __Balancing predefined regions__: If predefined tissue regions are available (e.g., pathologist annotations of tumor and adjacent stromal regions), you can use the `Region` and `downsample.by.region` argument to balance spatial neighborhoods across regions. When enabled, the method downsamples neighborhoods within each region to ensure comparable representation and to weight regions equally during integration.
 
 # Start with raw single-cell ST data from multiple samples
 
-The [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html) function provides an end-to-end pipeline for the integrative analysis of single-cell spatial transcriptomics data across multiple samples. While this streamlined workflow is convenient, it can be computationally intensive, as single-sample Spatial EcoTyper analysis is the most memory- and time-demanding step. Therefore, we recommend first analyzing each sample individually using the [SpatialEcoTyper](../reference/SpatialEcoTyper.html) function, as demonstrated in [Tutorial 1](SingleSample.html). The resulting outputs can then be integrated across samples using the [IntegrateSpatialEcoTyper](../reference/IntegrateSpatialEcoTyper.html) function, as described above.
+The [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html) function provides an end-to-end pipeline for the integrative analysis of single-cell spatial transcriptomics data across multiple samples. While this streamlined workflow is convenient, it can be computationally intensive. Therefore, we recommend first analyzing each sample individually using the [SpatialEcoTyper](../reference/SpatialEcoTyper.html) function, as demonstrated in [Tutorial 1](SingleSample.html). The resulting outputs can then be integrated across samples using the [IntegrateSpatialEcoTyper](../reference/IntegrateSpatialEcoTyper.html) function, as described above.
 
-First, load single-cell gene expression data and meta data.
+The [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html) requires two input data objects per sample:
+
+* __Gene expression matrix__: a numeric matrix with genes as rows and cells as columns.
+* __Metadata__: a data frame containing at least three columns: "X" (x-coordinate), "Y" (y-coordinate), and "CellType" (cell type annotation). Row names must match the column names (cell IDs) in the expression matrix.
+
+
+First, load single-cell gene expression data and meta data for the two example samples.
 ```{r loaddata2}
 # Load single-cell gene expression data. Rows represent gene names and columns represent cell IDs
 scdata1 <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz",
@@ -139,13 +156,15 @@ normdata1 <- NormalizeData(scdata1)
 normdata2 <- NormalizeData(scdata2)
 ```
 
-Then, you can submit the job and wait.
+You can then submit the job. As this step is computationally intensive, refer to the section below for the recommended memory allocation and estimated runtime requirements.
+
 ```{r multi, eval=FALSE}
 data_list <- list(SKCM = normdata1, CRC = normdata2)
 metadata_list <- list(SKCM = scmeta1, CRC = scmeta2)
 MultiSpatialEcoTyper(data_list, metadata_list, 
                      normalization.method = "None", # Normalization method
-                     nmf_ranks = 10,  # Number of clusters
+                     nfeatures = 300,
+                     nmf_ranks = 4:15,  # Number of clusters
                      nrun.per.rank = 30,  # Recommend 30 or higher for robust results
                      ncores = 2)
 ```
@@ -350,9 +369,11 @@ ggplot(gg, aes(SE, Dist2Interface)) + geom_boxplot() +
 
 # Identification of cell-type-specific SE markers
 
-You can identify cell-type-specific SE markers by differential expression analysis using the [`presto` package](https://github.com/immunogenomics/presto). Below is an example of how to identify fibroblast-specific markers for each SE.
+Cell-type-specific SE markers can be identified by differential expression analysis using the [`presto` package](https://github.com/immunogenomics/presto). In our study ([Zhang et al., Nature](https://www.nature.com/articles/s41586-026-10452-4)), we extended marker discovery to the whole transcriptome by developing an SE recovery model (see [Tutorial 3](TrainRecoveryModel.html) and [Tutorial 4](Discovery_SE_CellStates.html)). This model was applied to annotate SEs in pan-cancer scRNA-seq datasets (see [Tutorial 6](Recovery_scRNA.html)), after which differential expression analysis was performed on the annotated scRNA-seq data to identify both cell-type-specific and consensus SE markers.
 
 ## DE analysis within each sample
+
+Here is an example of how to identify fibroblast-specific markers for each SE.
 
 ```{r deg}
 require("presto")

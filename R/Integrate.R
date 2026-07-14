@@ -38,29 +38,29 @@ Integrate <- function(avgexprs, Region = NULL,
         tmpdf$ID
       }))
       idx = match(ids, colnames(avgexprs))
-      avgexprs = avgexprs[, idx]
+      avgexprs = avgexprs[, idx, drop = FALSE]
       Region = Region[idx]
     }
   }
   celltypes <- gsub("\\.\\..*", "", rownames(avgexprs))
   cors_rank = mclapply(unique(celltypes), function(ct){
-    tmpdat = avgexprs[celltypes==ct, ]
+    tmpdat = avgexprs[celltypes==ct, , drop = FALSE]
     if(nrow(tmpdat)<=min.features) return(NULL)
-    tmpdat = tmpdat[, colSums(!is.na(tmpdat))>min.features]
-    tmpdat = tmpdat[, colSums(tmpdat!=0, na.rm = TRUE)>min.features]
+    tmpdat = tmpdat[, colSums(!is.na(tmpdat))>min.features, drop = FALSE]
+    tmpdat = tmpdat[, colSums(tmpdat!=0, na.rm = TRUE)>min.features, drop = FALSE]
     # Select variable genes
     samples = gsub("\\.\\..*", "", colnames(tmpdat))
     if(length(table(samples)) < 2 | min(table(samples))<3) return(NULL)
-    vars = mclapply(unique(samples), function(ss){
-      apply(tmpdat[, samples==ss], 1, var, na.rm = TRUE)
+    vars = lapply(unique(samples), function(ss){
+      apply(tmpdat[, samples==ss, drop = FALSE], 1, var, na.rm = TRUE)
     })
     vars = do.call(cbind, vars)
-    vars = vars[apply(vars, 1, min)>0, ]
+    vars = vars[apply(vars, 1, min)>0, , drop = FALSE]
     var.ranks = apply(-vars, 2, rank)
     vars = rownames(var.ranks)[order(rowMeans(log(var.ranks)))]
     vars = vars[1:min(length(vars), nfeatures)]
     if(length(vars) < min.features) return(NULL)
-    tmpdat = tmpdat[match(vars, rownames(tmpdat)), ]
+    tmpdat = tmpdat[match(vars, rownames(tmpdat)), , drop = FALSE]
     tmpcor = suppressWarnings(cor(as.matrix(tmpdat), method = "pearson"))
     tmpcor[is.na(tmpcor)] = 0
     # tmpcor[tmpcor<0] = 0
@@ -74,13 +74,13 @@ Integrate <- function(avgexprs, Region = NULL,
     }
 
     samples = gsub("\\.\\..*", "", rownames(tmpcor))
-    tmpcor = mclapply(unique(samples), function(ss){
-      sscor = apply(tmpcor[samples==ss, ], 2, rank)
+    tmpcor = lapply(unique(samples), function(ss){
+      sscor = apply(tmpcor[samples==ss, , drop = FALSE], 2, rank)
       sscor = t(t(sscor) / colSums(sscor))
       sscor
-    }, mc.cores = ncores)
+    })
     tmpcor = do.call(rbind, tmpcor)
-    tmpcor = tmpcor[, rownames(tmpcor)]
+    tmpcor = tmpcor[, rownames(tmpcor), drop = FALSE]
     tmpcor = tmpcor + t(tmpcor)
     return(tmpcor)
   }, mc.cores = ncores)

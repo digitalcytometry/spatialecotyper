@@ -73,18 +73,18 @@ LoocvPredict = function(scdata, scmeta,
                               Sample = "Split",
                               seed = seeds[ii], ...)
         preds = RecoverSE(dat = testDat,
-                          celltypes = testMeta$CellType,
+                          celltypes = testMeta[, CellType],
                           ncell.per.run = 5000,
                           Ws = Ws, min.score = 0,
                           scale = scale)
       }else{
-        suppressMessages(Ws = NMFGenerateWList(trainDat, trainMeta,
+        Ws = suppressMessages(NMFGenerateWList(trainDat, trainMeta,
                                                CellType = CellType,
                                                SE = SE, scale = scale,
                                                Sample = "Split",
                                                seed = seeds[ii], ...))
-        suppressMessages(preds = RecoverSE(dat = testDat,
-                                           celltypes = testMeta$CellType,
+        preds = suppressMessages(RecoverSE(dat = testDat,
+                                           celltypes = testMeta[, CellType],
                                            ncell.per.run = 5000,
                                            Ws = Ws, min.score = 0,
                                            scale = scale))
@@ -98,7 +98,6 @@ LoocvPredict = function(scdata, scmeta,
   preds = preds %>% count(CID, SE) %>% arrange(desc(n)) %>%
     distinct(CID, .keep_all = TRUE)
   scmeta$cvPred = preds$SE[match(colnames(scdata), preds$CID)]
-  scmeta
   return(scmeta)
 }
 

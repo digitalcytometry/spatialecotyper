@@ -95,6 +95,7 @@ reference:
   - CoassociationTest
   - ComputeNormalizedMoranI
   - AverageMarkerExpression
+  - ColocalizationMetaAnalysis
 
 - title: Clustering Analysis
   desc:  Clustering via NMF.
@@ -119,9 +120,13 @@ reference:
   - fillspots
   - mostFrequent
   - InferNCells
+  - aggregateByWeights
+  - buildKNNWeights
+  - SmoothSEAbundances
+  - ComputeSEAbundanceBySN
 
 news:
   releases:
-  - text: "Version 1.0.3"
+  - text: "Version 1.0.4"
     href:
 

@@ -17,7 +17,7 @@ GetPCList(
 \item{mergedncem}{A matrix of cell-type-specific gene expression data, with rows
 representing genes and columns representing spatial neighborhoods by cell type.}
 
-\item{min.cells}{Integer, minimum number of non-zero counts required per gene to retain the gene in the analysis. Default is 3.}
+\item{min.cells}{Integer, minimum number of non-zero expression required to retain a gene in the analysis. Default is 3.}
 
 \item{min.features}{Integer, minimum number of features (genes) required per
 spatial neighborhood to retain the neighborhood in the analysis. Default is 5.}

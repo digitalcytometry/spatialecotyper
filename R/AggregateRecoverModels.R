@@ -41,8 +41,8 @@
 #' })
 #' aggregated_models <- AggregateRecoverModels(
 #'   model_list = Ws_list,
-#'   loading_margin = 0.01,
-#'   min_model_fraction = 0.5
+#'   delta.threshold = 0.01,
+#'   min.model.fraction = 0.5
 #' )
 #' }
 #'
@@ -68,8 +68,8 @@ AggregateRecoverModels = function(model_list,
     })
     gene_df = do.call(rbind, gene_df)
     gene_df = gene_df %>% count(SE, Gene) %>%
-      mutate(frac = n / max(n)) %>% filter(frac>min.model.fraction)
-    features = c(paste0(gene_df$Gene, "__pos"), paste0(gene_df$Gene, "__neg"))
+      mutate(frac = n / length(model_list)) %>% filter(frac>min.model.fraction)
+    features = unique(c(paste0(gene_df$Gene, "__pos"), paste0(gene_df$Gene, "__neg")))
     ses = unique(unlist(lapply(Ws, colnames)))
     Ws = lapply(Ws, function(xx){
       xx = xx[match(features, rownames(xx)), match(ses, colnames(xx))]

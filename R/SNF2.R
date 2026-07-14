@@ -22,6 +22,7 @@
 SNF2 <- function(Wall, K = 10, t = 10,
                  minibatch = 5000, ncores = 4,
                  verbose = FALSE){ #
+  if(length(Wall) < 2) stop(">=2 similarity matrices are required.")
   require("Matrix")
   # Similarity Network Fusion takes multiple views of a network (Wall) and
   # fuses them together to create a overall affinity matrix.
@@ -51,6 +52,7 @@ SNF2 <- function(Wall, K = 10, t = 10,
   }
 
   LW <- length(Wall)
+  if(LW < 2) stop(">=2 similarity matrices are required.")
 
   #Normalization method for affinity matrices
   normalize <- function(X){

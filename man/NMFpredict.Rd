@@ -35,7 +35,8 @@ This function uses pretrained NMF models to recover cell states / spatial ecotyp
 It takes a factorization matrix W representing a pretrained NMF model and a numeric gene expression matrix.
 }
 \examples{
-
+library(data.table)
+library(SpatialEcoTyper)
 bulkdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv",
                   sep = "\t", header = TRUE, data.table = FALSE)
 rownames(bulkdata) = bulkdata[, 1]

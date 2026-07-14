@@ -17,7 +17,6 @@ SpatialView(
   coord.fix = FALSE,
   highlight.cells = NULL,
   control.cells = NULL,
-  ncol = 3,
   bg.downsample = 2000,
   bg.color = "gray80",
   bg.size = 0.5,
@@ -31,7 +30,7 @@ SpatialView(
 
 \item{X}{A character specifying the spatial coordinate of x-axis.}
 
-\item{Y}{A character specifying the the spatial coordinate of y-axis.}
+\item{Y}{A character specifying the spatial coordinate of y-axis.}
 
 \item{pt.shape}{Point shape for plotting}
 
@@ -42,6 +41,8 @@ SpatialView(
 \item{jitter}{A boolean specifying whether add jitters to the cells.}
 
 \item{slot}{The slot in Seurat object to pull feature from.}
+
+\item{coord.fix}{A boolean specifying whether to fix the aspect ratio of coordinate system}
 
 \item{highlight.cells}{A vector specifying the cells for highlighting.}
 

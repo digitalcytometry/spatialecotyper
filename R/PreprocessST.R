@@ -22,7 +22,7 @@
 #'
 #' @return A list containing two elements:
 #' \describe{
-#'   \item{expdat}{A filtered matrix of gene expression data, converted to a sparse matrix}
+#'   \item{expdat}{A filtered (sparse) matrix of gene expression data}
 #'   \item{metadata}{A filtered data frame of metadata, aligned with the filtered gene expression data, including reformatted spatial coordinates.}
 #' }
 #'
@@ -51,10 +51,10 @@ PreprocessST <- function(expdat, metadata,
   metadata <- metadata[match(colnames(expdat), rownames(metadata)), ]
   tmp <- sum(rowSums(expdat>0)<min.cells)
   if(tmp>0) message(Sys.time(), " Remove ", tmp, " genes expressed in fewer than ", min.cells, " cells")
-  expdat <- expdat[rowSums(expdat>0)>=min.cells, ]
+  expdat <- expdat[rowSums(expdat>0)>=min.cells, , drop = FALSE]
   tmp <- sum(colSums(expdat>0)<min.features)
   if(tmp>0) message(Sys.time(), " Remove ", tmp, " cells with fewer than ", min.features, " features")
-  expdat <- expdat[, colSums(expdat>0)>=min.features]
+  expdat <- expdat[, colSums(expdat>0)>=min.features, drop = FALSE]
 
   if(ncol(expdat)>5000) expdat <- as(expdat, "sparseMatrix")
   metadata$X <- metadata[, X]

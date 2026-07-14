@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,19 +98,29 @@ single-cell ST samples are represented by gene expression profiles
 (GEPs) of their associated cell states, and clusters with similar GEPs
 are aggregated across samples to identify conserved SEs.</li>
 </ul>
-<p><strong>Load required packages for this vignette</strong></p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://renozao.github.io/NMF/" class="external-link">NMF</a></span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/ComplexHeatmap" class="external-link">ComplexHeatmap</a></span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/digitalcytometry/spatialecotyper/" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="loading-data">Loading data<a class="anchor" aria-label="anchor" href="#loading-data"></a>
+<h2 id="input-requirement">Input requirement<a class="anchor" aria-label="anchor" href="#input-requirement"></a>
+</h2>
+<p>All single-cell-scale ST datasets can be used to discover spatial
+ecotypes. In our study (<a href="https://www.nature.com/articles/s41586-026-10452-4" class="external-link">Zhang et al.,
+Nature</a>), we applied SpatialEcoTyper to both MERSCOPE and Xenium
+datasets and identified highly consistent pan-cancer spatial ecotypes
+across the two platforms.</p>
+<p>Single-cell ST gene expression profiles are inherently affected by
+transcript spillover. In our study, we addressed this issue by
+constructing a whitelist of genes expressed in each cell type using a
+pan-cancer scRNA-seq atlas and removing transcripts that were not
+included in the corresponding cell-type whitelist. Alternatively,
+computational methods such as <a href="https://github.com/bdsc-tds/SPLIT" class="external-link">SPLIT</a> have been developed
+to decontaminate single-cell ST data by correcting transcript spillover.
+We recommend applying either a whitelist-based filtering strategy or a
+dedicated decontamination method before SE discovery, as improving data
+quality can substantially enhance the robustness and biological
+interpretability of the discovered spatial ecotypes.</p>
+</div>
+<div class="section level2">
+<h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a>
 </h2>
 <p>For the demonstration of the integrative analysis of multiple
 single-cell ST samples, we have selected a subset of regions from a
@@ -123,16 +133,50 @@ cell types: B cells, CD4 T cells, CD8 T cells, NK cells, plasma cells,
 macrophages, dendritic cells (DC), fibroblasts, endothelial cells, and
 cancer cells. Cancer cells are excluded from this demonstration to
 reduce processing time.</p>
-<p>All cells are grouped into four spatial regions: tumor, inner margin,
-outer margin, and stroma. The tumor (tumor and inner margin) and stroma
-regions (stroma. and outer margin) are defined based on the density of
-cancer cells, as described in the <a href="https://www.nature.com/articles/s41587-023-01697-9" class="external-link">CytoSPACE
+<p>All cells are grouped into tumor (tumor and inner margin) and stroma
+regions (stroma and outer margin) based on the density of cancer cells,
+as described in the <a href="https://www.nature.com/articles/s41587-023-01697-9" class="external-link">CytoSPACE
 paper</a>. The inner and outer margins are defined as regions extending
 250 μm inside and outside the tumor boundaries, respectively.</p>
-<p>First, download the demo data and load them into R. You can use
-<code>read.table</code> for small files or
-<code><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">data.table::fread</a></code> for larger files.</p>
+<p><strong>Load required packages for this vignette</strong></p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://renozao.github.io/NMF/" class="external-link">NMF</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jokergoo/ComplexHeatmap" class="external-link">ComplexHeatmap</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/digitalcytometry/spatialecotyper/" class="external-link">SpatialEcoTyper</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="start-with-spatialecotyper-results-from-individual-single-cell-st-samples">Start with SpatialEcoTyper results from individual single-cell ST
+samples<a class="anchor" aria-label="anchor" href="#start-with-spatialecotyper-results-from-individual-single-cell-st-samples"></a>
+</h2>
+<p>Multiple samples can be integrated to identify conserved spatial
+ecotypes using <a href="../reference/IntegrateSpatialEcoTyper.html">IntegrateSpatialEcoTyper</a>.
+Before integration, each sample must be analyzed individually following
+<a href="SingleSample.html">Tutorial 1</a> using identical analysis
+settings. To ensure robust integration, cell types included in the
+analysis should present in more than 50% of the samples.</p>
+<p>This <a href="../reference/IntegrateSpatialEcoTyper.html">IntegrateSpatialEcoTyper</a>
+function requires two input data objects per sample:</p>
+<ul>
+<li><p><strong>Gene expression matrix</strong>: a numeric matrix with
+genes as rows and cells as columns. The data should be already analyzed
+with <a href="../reference/SpatialEcoTyper.html">SpatialEcoTyper</a>.</p></li>
+<li><p><strong><a href="../reference/SpatialEcoTyper.html">SpatialEcoTyper</a>
+output</strong>: a list object obtained from single-sample analysis with
+<a href="../reference/SpatialEcoTyper.html">SpatialEcoTyper</a>. If you
+don’t have the results yet, please follow <a href="SingleSample.html">Tutorial 1</a> for the analysis.</p></li>
+</ul>
+<p>Load the demo data</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">url</span> <span class="op">&lt;-</span> <span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=CRC2_subset_SpatialEcoTyper_results.rds"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="va">url</span>, destfile <span class="op">=</span> <span class="st">"CRC2_subset_SpatialEcoTyper_results.rds"</span>, mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span>
+<span><span class="va">url</span> <span class="op">&lt;-</span> <span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_SpatialEcoTyper_results.rds"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="va">url</span>, destfile <span class="op">=</span> <span class="st">"Melanoma1_subset_SpatialEcoTyper_results.rds"</span>, mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load single-cell gene expression data. Rows represent gene names and columns represent cell IDs</span></span>
 <span><span class="va">scdata1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz"</span>,</span>
 <span>                sep <span class="op">=</span> <span class="st">"\t"</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, data.table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -165,51 +209,24 @@ paper</a>. The inner and outer margins are defined as regions extending
 <span><span class="co">## FAP                                     0</span></span>
 <span><span class="co">## GZMB                                    0</span></span>
 <span><span class="co">## TSC2                                    0</span></span></code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># head(scdata2[,1:5])</span></span>
 <span></span>
 <span><span class="co">## Normalize the data as needed</span></span>
 <span><span class="va">normdata1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata1</span><span class="op">)</span></span>
-<span><span class="va">normdata2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata2</span><span class="op">)</span></span></code></pre></div>
-
-</div>
-<div class="section level2">
-<h2 id="start-with-spatialecotyper-results-from-individual-single-cell-st-samples">Start with SpatialEcoTyper results from individual single-cell ST
-samples<a class="anchor" aria-label="anchor" href="#start-with-spatialecotyper-results-from-individual-single-cell-st-samples"></a>
-</h2>
-<p>The <a href="../reference/IntegrateSpatialEcoTyper.html">IntegrateSpatialEcoTyper</a>
-function provides a convenient way to integrate Spatial EcoTyper results
-across samples or cancer types to identify conserved spatial ecotypes.
-This function assumes that <a href="../reference/SpatialEcoTyper.html">SpatialEcoTyper</a> has been
-run on each sample using consistent settings. Before proceeding, please
-review the full manual of the <code>IntegrateSpatialEcoTyper</code>
-function <a href="../reference/IntegrateSpatialEcoTyper.html">here</a>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">url</span> <span class="op">&lt;-</span> <span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=CRC2_subset_SpatialEcoTyper_results.rds"</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="va">url</span>, destfile <span class="op">=</span> <span class="st">"CRC2_subset_SpatialEcoTyper_results.rds"</span>, mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span>
-<span><span class="va">url</span> <span class="op">&lt;-</span> <span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_SpatialEcoTyper_results.rds"</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="va">url</span>, destfile <span class="op">=</span> <span class="st">"Melanoma1_subset_SpatialEcoTyper_results.rds"</span>, mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Note</strong>: If you are using Seurat v4 (rather than Seurat
-v5), please follow <a href="SingleSample.html">Tutorial 1</a> to
-generate Spatial EcoTyper results for the two demo samples before
-testing the scripts below.</p>
+<span><span class="va">normdata2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>SKCM <span class="op">=</span> <span class="va">normdata1</span>, CRC <span class="op">=</span> <span class="va">normdata2</span><span class="op">)</span></span>
+<span><span class="va">SpatialEcoTyper_results_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>SKCM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"Melanoma1_subset_SpatialEcoTyper_results.rds"</span><span class="op">)</span>,</span>
+<span>                             CRC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"CRC2_subset_SpatialEcoTyper_results.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>SKCM <span class="op">=</span> <span class="va">normdata1</span>, CRC <span class="op">=</span> <span class="va">normdata2</span><span class="op">)</span></span>
-<span><span class="va">SpatialEcoTyper_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>SKCM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"Melanoma1_subset_SpatialEcoTyper_results.rds"</span><span class="op">)</span>,</span>
-<span>                             CRC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"CRC2_subset_SpatialEcoTyper_results.rds"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/IntegrateSpatialEcoTyper.html">IntegrateSpatialEcoTyper</a></span><span class="op">(</span><span class="va">SpatialEcoTyper_list</span>, <span class="va">data_list</span>, </span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/IntegrateSpatialEcoTyper.html">IntegrateSpatialEcoTyper</a></span><span class="op">(</span><span class="va">SpatialEcoTyper_results_list</span>, <span class="va">data_list</span>, </span>
 <span>                         outdir <span class="op">=</span> <span class="st">"SpatialEcoTyper_results/"</span>,</span>
 <span>                         normalization.method <span class="op">=</span> <span class="st">"None"</span>, </span>
 <span>                         nfeatures <span class="op">=</span> <span class="fl">300</span>, <span class="co"># Number of top variable genes to use</span></span>
 <span>                         nmf_ranks <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fl">15</span>, <span class="co"># Number of clusters to test</span></span>
 <span>                         nrun.per.rank <span class="op">=</span> <span class="fl">10</span>,  <span class="co"># recommend 30 or higher for robust results</span></span>
 <span>                         ncores <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Choosing Louvain clustering resolution</strong>: Louvain
-clustering was applied to group spatial neighborhoods into clusters
-within each sample, which improves computational efficiency for
-integrative analysis of samples. We recommend using as high a clustering
-resolution as feasible (30 or higher) to better preserve fine-grained
-biological structure and ensure robustness to parameter variation.</p>
 <p><strong>Choosing the optimal number of SEs</strong>: NMF clustering
 is used to identify conserved spatial ecotypes across samples. To
 determine the optimal number of SEs, users can specify the
@@ -239,13 +256,25 @@ to weight regions equally during integration.</p>
 function provides an end-to-end pipeline for the integrative analysis of
 single-cell spatial transcriptomics data across multiple samples. While
 this streamlined workflow is convenient, it can be computationally
-intensive, as single-sample Spatial EcoTyper analysis is the most
-memory- and time-demanding step. Therefore, we recommend first analyzing
-each sample individually using the <a href="../reference/SpatialEcoTyper.html">SpatialEcoTyper</a> function,
+intensive. Therefore, we recommend first analyzing each sample
+individually using the <a href="../reference/SpatialEcoTyper.html">SpatialEcoTyper</a> function,
 as demonstrated in <a href="SingleSample.html">Tutorial 1</a>. The
 resulting outputs can then be integrated across samples using the <a href="../reference/IntegrateSpatialEcoTyper.html">IntegrateSpatialEcoTyper</a>
 function, as described above.</p>
-<p>First, load single-cell gene expression data and meta data.</p>
+<p>The <a href="../reference/MultiSpatialEcoTyper.html">MultiSpatialEcoTyper</a>
+requires two input data objects per sample:</p>
+<ul>
+<li>
+<strong>Gene expression matrix</strong>: a numeric matrix with genes
+as rows and cells as columns.</li>
+<li>
+<strong>Metadata</strong>: a data frame containing at least three
+columns: “X” (x-coordinate), “Y” (y-coordinate), and “CellType” (cell
+type annotation). Row names must match the column names (cell IDs) in
+the expression matrix.</li>
+</ul>
+<p>First, load single-cell gene expression data and meta data for the
+two example samples.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load single-cell gene expression data. Rows represent gene names and columns represent cell IDs</span></span>
 <span><span class="va">scdata1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_counts.tsv.gz"</span>,</span>
@@ -314,13 +343,16 @@ function, as described above.</p>
 <span><span class="co">## Normalize the data as needed</span></span>
 <span><span class="va">normdata1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata1</span><span class="op">)</span></span>
 <span><span class="va">normdata2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">scdata2</span><span class="op">)</span></span></code></pre></div>
-<p>Then, you can submit the job and wait.</p>
+<p>You can then submit the job. As this step is computationally
+intensive, refer to the section below for the recommended memory
+allocation and estimated runtime requirements.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>SKCM <span class="op">=</span> <span class="va">normdata1</span>, CRC <span class="op">=</span> <span class="va">normdata2</span><span class="op">)</span></span>
 <span><span class="va">metadata_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>SKCM <span class="op">=</span> <span class="va">scmeta1</span>, CRC <span class="op">=</span> <span class="va">scmeta2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/MultiSpatialEcoTyper.html">MultiSpatialEcoTyper</a></span><span class="op">(</span><span class="va">data_list</span>, <span class="va">metadata_list</span>, </span>
 <span>                     normalization.method <span class="op">=</span> <span class="st">"None"</span>, <span class="co"># Normalization method</span></span>
-<span>                     nmf_ranks <span class="op">=</span> <span class="fl">10</span>,  <span class="co"># Number of clusters</span></span>
+<span>                     nfeatures <span class="op">=</span> <span class="fl">300</span>,</span>
+<span>                     nmf_ranks <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fl">15</span>,  <span class="co"># Number of clusters</span></span>
 <span>                     nrun.per.rank <span class="op">=</span> <span class="fl">30</span>,  <span class="co"># Recommend 30 or higher for robust results</span></span>
 <span>                     ncores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <details><summary><strong>Optimizing memory usage</strong>
@@ -425,12 +457,12 @@ step.</p>
 <span><span class="co">## HumanMelanomaPatient1__cell_3661   SKCM 1742.939 -6374.851 Fibroblast Stroma</span></span>
 <span><span class="co">## HumanMelanomaPatient1__cell_3663   SKCM 1921.683 -6383.309 Fibroblast Stroma</span></span>
 <span><span class="co">##                                           InitSE     SE</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3655  SKCM..InitSE69 NewSE7</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3657 SKCM..InitSE146 NewSE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3658 SKCM..InitSE146 NewSE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3660 SKCM..InitSE146 NewSE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3661  SKCM..InitSE92 NewSE7</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3663  SKCM..InitSE69 NewSE7</span></span></code></pre>
+<span><span class="co">## HumanMelanomaPatient1__cell_3655 SKCM..InitSE104 NewSE1</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3657  SKCM..InitSE56 NewSE5</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3658  SKCM..InitSE56 NewSE5</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3660  SKCM..InitSE56 NewSE5</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3661 SKCM..InitSE149 NewSE1</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3663 SKCM..InitSE104 NewSE1</span></span></code></pre>
 <p>For instance, if you want to identify 10 SEs, you can specific
 <code>ranks = 10</code> to identify 10 clusters.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
@@ -587,13 +619,19 @@ spatial localization relative to the tumor/stroma interface.</p>
 <div class="section level2">
 <h2 id="identification-of-cell-type-specific-se-markers">Identification of cell-type-specific SE markers<a class="anchor" aria-label="anchor" href="#identification-of-cell-type-specific-se-markers"></a>
 </h2>
-<p>You can identify cell-type-specific SE markers by differential
+<p>Cell-type-specific SE markers can be identified by differential
 expression analysis using the <a href="https://github.com/immunogenomics/presto" class="external-link"><code>presto</code>
-package</a>. Below is an example of how to identify fibroblast-specific
-markers for each SE.</p>
+package</a>. In our study (<a href="https://www.nature.com/articles/s41586-026-10452-4" class="external-link">Zhang et al.,
+Nature</a>), we extended marker discovery to the whole transcriptome by
+developing an SE recovery model (see <a href="TrainRecoveryModel.html">Tutorial 3</a> and <a href="Discovery_SE_CellStates.html">Tutorial 4</a>). This model was
+applied to annotate SEs in pan-cancer scRNA-seq datasets (see <a href="Recovery_scRNA.html">Tutorial 6</a>), after which differential
+expression analysis was performed on the annotated scRNA-seq data to
+identify both cell-type-specific and consensus SE markers.</p>
 <div class="section level3">
 <h3 id="de-analysis-within-each-sample">DE analysis within each sample<a class="anchor" aria-label="anchor" href="#de-analysis-within-each-sample"></a>
 </h3>
+<p>Here is an example of how to identify fibroblast-specific markers for
+each SE.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st">"presto"</span><span class="op">)</span></span>
 <span><span class="co">## DE analysis within the first sample</span></span>
@@ -606,36 +644,36 @@ markers for each SE.</p>
 <span><span class="va">degs2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/presto/man/wilcoxauc.html" class="external-link">wilcoxauc</a></span><span class="op">(</span><span class="va">tmpdata2</span>, <span class="va">tmpmeta2</span><span class="op">$</span><span class="va">SE</span><span class="op">)</span> <span class="co"># DE analysis</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">degs1</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##    feature  group    avgExpr       logFC statistic       auc         pval</span></span>
-<span><span class="co">## 1     PDK4 NewSE1 0.65754094  0.24518554   1991907 0.5279472 1.817392e-04</span></span>
-<span><span class="co">## 2 TNFRSF17 NewSE1 0.00000000  0.00000000   1886393 0.4999811 9.988846e-01</span></span>
-<span><span class="co">## 3    ICAM3 NewSE1 0.00000000  0.00000000   1886393 0.4999811 9.988846e-01</span></span>
-<span><span class="co">## 4      FAP NewSE1 0.41089988 -0.34706947   1704947 0.4518894 3.225772e-07</span></span>
-<span><span class="co">## 5     GZMB NewSE1 0.02402809 -0.05817573   1856047 0.4919380 1.610637e-02</span></span>
-<span><span class="co">## 6     TSC2 NewSE1 0.02312765 -0.02541757   1871793 0.4961114 1.452452e-01</span></span>
-<span><span class="co">##           padj     pct_in   pct_out</span></span>
-<span><span class="co">## 1 7.766634e-04 16.2271805 11.328891</span></span>
-<span><span class="co">## 2 9.988846e-01  0.0000000  0.000000</span></span>
-<span><span class="co">## 3 9.988846e-01  0.0000000  0.000000</span></span>
-<span><span class="co">## 4 1.966934e-06 10.9533469 20.841500</span></span>
-<span><span class="co">## 5 5.229339e-02  0.6085193  2.221351</span></span>
-<span><span class="co">## 6 3.802231e-01  0.6085193  1.385078</span></span></code></pre>
+<pre><code><span><span class="co">##    feature  group    avgExpr        logFC statistic       auc         pval</span></span>
+<span><span class="co">## 1     PDK4 NewSE1 0.48574491  0.092083955   7899698 0.5119967 1.364733e-03</span></span>
+<span><span class="co">## 2 TNFRSF17 NewSE1 0.00000000  0.000000000   7714180 0.4999728 9.967990e-01</span></span>
+<span><span class="co">## 3    ICAM3 NewSE1 0.00000000  0.000000000   7714180 0.4999728 9.967990e-01</span></span>
+<span><span class="co">## 4      FAP NewSE1 0.84409686  0.151075956   8024811 0.5201055 2.377714e-05</span></span>
+<span><span class="co">## 5     GZMB NewSE1 0.06565430 -0.019517209   7677965 0.4976256 1.599855e-01</span></span>
+<span><span class="co">## 6     TSC2 NewSE1 0.03930162 -0.009729453   7689585 0.4983788 2.236933e-01</span></span>
+<span><span class="co">##           padj    pct_in   pct_out</span></span>
+<span><span class="co">## 1 0.0042647921 13.097478 10.780093</span></span>
+<span><span class="co">## 2 0.9967989683  0.000000  0.000000</span></span>
+<span><span class="co">## 3 0.9967989683  0.000000  0.000000</span></span>
+<span><span class="co">## 4 0.0000843161 22.882951 19.218185</span></span>
+<span><span class="co">## 5 0.3845805110  1.806549  2.273119</span></span>
+<span><span class="co">## 6 0.5202170696  1.091457  1.412089</span></span></code></pre>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">degs2</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   feature  group   avgExpr       logFC statistic       auc         pval</span></span>
-<span><span class="co">## 1    PDK4 NewSE1 0.5768008 -0.16802819   4118585 0.4790122 1.392025e-02</span></span>
-<span><span class="co">## 2   CCL26 NewSE1 0.0000000  0.00000000   4298863 0.4999794 9.986864e-01</span></span>
-<span><span class="co">## 3  CX3CL1 NewSE1 0.4482779  0.20030746   4523230 0.5260745 2.108270e-06</span></span>
-<span><span class="co">## 4 PGLYRP1 NewSE1 0.0000000  0.00000000   4298863 0.4999794 9.986864e-01</span></span>
-<span><span class="co">## 5     CD4 NewSE1 0.0000000  0.00000000   4298863 0.4999794 9.986864e-01</span></span>
-<span><span class="co">## 6   SNAI2 NewSE1 1.3119381  0.04667876   4349122 0.5058248 5.730139e-01</span></span>
-<span><span class="co">##           padj   pct_in   pct_out</span></span>
-<span><span class="co">## 1 7.175389e-02 14.98195 19.085052</span></span>
-<span><span class="co">## 2 9.986864e-01  0.00000  0.000000</span></span>
-<span><span class="co">## 3 2.849014e-05 11.91336  6.759021</span></span>
-<span><span class="co">## 4 9.986864e-01  0.00000  0.000000</span></span>
-<span><span class="co">## 5 9.986864e-01  0.00000  0.000000</span></span>
-<span><span class="co">## 6 9.986864e-01 32.12996 31.990979</span></span></code></pre>
+<pre><code><span><span class="co">##   feature  group   avgExpr      logFC statistic       auc         pval</span></span>
+<span><span class="co">## 1    PDK4 NewSE1 1.1155180  0.4886977  25523561 0.5584334 3.836022e-56</span></span>
+<span><span class="co">## 2   CCL26 NewSE1 0.0000000  0.0000000  22851646 0.4999742 9.961951e-01</span></span>
+<span><span class="co">## 3  CX3CL1 NewSE1 0.1202783 -0.1747148  21754293 0.4759650 6.798938e-24</span></span>
+<span><span class="co">## 4 PGLYRP1 NewSE1 0.0000000  0.0000000  22851646 0.4999742 9.961951e-01</span></span>
+<span><span class="co">## 5     CD4 NewSE1 0.0000000  0.0000000  22851646 0.4999742 9.961951e-01</span></span>
+<span><span class="co">## 6   SNAI2 NewSE1 0.8803556 -0.5017203  19926686 0.4359786 2.794141e-46</span></span>
+<span><span class="co">##           padj    pct_in   pct_out</span></span>
+<span><span class="co">## 1 3.618888e-55 27.282579 16.458047</span></span>
+<span><span class="co">## 2 9.961951e-01  0.000000  0.000000</span></span>
+<span><span class="co">## 3 3.655343e-23  3.224059  8.043285</span></span>
+<span><span class="co">## 4 9.961951e-01  0.000000  0.000000</span></span>
+<span><span class="co">## 5 9.961951e-01  0.000000  0.000000</span></span>
+<span><span class="co">## 6 2.290280e-45 23.354105 34.571590</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="identifying-conserved-markers-across-samples">Identifying conserved markers across samples<a class="anchor" aria-label="anchor" href="#identifying-conserved-markers-across-samples"></a>
@@ -652,20 +690,20 @@ analyses.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">lfcs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">lfcs</span><span class="op">$</span><span class="va">feature</span></span>
 <span><span class="va">lfcs</span> <span class="op">&lt;-</span> <span class="va">lfcs</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lfcs</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##              NewSE1      NewSE2      NewSE3      NewSE4      NewSE5</span></span>
-<span><span class="co">## ACKR3    0.23129002 -0.37521116 -0.69644369 -0.20866491 -0.03791532</span></span>
-<span><span class="co">## ACTA2    2.26183640 -0.09824403  0.09400553 -0.22370086 -0.18170887</span></span>
-<span><span class="co">## ADAMTS4 -0.04167099  0.63380839  0.78192961  0.20039317 -0.28792436</span></span>
-<span><span class="co">## AKT1     0.15759620  1.08038975  0.95750771  0.05349286 -0.39196038</span></span>
-<span><span class="co">## AKT2    -0.03270727  0.02103533  0.11173328 -0.08599313 -0.18438298</span></span>
-<span><span class="co">## AKT3     0.43349780  0.35193498  0.10164257 -0.19753143 -0.28513940</span></span>
-<span><span class="co">##               NewSE6       NewSE7      NewSE8      NewSE9</span></span>
-<span><span class="co">## ACKR3   -0.292968737  0.788662831  0.66468166  0.09324492</span></span>
-<span><span class="co">## ACTA2    0.797982497 -0.051484034 -0.82402411  0.18951480</span></span>
-<span><span class="co">## ADAMTS4  0.066685517 -0.608592924  0.01962479  0.11986800</span></span>
-<span><span class="co">## AKT1     0.246800126 -0.568748749 -0.28703024 -0.23328946</span></span>
-<span><span class="co">## AKT2     0.008436113  0.043805780  0.06123596  0.08893108</span></span>
-<span><span class="co">## AKT3    -0.033547946  0.007479543  0.01699382  0.28178934</span></span></code></pre>
+<pre><code><span><span class="co">##              NewSE1       NewSE2      NewSE3      NewSE4      NewSE5     NewSE6</span></span>
+<span><span class="co">## ACKR3    0.84084343 -0.330411721 -0.05266930  0.49300904  0.21706024 -0.6875528</span></span>
+<span><span class="co">## ACTA2   -0.12414526 -0.004982032 -0.03618349 -0.99876009  1.93345482  0.1739961</span></span>
+<span><span class="co">## ADAMTS4 -0.59400756 -0.304613266 -0.29170500  0.03816032  0.03154192  0.6995093</span></span>
+<span><span class="co">## AKT1    -0.56720182 -0.325724711 -0.22263010 -0.32939729  0.11644233  1.0446516</span></span>
+<span><span class="co">## AKT2     0.05539333 -0.127636519 -0.07529157  0.07918351 -0.01741083  0.1122756</span></span>
+<span><span class="co">## AKT3     0.06020394 -0.296868787 -0.21311860 -0.09969229  0.47080083  0.1633901</span></span>
+<span><span class="co">##               NewSE7</span></span>
+<span><span class="co">## ACKR3   -0.502695726</span></span>
+<span><span class="co">## ACTA2    0.072077121</span></span>
+<span><span class="co">## ADAMTS4  0.613670049</span></span>
+<span><span class="co">## AKT1     0.424136899</span></span>
+<span><span class="co">## AKT2     0.004026276</span></span>
+<span><span class="co">## AKT3    -0.046847486</span></span></code></pre>
 <p>To identify markers that are specific to each SE-associated cell
 state, we calculate the difference between the maximum log2FC for each
 gene and the second-highest log2FC:</p>
@@ -684,31 +722,25 @@ gene and the second-highest log2FC:</p>
 <span><span class="va">top5</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">markers</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">]</span> <span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">top5</span></span></code></pre></div>
 <pre><code><span><span class="co">## $NewSE1</span></span>
-<span><span class="co">## [1] "ACTA2"  "COL4A1" "MYH11"  "TNC"    "ITGA1" </span></span>
+<span><span class="co">## [1] "PLA2G2A" "FBLN1"   "FOS"     "ELN"     "DUSP1"  </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $NewSE2</span></span>
-<span><span class="co">## [1] "CDK2"   "MYC"    "CTNNB1" "YAP1"   "BCL2L1"</span></span>
+<span><span class="co">## [1] "COL11A1" "COL1A1"  "CSF1"    "COL5A1"  "CXCL2"  </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $NewSE3</span></span>
-<span><span class="co">## [1] "MMP11" "BST2"  "TGFBI" "STAT1" "PKM"  </span></span>
+<span><span class="co">## [1] "CXCR4" "XBP1"  "PTPRC" "PDPN"  "PDK1" </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $NewSE4</span></span>
-<span><span class="co">## [1] "CXCR4"  "SOD2"   "NFKBIA" "XBP1"   "PTPRC" </span></span>
+<span><span class="co">## [1] "VEGFA"  "TGFBR3" "TCF7L2" "CREBBP" "AXIN2" </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $NewSE5</span></span>
-<span><span class="co">## [1] "COL11A1"  "COL1A1"   "HLA-DRB1" "COL5A1"   "HLA-DPA1"</span></span>
+<span><span class="co">## [1] "ACTA2"  "COL4A1" "MYH11"  "CAV1"   "ITGA1" </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $NewSE6</span></span>
-<span><span class="co">## [1] "FN1"      "SERPINE1" "CSF1"     "CCL2"     "SERPINA1"</span></span>
+<span><span class="co">## [1] "MMP11"  "TGFBI"  "PKM"    "BCL2L1" "CTNNB1"</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $NewSE7</span></span>
-<span><span class="co">## [1] "PLA2G2A" "FBLN1"   "FOS"     "DUSP1"   "PDGFRA" </span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $NewSE8</span></span>
-<span><span class="co">## [1] "TGFBR3" "PDGFRB" "TCF7L2" "CD248"  "KITLG" </span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $NewSE9</span></span>
-<span><span class="co">## [1] "GPX3"   "EGFR"   "FZD7"   "PGF"    "ANGPT2"</span></span></code></pre>
+<span><span class="co">## [1] "BST2"    "CXCL9"   "HLA-DRA" "TAPBP"   "FN1"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="visualizing-top-se-cell-state-markers">Visualizing top SE cell state markers<a class="anchor" aria-label="anchor" href="#visualizing-top-se-cell-state-markers"></a>
@@ -754,65 +786,64 @@ that might be causing problems.</p>
 <span><span class="co">## [8] methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] tidyr_1.3.1           presto_1.0.0          Rcpp_1.0.13          </span></span>
-<span><span class="co">##  [4] pals_1.9              SpatialEcoTyper_1.0.3 RANN_2.6.2           </span></span>
+<span><span class="co">##  [1] tidyr_1.3.1           presto_1.0.0          Rcpp_1.1.2           </span></span>
+<span><span class="co">##  [4] SpatialEcoTyper_1.0.4 pals_1.9              RANN_2.6.2           </span></span>
 <span><span class="co">##  [7] Matrix_1.7-0          ComplexHeatmap_2.20.0 NMF_0.28             </span></span>
 <span><span class="co">## [10] Biobase_2.64.0        BiocGenerics_0.50.0   cluster_2.1.6        </span></span>
-<span><span class="co">## [13] rngtools_1.5.2        registry_0.5-1        data.table_1.16.0    </span></span>
+<span><span class="co">## [13] rngtools_1.5.2        registry_0.5-1        data.table_1.18.4    </span></span>
 <span><span class="co">## [16] Seurat_5.1.0          SeuratObject_5.0.2    sp_2.1-4             </span></span>
-<span><span class="co">## [19] ggplot2_3.5.1         dplyr_1.1.4          </span></span>
+<span><span class="co">## [19] ggplot2_4.0.3         dplyr_1.2.1          </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##   [1] RcppAnnoy_0.0.22       splines_4.4.1          later_1.3.2           </span></span>
-<span><span class="co">##   [4] R.oo_1.26.0            tibble_3.2.1           polyclip_1.10-7       </span></span>
-<span><span class="co">##   [7] fastDummies_1.7.4      lifecycle_1.0.4        sf_1.1-0              </span></span>
+<span><span class="co">##   [4] R.oo_1.26.0            tibble_3.3.1           polyclip_1.10-7       </span></span>
+<span><span class="co">##   [7] fastDummies_1.7.4      lifecycle_1.0.5        sf_1.1-0              </span></span>
 <span><span class="co">##  [10] doParallel_1.0.17      globals_0.16.3         lattice_0.22-6        </span></span>
-<span><span class="co">##  [13] MASS_7.3-60.2          magrittr_2.0.3         plotly_4.10.4         </span></span>
+<span><span class="co">##  [13] MASS_7.3-60.2          magrittr_2.0.5         plotly_4.10.4         </span></span>
 <span><span class="co">##  [16] sass_0.4.9             rmarkdown_2.28         jquerylib_0.1.4       </span></span>
 <span><span class="co">##  [19] yaml_2.3.10            httpuv_1.6.15          sctransform_0.4.1     </span></span>
 <span><span class="co">##  [22] spam_2.10-0            spatstat.sparse_3.1-0  reticulate_1.39.0     </span></span>
-<span><span class="co">##  [25] mapproj_1.2.11         cowplot_1.1.3          pbapply_1.7-2         </span></span>
+<span><span class="co">##  [25] cowplot_1.1.3          mapproj_1.2.11         pbapply_1.7-2         </span></span>
 <span><span class="co">##  [28] DBI_1.3.0              RColorBrewer_1.1-3     maps_3.4.2            </span></span>
-<span><span class="co">##  [31] abind_1.4-5            Rtsne_0.17             R.utils_2.12.3        </span></span>
-<span><span class="co">##  [34] purrr_1.0.2            circlize_0.4.16        IRanges_2.38.1        </span></span>
+<span><span class="co">##  [31] abind_1.4-8            Rtsne_0.17             R.utils_2.12.3        </span></span>
+<span><span class="co">##  [34] purrr_1.0.2            circlize_0.4.18        IRanges_2.38.1        </span></span>
 <span><span class="co">##  [37] S4Vectors_0.42.1       ggrepel_0.9.6          irlba_2.3.5.1         </span></span>
 <span><span class="co">##  [40] listenv_0.9.1          spatstat.utils_3.1-0   units_1.0-1           </span></span>
 <span><span class="co">##  [43] goftest_1.2-3          RSpectra_0.16-2        spatstat.random_3.3-1 </span></span>
 <span><span class="co">##  [46] fitdistrplus_1.2-1     parallelly_1.38.0      pkgdown_2.1.0         </span></span>
 <span><span class="co">##  [49] leiden_0.4.3.1         codetools_0.2-20       tidyselect_1.2.1      </span></span>
-<span><span class="co">##  [52] shape_1.4.6.1          farver_2.1.2           matrixStats_1.4.1     </span></span>
+<span><span class="co">##  [52] shape_1.4.6.1          farver_2.1.2           matrixStats_1.5.0     </span></span>
 <span><span class="co">##  [55] stats4_4.4.1           spatstat.explore_3.3-2 jsonlite_1.8.8        </span></span>
-<span><span class="co">##  [58] GetoptLong_1.0.5       e1071_1.7-16           progressr_0.14.0      </span></span>
+<span><span class="co">##  [58] GetoptLong_1.1.1       e1071_1.7-16           progressr_0.14.0      </span></span>
 <span><span class="co">##  [61] ggridges_0.5.6         survival_3.6-4         iterators_1.0.14      </span></span>
 <span><span class="co">##  [64] systemfonts_1.1.0      foreach_1.5.2          tools_4.4.1           </span></span>
-<span><span class="co">##  [67] ragg_1.3.2             ica_1.0-3              glue_1.7.0            </span></span>
-<span><span class="co">##  [70] gridExtra_2.3          xfun_0.52              withr_3.0.1           </span></span>
+<span><span class="co">##  [67] ragg_1.3.2             ica_1.0-3              glue_1.8.1            </span></span>
+<span><span class="co">##  [70] gridExtra_2.3.1        xfun_0.52              withr_3.0.3           </span></span>
 <span><span class="co">##  [73] BiocManager_1.30.25    fastmap_1.2.0          boot_1.3-30           </span></span>
-<span><span class="co">##  [76] fansi_1.0.6            spData_2.3.4           digest_0.6.37         </span></span>
-<span><span class="co">##  [79] R6_2.5.1               mime_0.12              wk_0.9.5              </span></span>
-<span><span class="co">##  [82] textshaping_0.4.0      colorspace_2.1-1       scattermore_1.2       </span></span>
-<span><span class="co">##  [85] tensor_1.5             dichromat_2.0-0.1      spatstat.data_3.1-2   </span></span>
-<span><span class="co">##  [88] R.methodsS3_1.8.2      utf8_1.2.4             generics_0.1.3        </span></span>
-<span><span class="co">##  [91] class_7.3-22           httr_1.4.7             htmlwidgets_1.6.4     </span></span>
-<span><span class="co">##  [94] spdep_1.4-2            uwot_0.2.2             pkgconfig_2.0.3       </span></span>
-<span><span class="co">##  [97] gtable_0.3.5           lmtest_0.9-40          htmltools_0.5.8.1     </span></span>
-<span><span class="co">## [100] dotCall64_1.1-1        clue_0.3-65            scales_1.3.0          </span></span>
-<span><span class="co">## [103] png_0.1-8              spatstat.univar_3.0-1  knitr_1.48            </span></span>
-<span><span class="co">## [106] rstudioapi_0.16.0      reshape2_1.4.4         rjson_0.2.22          </span></span>
-<span><span class="co">## [109] nlme_3.1-164           proxy_0.4-27           cachem_1.1.0          </span></span>
-<span><span class="co">## [112] zoo_1.8-12             GlobalOptions_0.1.2    stringr_1.5.1         </span></span>
-<span><span class="co">## [115] KernSmooth_2.23-24     miniUI_0.1.1.1         s2_1.1.9              </span></span>
-<span><span class="co">## [118] desc_1.4.3             pillar_1.9.0           vctrs_0.6.5           </span></span>
-<span><span class="co">## [121] promises_1.3.0         xtable_1.8-4           evaluate_0.24.0       </span></span>
-<span><span class="co">## [124] magick_2.8.5           cli_3.6.3              compiler_4.4.1        </span></span>
-<span><span class="co">## [127] rlang_1.1.4            crayon_1.5.3           future.apply_1.11.2   </span></span>
-<span><span class="co">## [130] labeling_0.4.3         classInt_0.4-11        plyr_1.8.9            </span></span>
-<span><span class="co">## [133] fs_1.6.4               stringi_1.8.4          viridisLite_0.4.2     </span></span>
-<span><span class="co">## [136] deldir_2.0-4           gridBase_0.4-7         munsell_0.5.1         </span></span>
-<span><span class="co">## [139] lazyeval_0.2.2         spatstat.geom_3.3-2    RcppHNSW_0.6.0        </span></span>
-<span><span class="co">## [142] patchwork_1.2.0        future_1.34.0          shiny_1.9.1           </span></span>
-<span><span class="co">## [145] highr_0.11             ROCR_1.0-11            igraph_2.0.3          </span></span>
-<span><span class="co">## [148] bslib_0.8.0</span></span></code></pre>
+<span><span class="co">##  [76] spData_2.3.4           digest_0.6.39          R6_2.6.1              </span></span>
+<span><span class="co">##  [79] mime_0.12              wk_0.9.5               textshaping_0.4.0     </span></span>
+<span><span class="co">##  [82] colorspace_2.1-2       scattermore_1.2        tensor_1.5            </span></span>
+<span><span class="co">##  [85] dichromat_2.0-0.1      spatstat.data_3.1-2    R.methodsS3_1.8.2     </span></span>
+<span><span class="co">##  [88] generics_0.1.4         class_7.3-22           httr_1.4.7            </span></span>
+<span><span class="co">##  [91] htmlwidgets_1.6.4      spdep_1.4-2            uwot_0.2.2            </span></span>
+<span><span class="co">##  [94] pkgconfig_2.0.3        gtable_0.3.6           lmtest_0.9-40         </span></span>
+<span><span class="co">##  [97] S7_0.2.2               htmltools_0.5.8.1      dotCall64_1.1-1       </span></span>
+<span><span class="co">## [100] clue_0.3-68            scales_1.4.0           png_0.1-9             </span></span>
+<span><span class="co">## [103] spatstat.univar_3.0-1  knitr_1.48             rstudioapi_0.16.0     </span></span>
+<span><span class="co">## [106] reshape2_1.4.4         rjson_0.2.23           nlme_3.1-164          </span></span>
+<span><span class="co">## [109] proxy_0.4-27           cachem_1.1.0           zoo_1.8-12            </span></span>
+<span><span class="co">## [112] GlobalOptions_0.1.4    stringr_1.5.1          KernSmooth_2.23-24    </span></span>
+<span><span class="co">## [115] miniUI_0.1.1.1         s2_1.1.9               desc_1.4.3            </span></span>
+<span><span class="co">## [118] pillar_1.11.1          vctrs_0.7.3            promises_1.3.0        </span></span>
+<span><span class="co">## [121] xtable_1.8-4           evaluate_0.24.0        magick_2.8.5          </span></span>
+<span><span class="co">## [124] cli_3.6.6              compiler_4.4.1         rlang_1.3.0           </span></span>
+<span><span class="co">## [127] crayon_1.5.3           future.apply_1.11.2    labeling_0.4.3        </span></span>
+<span><span class="co">## [130] classInt_0.4-11        plyr_1.8.9             fs_1.6.4              </span></span>
+<span><span class="co">## [133] stringi_1.8.4          viridisLite_0.4.3      deldir_2.0-4          </span></span>
+<span><span class="co">## [136] gridBase_0.4-7         lazyeval_0.2.2         spatstat.geom_3.3-2   </span></span>
+<span><span class="co">## [139] RcppHNSW_0.6.0         patchwork_1.2.0        future_1.34.0         </span></span>
+<span><span class="co">## [142] shiny_1.9.1            highr_0.11             ROCR_1.0-11           </span></span>
+<span><span class="co">## [145] igraph_2.0.3           bslib_0.8.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

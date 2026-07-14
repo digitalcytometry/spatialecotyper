@@ -59,7 +59,7 @@ __Load cell type and SE annotations__
 ## Load the single-cell meta data derived from MultiSpatialEcoTyper analysis
 scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=MultiSE_metadata_final.tsv", sep = "\t", 
                      header = TRUE, row.names = 1)
-scmeta$SE[is.na(scmeta$SE)] = "nonSE" ## cells with NA predictions were assigned into the nonSE group
+scmeta$SE[is.na(scmeta$SE)] = "NonSE" ## cells with NA predictions were assigned into the NonSE group
 
 ## Matches the row names of meta data and column names of expression matrix
 cells <- intersect(colnames(scdata), rownames(scmeta))
@@ -159,7 +159,7 @@ Ws_final = AggregateRecoverModels(Ws_list)
 
 # Next step
 
-Using the SE recovery model, users can recover spatial ecotypes from held-out single-cell datasets, including both single-cell spatial transcriptomics and single-cell RNA-seq data, as demonstrated separately in [Tutorial 5](Recovery_scST.html) and [Tutorial 6](Recovery_scRNA.html) separately.
+Using the SE recovery model, users can recover spatial ecotypes from held-out single-cell datasets, including both single-cell spatial transcriptomics and single-cell RNA-seq data, as demonstrated separately in [Tutorial 5](Recovery_scST.html) and [Tutorial 6](Recovery_scRNA.html).
 
 # Session info
 

@@ -44,7 +44,7 @@
 #'                                  spotCoord = snmeta)
 #' head(metacells)
 #'
-#' @importFrom parallel detectCores mclapply
+#' @importFrom parallel mclapply
 #' @export
 #'
 GetSpatialMetacells <- function(normdata,
@@ -113,7 +113,6 @@ GetKnnWeights <- function(scmeta, spotmeta,
                           k = 20, radius = 50,
                           X = "X", Y = "Y",
                           min.cells.per.region = 1){
-  set.seed(39)
   require("Matrix")
   require("RANN")
   require("dplyr")
@@ -133,11 +132,14 @@ GetKnnWeights <- function(scmeta, spotmeta,
   if(length(weights)>1e8){
     ## Too big integers will be converted to NA
     for(i in 1:ncol(weights)){
-      idx <- knn$nn.idx[i, ]
-      idx <- idx[idx > 0]
-      tmp <- knn$nn.dists[i, ]+1
-      # tmp <- tmp[!(is.na(tmp)|is.infinite(tmp))]
-      weights[idx, i] <- tmp
+      idx = knn$nn.idx[i, ]
+      tmp = knn$nn.dists[i, ]+1
+      idx2 = idx[idx > 0]
+      tmp = tmp[idx > 0]
+      idx_tmp = !(is.na(tmp)|is.infinite(tmp))
+      tmp = tmp[idx_tmp]
+      idx2 = idx2[idx_tmp]
+      weights[idx2, i] = tmp
     }
     idx <- Matrix::which(weights>(radius+1), arr.ind = TRUE)
     for(j in unique(idx[,2])){
@@ -147,10 +149,13 @@ GetKnnWeights <- function(scmeta, spotmeta,
   }else{
     for(i in 1:k){
       idx <- nrow(weights) * (1:ncol(weights)-1) + knn$nn.idx[, i]
-      idx <- idx[knn$nn.idx[, i]>0]
       tmp <- knn$nn.dists[, i]+1
-      tmp <- tmp[!(is.na(tmp)|is.infinite(tmp))]
-      weights[idx] <- tmp
+      idx2 <- idx[knn$nn.idx[, i]>0]
+      tmp = tmp[knn$nn.idx[, i]>0]
+      idx_tmp = !(is.na(tmp)|is.infinite(tmp))
+      tmp = tmp[idx_tmp]
+      idx2 = idx2[idx_tmp]
+      weights[idx2] <- tmp
     }
     weights@x[weights@x>(radius+1)] <- 0
   }

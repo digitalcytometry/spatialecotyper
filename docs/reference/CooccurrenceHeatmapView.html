@@ -11,7 +11,7 @@ column annotations, color scales, clustering, and significance indicators."><met
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -138,7 +138,6 @@ The heatmap can be customized with clustering, annotations, and color scales.</p
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">col_matrix</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SE1_CD4T"</span>, <span class="st">"SE1_CD8T"</span>, <span class="st">"SE2_CD4T"</span>, <span class="st">"SE2_CD8T"</span>, <span class="st">"SE3_CD4T"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pvals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>SE1 <span class="op">=</span> <span class="fl">0.01</span>, SE2 <span class="op">=</span> <span class="fl">0.2</span>, SE3 <span class="op">=</span> <span class="fl">0.0005</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">CooccurrenceHeatmapView</span><span class="op">(</span><span class="va">col_matrix</span>, Pval <span class="op">=</span> <span class="va">pvals</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: pals</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`legend_height` you specified is too small, use the default minimal</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> height.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`legend_height` you specified is too small, use the default minimal</span>

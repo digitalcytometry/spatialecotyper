@@ -22,6 +22,8 @@ __First load required packages for this vignette__
 suppressPackageStartupMessages(library(Seurat))
 suppressPackageStartupMessages(library(data.table))
 library(SpatialEcoTyper)
+library(ggplot2)
+library(dplyr)
 ```
 
 
@@ -31,8 +33,13 @@ We will start with the SE deconvolution from bulk RNA-seq. We will use bulk RNA-
 
 ## Loading bulk expression of TCGA melanoma samples
 
+```{r download}
+url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv"
+download.file(url, destfile = "SKCM_RNASeqV2.geneExp.tsv", mode = "wb", method = "curl")
+```
+
 ```{r loadbulk}
-bulkdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv", sep = "\t", data.table = FALSE)
+bulkdata <- fread("SKCM_RNASeqV2.geneExp.tsv", sep = "\t", data.table = FALSE)
 rownames(bulkdata) <- bulkdata[, 1] ## Set the first column as row names
 bulkdata <- bulkdata[, -1] ## Drop the first column
 head(bulkdata[, 1:5]) ## TPM matrix
@@ -42,7 +49,7 @@ head(bulkdata[, 1:5]) ## TPM matrix
 
 The [DeconvoluteSE](../reference/DeconvoluteSE.html) function infers SE abundances in bulk tissue samples. Users can either use the default model, which estimates the abundances of predefined SEs, or apply a custom model to infer the abundance of newly defined SEs from bulk gene expression data. Before prediction, [DeconvoluteSE](../reference/DeconvoluteSE.html) automatically applies a log₂ transformation (if the maximum value exceeds 80) and standardizes the data so that each gene has a mean of 0 and a unit variance. To ensure reliable standardization, we recommend a minimum of 20 samples. For smaller datasets, we recommend to combine them with a larger dataset for normalization prior to running [DeconvoluteSE](../reference/DeconvoluteSE.html).
 
-The default model is trained on pseudobulk gene expression data and predicts the abundances of nine predefined SEs along with a nonSE group, which includes cancer cells and cells not associated with any SEs. The predicted SE and nonSE abundances for each sample sum to 1, making them comparable across samples.
+The default model is trained on pseudobulk gene expression data and predicts the abundances of nine predefined SEs along with a NonSE group, which includes cancer cells and cells not associated with any SEs. The predicted SE and NonSE abundances for each sample sum to 1, making them comparable across samples.
 
 ### Using default model
 
@@ -65,11 +72,20 @@ sefracs <- DeconvoluteSE(bulkdata, W = new_model)
 ```
 
 
-## Visualizing SE abundances across samples
+## Compare SE abundances across sample groups
+
+For demonstration purposes, here we compare the SE abundances between primary and metastatic melanoma samples.
 ```{r visualse}
-library(grid)
-HeatmapView(sefracs, breaks = c(0, 0.15, 0.3), 
-            show_row_names = FALSE, cluster_rows = TRUE)
+sefracs = as.data.frame(sefracs)
+sefracs$Group = NA
+sefracs$Group[grepl("01$", rownames(sefracs))] = "Primary"
+sefracs$Group[grepl("06$", rownames(sefracs))] = "Metastatic"
+
+ggplot(sefracs, aes(Group, SE1)) + 
+  geom_boxplot(width = 0.5, outlier.shape = NA) + 
+  ggpubr::stat_compare_means(comparisons = list(c("Primary", "Metastatic"))) +
+  geom_jitter(width = 0.1, size = 0.2) + 
+  theme_classic(base_size = 14)
 ```
 
 
@@ -112,13 +128,41 @@ head(sefracs)
 The [SpatialView](../reference/SpatialView.html) function can be used to visualize SE levels across Visium spots.
 
 ```{r DeconvoluteSE4}
-library(ggplot2)
 ## attach the spatial coordinates to the matrix for visualization
-gg = cbind(sefracs, meta[match(rownames(sefracs), rownames(meta)), ])
-gg = as.data.frame(gg)
-SpatialView(gg, by = "SE7", X = "imagerow", Y = "imagecol", pt.size = 2) +
-  scale_color_gradientn(colors = rev(RColorBrewer::brewer.pal(11, "Spectral"))) + 
-  coord_fixed()
+gg = as.data.frame(sefracs)
+gg = cbind(meta[match(rownames(gg), rownames(meta)), c("imagerow", "imagecol")], gg)
+gg$imagerow = -gg$imagerow
+
+colors = rev(RColorBrewer::brewer.pal(11, "Spectral"))
+plist = lapply(colnames(gg)[-(1:3)], function(se){
+  p = SpatialView(gg, by = se, X = "imagecol", Y = "imagerow", pt.size = 0.2) + 
+    coord_fixed() + scale_color_gradientn(colors = colors) + 
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+    labs(title = se)
+  p
+})
+p = patchwork::wrap_plots(plist, nrow = 3)
+plot(p)
+```
+
+The [SmoothSEAbundances](../reference/SmoothSEAbundances.html) function can be used to smooth SE levels across Visium spots by taking average SE levels across k nearest neighbor spots.
+
+```{r smoothse}
+gg_smoothed = SmoothSEAbundances(gg[, -(1:2)], spot_coords = gg[, 1:2],
+                                 include.self = TRUE, k = 7,
+                                 X = "imagecol", Y = "imagerow")
+
+colors = rev(RColorBrewer::brewer.pal(11, "Spectral"))
+plist = lapply(colnames(gg_smoothed)[-(1:3)], function(se){
+  p = SpatialView(gg_smoothed, by = se, 
+                  X = "imagecol", Y = "imagerow", pt.size = 0.2) + 
+    coord_fixed() + scale_color_gradientn(colors = colors) + 
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+    labs(title = se)
+  p
+})
+p = patchwork::wrap_plots(plist, nrow = 3)
+plot(p)
 ```
 
 ## Aggregating SE abundances across Visium spots

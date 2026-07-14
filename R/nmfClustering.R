@@ -55,18 +55,18 @@ nmfClustering <- function(mat, ranks = 10,
     rownames(mat)[!idx] <- paste0(rownames(mat)[!idx], "__pos")
     rownames(mat)[idx] <- paste0(rownames(mat)[idx], "__neg")
   }
-  mat = mat[apply(mat, 1, var) > 0, ]
+  mat = mat[apply(mat, 1, var) > 0, , drop = FALSE]
 
   ## Generate seeds for NMF analysis
   set.seed(seed)
-  seeds = sample(1:2024, max(ranks)*nrun.per.rank, replace = TRUE)
+  seeds = sample(1:6280, nrun.per.rank, replace = FALSE)
 
   ## NMF analysis
   ranks = sort(ranks)
   if(length(ranks)>=nrun.per.rank){
     estim.list <- mclapply(ranks, function(k){
       tmp = lapply(1:nrun.per.rank, function(i){
-        NMF::nmf(mat, k, nrun = 1, method = nmf.method, seed = seeds[k*i], ...)
+        NMF::nmf(mat, k, nrun = 1, method = nmf.method, seed = seeds[i], ...)
       })
       suppressWarnings(NMF:::NMFfitX(tmp, .merge = T))
     }, mc.cores = ncores)
@@ -74,7 +74,7 @@ nmfClustering <- function(mat, ranks = 10,
   }else{
     estim.list <- lapply(ranks, function(k){
       tmp = mclapply(1:nrun.per.rank, function(i){
-        NMF::nmf(mat, k, nrun = 1, method = nmf.method, seed = seeds[k*i], ...)
+        NMF::nmf(mat, k, nrun = 1, method = nmf.method, seed = seeds[i], ...)
       }, mc.cores = ncores)
       suppressWarnings(NMF:::NMFfitX(tmp, .merge = T))
     })

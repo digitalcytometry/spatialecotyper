@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Development of SE deconvolution model to infer SE abundances from bulk gene expression data
 
-This tutorial will demonstrate how to develop an NMF model to deconvolve SEs from bulk gene expression data. This process requires bulk gene expression data with known SE compositions, which we can generate by aggregating single-cell RNA-seq data into pseudo-bulk mixtures. For demonstration, we will use single-cell RNA-seq data from a melanoma sample. 
+This tutorial will demonstrate how to develop an NMF model to deconvolve spatial ecotypes (SEs) from bulk gene expression data. This process requires bulk gene expression data with known SE compositions, which we can generate by aggregating single-cell RNA-seq data into pseudo-bulk mixtures. For demonstration, we will use single-cell RNA-seq data from a melanoma sample. 
 
 Raw count data for this sample are available at  [scRNAseq_demo_counts.tsv](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv) and SE recovery results are available at [scRNAseq_demo_RecoveredSEs.tsv](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_RecoveredSEs.tsv).
 

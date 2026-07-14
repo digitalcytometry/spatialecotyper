@@ -15,7 +15,9 @@ Default is 1000.}
 }
 \value{
 A named numeric vector of two-sided P-values for each SE,
-representing the significance of within-SE co-association.
+representing the significance of within-SE co-association. The signed
+Z-scores underlying these P-values are attached as the `"Zscore"`
+attribute (`attr(result, "Zscore")`).
 }
 \description{
 This function evaluates the statistical significance of co-association

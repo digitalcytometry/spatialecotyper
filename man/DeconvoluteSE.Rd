@@ -36,7 +36,8 @@ This function estimates the abundances of SEs in bulk tumor gene expression data
 using a provided basis matrix (`W`) from NMF model.
 }
 \examples{
-
+library(SpatialEcoTyper)
+library(data.table)
 bulkdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv",
                   sep = "\t", header = TRUE, data.table = FALSE)
 rownames(bulkdata) = bulkdata[, 1]

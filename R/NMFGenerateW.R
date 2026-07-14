@@ -61,12 +61,12 @@ NMFGenerateWList <- function(scdata, scmeta,
   Ws <- mclapply(cts, function(x){
     message(Sys.time(), " Training on ", x, " cells...")
     tmpmeta = scmeta[scmeta$CellType==x, ]
-    tmpdat = scdata[, scmeta$CellType==x]
+    tmpdat = scdata[, scmeta$CellType==x, drop = FALSE]
     if(is.null(Sample)){
       if(nrow(tmpdat)>nfeature){ # Select variable features
         varfeatures = rownames(tmpdat)[order(-apply(tmpdat, 1, var))]
         varfeatures = varfeatures[1:min(nfeature, length(varfeatures))]
-        tmpdat = tmpdat[varfeatures, ]
+        tmpdat = tmpdat[varfeatures, , drop = FALSE]
       }
       if(scale) tmpdat <- as.matrix(Seurat::ScaleData(tmpdat, verbose = FALSE))
     }else{
@@ -81,12 +81,12 @@ NMFGenerateWList <- function(scdata, scmeta,
         ranks = Reduce("+", ranks)
         varfeatures = rownames(tmpdat)[order(-ranks)]
         varfeatures = varfeatures[1:nfeature]
-        tmpdat = tmpdat[varfeatures, ]
+        tmpdat = tmpdat[varfeatures, , drop = FALSE]
       }
       # univariance normalization
       if(scale){
         tmpdat = lapply(samples, function(s){
-          ScaleData(tmpdat[, tmpmeta$Sample==s], verbose = FALSE)
+          ScaleData(tmpdat[, tmpmeta$Sample==s, drop = FALSE], verbose = FALSE)
         })
         tmpdat = do.call(cbind, tmpdat)
         tmpmeta = tmpmeta[match(colnames(tmpdat), rownames(tmpmeta)), ]
@@ -99,7 +99,7 @@ NMFGenerateWList <- function(scdata, scmeta,
         tmpdat = lapply(samples, function(s){
           idx = which(tmpmeta$Sample==s)
           if(length(idx)>balancesize) idx = sample(idx, balancesize)
-          tmpdat[, idx]
+          tmpdat[, idx, drop = FALSE]
         })
         tmpdat = do.call(cbind, tmpdat)
         tmpmeta = tmpmeta[match(colnames(tmpdat), rownames(tmpmeta)), ]
@@ -110,7 +110,7 @@ NMFGenerateWList <- function(scdata, scmeta,
       set.seed(seed)
       idx = sample(nrow(tmpmeta), downsample)
       tmpmeta = tmpmeta[idx, ]
-      tmpdat = tmpdat[, idx]
+      tmpdat = tmpdat[, idx, drop = FALSE]
     }
 
     #### Generate binary H matrix ####
@@ -119,7 +119,7 @@ NMFGenerateWList <- function(scdata, scmeta,
     idx = cbind(row = match(tmpmeta$SE, rownames(H)), col = 1:nrow(tmpmeta))
     idx = as.array(idx)
     H[idx] = 1
-    H = H[rowSums(H)>2, ]
+    H = H[rowSums(H)>2, , drop=FALSE]
     if(nrow(H)<2) return(NULL)
     W = NMFGenerateW(t(H), tmpdat, scale = FALSE, nfeature = nfeature,
                      nfeature.per.se = nfeature.per.se)
@@ -161,7 +161,7 @@ NMFGenerateW <- function(Fracs, ExpMat, scale = TRUE,
   if(nrow(ExpMat)>nfeature){
     varfeatures = rownames(ExpMat)[order(-apply(ExpMat, 1, var))]
     varfeatures = varfeatures[1:min(nfeature, length(varfeatures))]
-    ExpMat = ExpMat[varfeatures, ]
+    ExpMat = ExpMat[varfeatures, , drop = FALSE]
   }
 
   if(scale){
@@ -175,11 +175,10 @@ NMFGenerateW <- function(Fracs, ExpMat, scale = TRUE,
     if(sum(to_predict<0)>0) to_predict = posneg(to_predict)
     to_predict[is.na(to_predict)] = 0
   }
-  # NEW CODE ADDED TO FILTER BASED ON VARIANCE
-  to_predict = to_predict[apply(to_predict, 1, function(x) var(x) > 0), ]
+  to_predict = to_predict[apply(to_predict, 1, function(x) var(x) > 0), , drop = FALSE]
 
   Fracs = as.matrix(t(Fracs))
-  FracsF = Fracs[,colnames(to_predict)]
+  FracsF = Fracs[, colnames(to_predict), drop = FALSE]
 
   my_method <- function (i, v, x, copy = FALSE, eps = .Machine$double.eps, ...) {
     w <- .basis(x)
@@ -205,7 +204,7 @@ NMFGenerateW <- function(Fracs, ExpMat, scale = TRUE,
   dummyH[is.na(dummyH)] = 0
 
   dummyWF = dummyW
-  dummyHF = dummyH[, colnames(to_predict)]
+  dummyHF = dummyH[, colnames(to_predict), drop = FALSE]
 
 
   # NEW CODE ADDED - TOGGLE THIS LINE AS NEEDED
@@ -249,8 +248,8 @@ NMFGenerateW <- function(Fracs, ExpMat, scale = TRUE,
   })
   names(genes) = colnames(delta)
   idx = gsub("__.*", "", rownames(W)) %in% unlist(genes)
-  W = W[idx, ]
-  W = W[order(-rowSums(W)), ]
+  W = W[idx, , drop = FALSE]
+  W = W[order(-rowSums(W)), , drop = FALSE]
   W
 }
 

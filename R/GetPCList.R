@@ -5,7 +5,7 @@
 #'
 #' @param mergedncem A matrix of cell-type-specific gene expression data, with rows
 #' representing genes and columns representing spatial neighborhoods by cell type.
-#' @param min.cells Integer, minimum number of non-zero counts required per gene to retain the gene in the analysis. Default is 3.
+#' @param min.cells Integer, minimum number of non-zero expression required to retain a gene in the analysis. Default is 3.
 #' @param min.features Integer, minimum number of features (genes) required per
 #' spatial neighborhood to retain the neighborhood in the analysis. Default is 5.
 #' @param nfeatures Integer, number of variable features to select for PCA. Default is 3000.
@@ -32,10 +32,12 @@ GetPCList <- function(mergedncem,
   emb_list <- parallel::mclapply(unique(celltypes), function(ct){
     ncem = mergedncem[, which(celltypes==ct), drop = FALSE]
     colnames(ncem) = gsub("\\.+.*", "", colnames(ncem))
-    if(sum(rowSums(ncem>0)>=min.cells)<min.features) return(NULL)
-    ncem = ncem[rowSums(ncem>0)>=min.cells, ]
-    if(sum(colSums(ncem>0)>=min.features)<max(min.cells, 5)) return(NULL)
-    ncem = ncem[, colSums(ncem>0)>=min.features]
+    idx = rowSums(ncem>0)>=min.cells # remove genes with low detection across cells
+    if(sum(idx)<min.features) return(NULL)
+    ncem = ncem[idx, ]
+    idx = colSums(ncem>0)>=min.features # remove SNs with limited gene expression
+    if(sum(idx)<min.cells) return(NULL)
+    ncem = ncem[, idx]
     tmpobj = CreateSeuratObject(ncem - rowMeans(ncem))
     seurat_version = as.integer(gsub("\\..*", "", as.character(packageVersion("Seurat"))))
     if(seurat_version>=5) tmpobj[["RNA"]]$data = tmpobj[["RNA"]]$counts

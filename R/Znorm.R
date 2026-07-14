@@ -35,15 +35,17 @@ Znorm <- function(mat, groups = NULL){
   if(!(is.matrix(mat)|is(mat, "sparseMatrix"))){
     mat <- as.matrix(mat)
   }
-  groups <- as.character(groups)
-  rgs <- table(groups)
-  if(length(rgs)<2){
+  if(is.null(groups)){
     return(Seurat::ScaleData(mat))
   }else{
+    if(sum(is.na(groups))>0) stop("The group labels can't be NAs.")
+    if(length(groups) != ncol(mat)) stop("Length of group labels does not match the number of columns in the mat.")
+    groups <- as.character(groups)
+    rgs <- table(groups)
     wt <- 1 / rgs[groups]
     wt0 <- matrix(rep(wt, nrow(mat)), nrow = nrow(mat), byrow = TRUE)
-    wtd.mean <- rowSums(wt0  *  mat) / sum(wt)
-    wtd.var <- rowSums(wt0 * (mat - wtd.mean)^2) / (sum(wt) - 1)
+    wtd.mean <- rowSums(wt0  *  mat, na.rm = TRUE) / sum(wt)
+    wtd.var <- rowSums(wt0 * (mat - wtd.mean)^2, na.rm = TRUE) / (sum(wt) - 1)
     wtd.var[wtd.var<=0] <- 1 ## Prevent 0 variance.
     return((mat - wtd.mean) / sqrt(wtd.var))
   }

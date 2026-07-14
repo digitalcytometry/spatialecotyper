@@ -14,6 +14,8 @@ drawRectangleAnnotation(
 )
 }
 \arguments{
+\item{ht}{HeatmapList-class from ComplexHeatmap}
+
 \item{rows}{A vector of row annotation labels. Length must match the number
 of rows in the heatmap.}
 

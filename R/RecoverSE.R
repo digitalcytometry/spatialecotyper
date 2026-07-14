@@ -22,10 +22,10 @@
 #'
 #' @return A data frame with five columns, including CID (cell id), CellType (cell type),
 #' InitSE (raw prediction), SE (processed prediction), and PredScore (prediction probability for the assigned SE).
-#' InitSE records the raw prediction where cells are assigned into 11 init SEs discovered from MERSCOPE data.
-#' Cells were assigned to "NonSE" if  1) they were initially assigned to the two SEs lack of SE-specific cell states,
-#' or cell states do not specific to the SE or do not conserve across cancers or
-#' 2) their prediction score is below the min probability threshold (min.score<0.6) by default.
+#' InitSE records the raw prediction where each cell is assigned to one of the 11 initial SEs discovered from MERSCOPE data.
+#' Cells were assigned to "NonSE" if  1) they are initially assigned to SEs without SE-specific cell states,
+#' 2) they are initially assigned to cell states that are not specific to any SEs or are not conserved across cancers or
+#' 3) their prediction score is below the minimum probability threshold (min.score, 0.6 by default).
 #'
 #' @examples
 #' # see https://digitalcytometry.github.io/spatialecotyper/articles/Recovery_scRNA.html
@@ -105,6 +105,7 @@ RecoverSE <- function(dat, celltypes,
                          SE = colnames(resDF)[apply(resDF, 1, which.max)],
                          PredScore = apply(resDF, 1, max))
   assignRes$SE[assignRes$PredScore<min.score] <- "NonSE"
+  assignRes$SE[assignRes$PredScore==0] <- "NonSE"
   assignRes = assignRes[match(colnames(dat), assignRes$CID), ]
   if(flag=="default"){
     states = readRDS(file.path(system.file("extdata", package = "SpatialEcoTyper"),

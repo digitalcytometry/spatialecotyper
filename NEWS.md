@@ -1,3 +1,8 @@
+# SpatialEcoTyper 1.0.4
+
+  * Add function and tutorial for visualizing SE recovery results
+  * Add function to smooth SE abundances across Visium spots
+  
 # SpatialEcoTyper 1.0.3
 
   * Add function to aggregate SE abundances across Visium spots

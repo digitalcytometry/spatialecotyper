@@ -59,7 +59,7 @@ __Load cell type and SE annotations__
 ## Load the single-cell meta data derived from MultiSpatialEcoTyper analysis
 scmeta <- read.table("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=MultiSE_metadata_final.tsv", 
                      sep = "\t", header = TRUE, row.names = 1)
-scmeta$SE[is.na(scmeta$SE)] = "NonSE" ## cells with NA predictions were assigned into the nonSE group
+scmeta$SE[is.na(scmeta$SE)] = "NonSE" ## cells with NA predictions were assigned into the NonSE group
 
 ## Matches the row names of meta data and column names of expression matrix
 cells <- intersect(colnames(scdata), rownames(scmeta))

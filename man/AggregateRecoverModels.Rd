@@ -55,8 +55,8 @@ Ws_list = lapply(1:30, function(ii){
 })
 aggregated_models <- AggregateRecoverModels(
   model_list = Ws_list,
-  loading_margin = 0.01,
-  min_model_fraction = 0.5
+  delta.threshold = 0.01,
+  min.model.fraction = 0.5
 )
 }
 

@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,11 +82,11 @@
 bulk gene expression data<a class="anchor" aria-label="anchor" href="#development-of-se-deconvolution-model-to-infer-se-abundances-from-bulk-gene-expression-data"></a>
 </h2>
 <p>This tutorial will demonstrate how to develop an NMF model to
-deconvolve SEs from bulk gene expression data. This process requires
-bulk gene expression data with known SE compositions, which we can
-generate by aggregating single-cell RNA-seq data into pseudo-bulk
-mixtures. For demonstration, we will use single-cell RNA-seq data from a
-melanoma sample.</p>
+deconvolve spatial ecotypes (SEs) from bulk gene expression data. This
+process requires bulk gene expression data with known SE compositions,
+which we can generate by aggregating single-cell RNA-seq data into
+pseudo-bulk mixtures. For demonstration, we will use single-cell RNA-seq
+data from a melanoma sample.</p>
 <p>Raw count data for this sample are available at <a href="https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv" class="external-link">scRNAseq_demo_counts.tsv</a>
 and SE recovery results are available at <a href="https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_RecoveredSEs.tsv" class="external-link">scRNAseq_demo_RecoveredSEs.tsv</a>.</p>
 <p><strong>First load required packages for this vignette</strong></p>
@@ -107,6 +107,13 @@ and SE recovery results are available at <a href="https://spatialecotyper.stanfo
 <pre><code><span><span class="co">##   To enable shared memory capabilities, try: install.extras('</span></span>
 <span><span class="co">## NMF</span></span>
 <span><span class="co">## ')</span></span></code></pre>
+<pre><code><span><span class="co">## Loading required package: pals</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: replacing previous import 'Matrix::unpack' by 'tidyr::unpack' when</span></span>
+<span><span class="co">## loading 'SpatialEcoTyper'</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: replacing previous import 'Matrix::expand' by 'tidyr::expand' when</span></span>
+<span><span class="co">## loading 'SpatialEcoTyper'</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: replacing previous import 'Matrix::pack' by 'tidyr::pack' when loading</span></span>
+<span><span class="co">## 'SpatialEcoTyper'</span></span></code></pre>
 <pre><code><span><span class="co">## Registered S3 methods overwritten by 'proxy':</span></span>
 <span><span class="co">##   method               from    </span></span>
 <span><span class="co">##   print.registry_field registry</span></span>
@@ -114,7 +121,7 @@ and SE recovery results are available at <a href="https://spatialecotyper.stanfo
 <div class="section level3">
 <h3 id="loading-data">Loading data<a class="anchor" aria-label="anchor" href="#loading-data"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load single-cell gene expression matrix.</span></span>
 <span><span class="va">counts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv"</span>, sep <span class="op">=</span> <span class="st">"\t"</span>, data.table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span> <span class="op">=</span> <span class="va">counts</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="co">## Set the first column as row names</span></span>
@@ -134,13 +141,13 @@ and SE recovery results are available at <a href="https://spatialecotyper.stanfo
 <span><span class="co">## AC114498.1                  0                  0</span></span>
 <span><span class="co">## AL669831.2                  0                  0</span></span>
 <span><span class="co">## LINC01409                   0                  0</span></span></code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load SE recovery results</span></span>
 <span><span class="va">SEs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_RecoveredSEs.tsv"</span>, sep <span class="op">=</span> <span class="st">"\t"</span>, row.names <span class="op">=</span> <span class="fl">1</span>, header <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">SEs</span> <span class="op">=</span> <span class="va">SEs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">SEs</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">]</span> <span class="co"># extract SE predictions</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">SEs</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 1337</span></span></code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">SEs</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## SEs</span></span>
 <span><span class="co">## NonSE   SE1   SE2   SE3   SE4   SE5   SE6   SE7   SE8   SE9 </span></span>
@@ -166,7 +173,7 @@ Based on the resulting fractions, it samples 1,000 cells per pseudo-bulk
 mixture with replacement, aggregates their transcriptomes in non-log
 linear space, and normalizes the resulting mixture to log CPM using
 Seurat’s <code>NormalizeData</code>.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">=</span> <span class="fu"><a href="../reference/CreatePseudobulks.html">CreatePseudobulks</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">counts</span>, groups <span class="op">=</span> <span class="va">SEs</span>, n_mixtures <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="co">## This step took ~4 min for the demo.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">Mixtures</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Gene expression matrix of pseudobulks</span></span></code></pre></div>
@@ -177,7 +184,7 @@ Seurat’s <code>NormalizeData</code>.</p>
 <span><span class="co">## AC114498.1 0.0009226095 0.001849908 0.012487922 0.007915024 0.0009235317</span></span>
 <span><span class="co">## AL669831.2 0.0003700004 0.000000000 0.000000000 0.000000000 0.0000000000</span></span>
 <span><span class="co">## LINC01409  0.0388370335 0.046997175 0.048489613 0.033545565 0.0350300209</span></span></code></pre>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">Fracs</span><span class="op">)</span> <span class="co">## SE fractions in pseudobulks</span></span></code></pre></div>
 <pre><code><span><span class="co">##                  NonSE        SE1        SE2        SE3        SE4        SE5</span></span>
 <span><span class="co">## Pseudobulk1 0.09634633 0.06078223 0.08168480 0.18168768 0.15460683 0.05722716</span></span>
@@ -211,7 +218,7 @@ to form the final training data for the NMF model.</p>
 2000 variable features (<code>nfeature</code> argument) for training.
 After training, it retains 50 genes per SE (<code>nfeature.per.se</code>
 argument) in the model. Users can tune the parameters accordingly.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">W</span> <span class="op">=</span> <span class="fu"><a href="../reference/NMFGenerateW.html">NMFGenerateW</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">Fracs</span>, <span class="va">result</span><span class="op">$</span><span class="va">Mixtures</span><span class="op">)</span></span>
 <span><span class="co">## This step took less than 1 min for the demo.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">W</span><span class="op">)</span></span></code></pre></div>
@@ -229,7 +236,7 @@ argument) in the model. Users can tune the parameters accordingly.</p>
 <span><span class="co">## IGKV1-5__neg  3.935260e-05 6.133635e-01 2.220446e-16 3.135628e-01 4.204170e-01</span></span>
 <span><span class="co">## PPP1R14A__pos 2.220446e-16 2.220446e-16 2.220446e-16 2.220446e-16 2.220446e-16</span></span>
 <span><span class="co">## FRZB__pos     2.220446e-16 2.220446e-16 2.220446e-16 2.220446e-16 2.220446e-16</span></span></code></pre>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Save the model for late use.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">W</span>, <span class="st">"SE_Deconvolution_W.rds"</span><span class="op">)</span></span></code></pre></div>
 <p>The resulting W matrix can be used to infer SE abundances from bulk
@@ -244,7 +251,7 @@ Gene Expression Data</a>.</p>
 <p>The session info allows users to replicate the exact environment and
 identify potential discrepancies in package versions or configurations
 that might be causing problems.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
@@ -265,61 +272,62 @@ that might be causing problems.</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] SpatialEcoTyper_1.0.3 NMF_0.28              Biobase_2.64.0       </span></span>
-<span><span class="co">##  [4] BiocGenerics_0.50.0   cluster_2.1.6         rngtools_1.5.2       </span></span>
-<span><span class="co">##  [7] registry_0.5-1        RANN_2.6.2            Matrix_1.7-0         </span></span>
-<span><span class="co">## [10] data.table_1.16.0     Seurat_5.1.0          SeuratObject_5.0.2   </span></span>
-<span><span class="co">## [13] sp_2.1-4              ggplot2_3.5.1         dplyr_1.1.4          </span></span>
+<span><span class="co">##  [1] SpatialEcoTyper_1.0.4 pals_1.9              NMF_0.28             </span></span>
+<span><span class="co">##  [4] Biobase_2.64.0        BiocGenerics_0.50.0   cluster_2.1.6        </span></span>
+<span><span class="co">##  [7] rngtools_1.5.2        registry_0.5-1        RANN_2.6.2           </span></span>
+<span><span class="co">## [10] Matrix_1.7-0          data.table_1.18.4     Seurat_5.1.0         </span></span>
+<span><span class="co">## [13] SeuratObject_5.0.2    sp_2.1-4              ggplot2_4.0.3        </span></span>
+<span><span class="co">## [16] dplyr_1.2.1          </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##   [1] RcppAnnoy_0.0.22       splines_4.4.1          later_1.3.2           </span></span>
-<span><span class="co">##   [4] tibble_3.2.1           polyclip_1.10-7        fastDummies_1.7.4     </span></span>
-<span><span class="co">##   [7] lifecycle_1.0.4        sf_1.1-0               doParallel_1.0.17     </span></span>
+<span><span class="co">##   [4] tibble_3.3.1           polyclip_1.10-7        fastDummies_1.7.4     </span></span>
+<span><span class="co">##   [7] lifecycle_1.0.5        sf_1.1-0               doParallel_1.0.17     </span></span>
 <span><span class="co">##  [10] globals_0.16.3         lattice_0.22-6         MASS_7.3-60.2         </span></span>
-<span><span class="co">##  [13] magrittr_2.0.3         plotly_4.10.4          sass_0.4.9            </span></span>
+<span><span class="co">##  [13] magrittr_2.0.5         plotly_4.10.4          sass_0.4.9            </span></span>
 <span><span class="co">##  [16] rmarkdown_2.28         jquerylib_0.1.4        yaml_2.3.10           </span></span>
 <span><span class="co">##  [19] httpuv_1.6.15          sctransform_0.4.1      spam_2.10-0           </span></span>
 <span><span class="co">##  [22] spatstat.sparse_3.1-0  reticulate_1.39.0      cowplot_1.1.3         </span></span>
-<span><span class="co">##  [25] pbapply_1.7-2          DBI_1.3.0              RColorBrewer_1.1-3    </span></span>
-<span><span class="co">##  [28] abind_1.4-5            Rtsne_0.17             purrr_1.0.2           </span></span>
-<span><span class="co">##  [31] circlize_0.4.16        IRanges_2.38.1         S4Vectors_0.42.1      </span></span>
-<span><span class="co">##  [34] ggrepel_0.9.6          irlba_2.3.5.1          listenv_0.9.1         </span></span>
-<span><span class="co">##  [37] spatstat.utils_3.1-0   units_1.0-1            goftest_1.2-3         </span></span>
-<span><span class="co">##  [40] RSpectra_0.16-2        spatstat.random_3.3-1  fitdistrplus_1.2-1    </span></span>
-<span><span class="co">##  [43] parallelly_1.38.0      pkgdown_2.1.0          leiden_0.4.3.1        </span></span>
-<span><span class="co">##  [46] codetools_0.2-20       tidyselect_1.2.1       shape_1.4.6.1         </span></span>
-<span><span class="co">##  [49] matrixStats_1.4.1      stats4_4.4.1           spatstat.explore_3.3-2</span></span>
-<span><span class="co">##  [52] jsonlite_1.8.8         GetoptLong_1.0.5       e1071_1.7-16          </span></span>
-<span><span class="co">##  [55] progressr_0.14.0       ggridges_0.5.6         survival_3.6-4        </span></span>
-<span><span class="co">##  [58] iterators_1.0.14       systemfonts_1.1.0      foreach_1.5.2         </span></span>
-<span><span class="co">##  [61] tools_4.4.1            ragg_1.3.2             ica_1.0-3             </span></span>
-<span><span class="co">##  [64] Rcpp_1.0.13            glue_1.7.0             gridExtra_2.3         </span></span>
-<span><span class="co">##  [67] xfun_0.52              withr_3.0.1            BiocManager_1.30.25   </span></span>
-<span><span class="co">##  [70] fastmap_1.2.0          boot_1.3-30            fansi_1.0.6           </span></span>
-<span><span class="co">##  [73] spData_2.3.4           digest_0.6.37          R6_2.5.1              </span></span>
-<span><span class="co">##  [76] mime_0.12              wk_0.9.5               textshaping_0.4.0     </span></span>
-<span><span class="co">##  [79] colorspace_2.1-1       scattermore_1.2        tensor_1.5            </span></span>
-<span><span class="co">##  [82] spatstat.data_3.1-2    utf8_1.2.4             tidyr_1.3.1           </span></span>
-<span><span class="co">##  [85] generics_0.1.3         class_7.3-22           httr_1.4.7            </span></span>
-<span><span class="co">##  [88] htmlwidgets_1.6.4      spdep_1.4-2            uwot_0.2.2            </span></span>
-<span><span class="co">##  [91] pkgconfig_2.0.3        gtable_0.3.5           ComplexHeatmap_2.20.0 </span></span>
-<span><span class="co">##  [94] lmtest_0.9-40          htmltools_0.5.8.1      dotCall64_1.1-1       </span></span>
-<span><span class="co">##  [97] clue_0.3-65            scales_1.3.0           png_0.1-8             </span></span>
-<span><span class="co">## [100] spatstat.univar_3.0-1  knitr_1.48             rstudioapi_0.16.0     </span></span>
-<span><span class="co">## [103] reshape2_1.4.4         rjson_0.2.22           nlme_3.1-164          </span></span>
-<span><span class="co">## [106] proxy_0.4-27           cachem_1.1.0           zoo_1.8-12            </span></span>
-<span><span class="co">## [109] GlobalOptions_0.1.2    stringr_1.5.1          KernSmooth_2.23-24    </span></span>
-<span><span class="co">## [112] miniUI_0.1.1.1         s2_1.1.9               desc_1.4.3            </span></span>
-<span><span class="co">## [115] pillar_1.9.0           grid_4.4.1             vctrs_0.6.5           </span></span>
-<span><span class="co">## [118] promises_1.3.0         xtable_1.8-4           evaluate_0.24.0       </span></span>
-<span><span class="co">## [121] cli_3.6.3              compiler_4.4.1         rlang_1.1.4           </span></span>
-<span><span class="co">## [124] crayon_1.5.3           future.apply_1.11.2    classInt_0.4-11       </span></span>
-<span><span class="co">## [127] plyr_1.8.9             fs_1.6.4               stringi_1.8.4         </span></span>
-<span><span class="co">## [130] viridisLite_0.4.2      deldir_2.0-4           gridBase_0.4-7        </span></span>
-<span><span class="co">## [133] munsell_0.5.1          lazyeval_0.2.2         spatstat.geom_3.3-2   </span></span>
-<span><span class="co">## [136] RcppHNSW_0.6.0         patchwork_1.2.0        future_1.34.0         </span></span>
-<span><span class="co">## [139] shiny_1.9.1            ROCR_1.0-11            igraph_2.0.3          </span></span>
-<span><span class="co">## [142] bslib_0.8.0</span></span></code></pre>
+<span><span class="co">##  [25] mapproj_1.2.11         pbapply_1.7-2          DBI_1.3.0             </span></span>
+<span><span class="co">##  [28] RColorBrewer_1.1-3     maps_3.4.2             abind_1.4-8           </span></span>
+<span><span class="co">##  [31] Rtsne_0.17             purrr_1.0.2            circlize_0.4.18       </span></span>
+<span><span class="co">##  [34] IRanges_2.38.1         S4Vectors_0.42.1       ggrepel_0.9.6         </span></span>
+<span><span class="co">##  [37] irlba_2.3.5.1          listenv_0.9.1          spatstat.utils_3.1-0  </span></span>
+<span><span class="co">##  [40] units_1.0-1            goftest_1.2-3          RSpectra_0.16-2       </span></span>
+<span><span class="co">##  [43] spatstat.random_3.3-1  fitdistrplus_1.2-1     parallelly_1.38.0     </span></span>
+<span><span class="co">##  [46] pkgdown_2.1.0          leiden_0.4.3.1         codetools_0.2-20      </span></span>
+<span><span class="co">##  [49] tidyselect_1.2.1       shape_1.4.6.1          farver_2.1.2          </span></span>
+<span><span class="co">##  [52] matrixStats_1.5.0      stats4_4.4.1           spatstat.explore_3.3-2</span></span>
+<span><span class="co">##  [55] jsonlite_1.8.8         GetoptLong_1.1.1       e1071_1.7-16          </span></span>
+<span><span class="co">##  [58] progressr_0.14.0       ggridges_0.5.6         survival_3.6-4        </span></span>
+<span><span class="co">##  [61] iterators_1.0.14       systemfonts_1.1.0      foreach_1.5.2         </span></span>
+<span><span class="co">##  [64] tools_4.4.1            ragg_1.3.2             ica_1.0-3             </span></span>
+<span><span class="co">##  [67] Rcpp_1.1.2             glue_1.8.1             gridExtra_2.3.1       </span></span>
+<span><span class="co">##  [70] xfun_0.52              withr_3.0.3            BiocManager_1.30.25   </span></span>
+<span><span class="co">##  [73] fastmap_1.2.0          boot_1.3-30            spData_2.3.4          </span></span>
+<span><span class="co">##  [76] digest_0.6.39          R6_2.6.1               mime_0.12             </span></span>
+<span><span class="co">##  [79] wk_0.9.5               textshaping_0.4.0      colorspace_2.1-2      </span></span>
+<span><span class="co">##  [82] scattermore_1.2        tensor_1.5             dichromat_2.0-0.1     </span></span>
+<span><span class="co">##  [85] spatstat.data_3.1-2    tidyr_1.3.1            generics_0.1.4        </span></span>
+<span><span class="co">##  [88] class_7.3-22           httr_1.4.7             htmlwidgets_1.6.4     </span></span>
+<span><span class="co">##  [91] spdep_1.4-2            uwot_0.2.2             pkgconfig_2.0.3       </span></span>
+<span><span class="co">##  [94] gtable_0.3.6           ComplexHeatmap_2.20.0  lmtest_0.9-40         </span></span>
+<span><span class="co">##  [97] S7_0.2.2               htmltools_0.5.8.1      dotCall64_1.1-1       </span></span>
+<span><span class="co">## [100] clue_0.3-68            scales_1.4.0           png_0.1-9             </span></span>
+<span><span class="co">## [103] spatstat.univar_3.0-1  knitr_1.48             rstudioapi_0.16.0     </span></span>
+<span><span class="co">## [106] reshape2_1.4.4         rjson_0.2.23           nlme_3.1-164          </span></span>
+<span><span class="co">## [109] proxy_0.4-27           cachem_1.1.0           zoo_1.8-12            </span></span>
+<span><span class="co">## [112] GlobalOptions_0.1.4    stringr_1.5.1          KernSmooth_2.23-24    </span></span>
+<span><span class="co">## [115] miniUI_0.1.1.1         s2_1.1.9               desc_1.4.3            </span></span>
+<span><span class="co">## [118] pillar_1.11.1          grid_4.4.1             vctrs_0.7.3           </span></span>
+<span><span class="co">## [121] promises_1.3.0         xtable_1.8-4           evaluate_0.24.0       </span></span>
+<span><span class="co">## [124] cli_3.6.6              compiler_4.4.1         rlang_1.3.0           </span></span>
+<span><span class="co">## [127] crayon_1.5.3           future.apply_1.11.2    classInt_0.4-11       </span></span>
+<span><span class="co">## [130] plyr_1.8.9             fs_1.6.4               stringi_1.8.4         </span></span>
+<span><span class="co">## [133] viridisLite_0.4.3      deldir_2.0-4           gridBase_0.4-7        </span></span>
+<span><span class="co">## [136] lazyeval_0.2.2         spatstat.geom_3.3-2    RcppHNSW_0.6.0        </span></span>
+<span><span class="co">## [139] patchwork_1.2.0        future_1.34.0          shiny_1.9.1           </span></span>
+<span><span class="co">## [142] ROCR_1.0-11            igraph_2.0.3           bslib_0.8.0</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -46,7 +46,7 @@ include "None" (default), "SCT", or other methods compatible with Seurat's `Norm
 When an integer vector is supplied, the function will test all supplied numbers and
 select the optimal number, which takes time.}
 
-\item{nrun.per.rank}{An integer specifying the the number of runs per rank for NMF (default: 30).}
+\item{nrun.per.rank}{An integer specifying the number of runs per rank for NMF (default: 30).}
 
 \item{min.coph}{Numeric specifying the minimum cophenetic coefficient required for a rank to be optimal.}
 
@@ -96,5 +96,4 @@ This function takes a list of gene expression matrices and corresponding metadat
 }
 \examples{
 # See https://digitalcytometry.github.io/spatialecotyper/docs/articles/Integration.html
-
 }

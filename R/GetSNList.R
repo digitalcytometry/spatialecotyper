@@ -6,8 +6,6 @@
 #'
 #' @param emb A matrix contains the embedding, with rows correspond to principal
 #' components (PCs) or features, and columns correspond to spatial neighborhoods.
-#' @param npcs An integer specifying the number of principal components or features
-#' for the analysis. Default is 20.
 #' @param k An integer specifying the number of nearest neighbors to consider when constructing the KNN graph.
 #' Default is 50.
 #'
@@ -23,7 +21,7 @@
 #' @importFrom parallel mclapply
 #'
 
-getSN <- function(emb, npcs = 20, k = 50){
+getSN <- function(emb, k = 50){
   tmpK = min(k, ncol(emb)-1)
   knn = RANN::nn2(data = t(emb), query = t(emb), k = tmpK)
   W = Matrix(0, nrow = ncol(emb), ncol = ncol(emb), sparse = TRUE)
@@ -33,18 +31,24 @@ getSN <- function(emb, npcs = 20, k = 50){
     ## Too big integers will be converted to NA
     for(i in 1:ncol(W)){
       idx = knn$nn.idx[i, ]
-      idx = idx[idx > 0]
       tmp = knn$nn.dists[i, ]+1
-      # tmp <- tmp[!(is.na(tmp)|is.infinite(tmp))]
-      W[idx, i] = tmp
+      idx2 = idx[idx > 0]
+      tmp = tmp[idx > 0]
+      idx_tmp = !(is.na(tmp)|is.infinite(tmp))
+      tmp = tmp[idx_tmp]
+      idx2 = idx2[idx_tmp]
+      W[idx2, i] = tmp
     }
   }else{
     for(i in 1:tmpK){
       idx = nrow(W) * (1:ncol(W)-1) + knn$nn.idx[, i]
-      idx = idx[knn$nn.idx[, i]>0]
       tmp = knn$nn.dists[, i]+1
-      tmp = tmp[!(is.na(tmp)|is.infinite(tmp))]
-      W[idx] = tmp
+      idx2 = idx[knn$nn.idx[, i]>0]
+      tmp = tmp[knn$nn.idx[, i]>0]
+      idx_tmp = !(is.na(tmp)|is.infinite(tmp))
+      tmp = tmp[idx_tmp]
+      idx2 = idx2[idx_tmp]
+      W[idx2] = tmp
     }
   }
   W = drop0(W)
@@ -89,7 +93,7 @@ GetSNList <- function(emb_list,
                       min.cts.per.region = 1,
                       ncores = 1){
   emb_list <- lapply(emb_list, function(x){
-    x[1:min(npcs, nrow(x)), ]
+    x[1:min(npcs, nrow(x)), , drop=FALSE]
   })
   nspots <- table(unlist(lapply(emb_list, colnames)))
   if(sum(nspots<min.cts.per.region)>0){
@@ -98,11 +102,11 @@ GetSNList <- function(emb_list,
             min.cts.per.region, " distinct cell types.")
     nspots <- names(nspots)[nspots>=min.cts.per.region]
     emb_list <- lapply(emb_list, function(x){
-      x[, colnames(x) %in% nspots]
+      x[, colnames(x) %in% nspots, drop = FALSE]
     })
   }
   snlist <- mclapply(emb_list, function(emb){
-    getSN(emb, npcs = npcs, k = k)
+    getSN(emb, k = k)
   }, mc.cores = ncores)
   snlist = fillspots(snlist)
   return(snlist)
@@ -137,7 +141,7 @@ fillspots <- function(snlist){
       x = rbind(x, tmp)
       x
     }
-    x[match(spots, rownames(x)), match(spots, colnames(x))]
+    x[match(spots, rownames(x)), match(spots, colnames(x)), drop = FALSE]
   })
 }
 

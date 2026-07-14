@@ -5,21 +5,21 @@
   testdat <- as.matrix(testdat)
   W <- as.matrix(W)
   if(grepl("__", rownames(W))[1]){
-    trainig_gene_set = intersect(unique(gsub("__.*", "", rownames(W))), rownames(testdat))
+    training_gene_set = intersect(unique(gsub("__.*", "", rownames(W))), rownames(testdat))
   }else{
-    trainig_gene_set = intersect(rownames(W), rownames(testdat))
+    training_gene_set = intersect(rownames(W), rownames(testdat))
   }
-  if(length(trainig_gene_set)<5){
+  if(length(training_gene_set)<5){
     H0 = matrix(NA, nrow = ncol(testdat), ncol = ncol(W))
     rownames(H0) = colnames(testdat)
     colnames(H0) = colnames(W)
     warning("Too few genes (<5) overlap with the model. Return NA predictions. ")
     return(t(H0))
   }
-  testdat = testdat[match(trainig_gene_set, rownames(testdat)), ]
+  testdat = testdat[match(training_gene_set, rownames(testdat)), , drop = FALSE]
   if(scale){ testdat <- Seurat::ScaleData(testdat, verbose = FALSE) }
   testdat[is.na(testdat)] = 0
-  rownames(testdat) = trainig_gene_set
+  rownames(testdat) = training_gene_set
   testdat <- as.matrix(testdat)
   if(grepl("__", rownames(W))[1]){
     to_predict = as.matrix(NMF::posneg(testdat))
@@ -29,10 +29,10 @@
   }else{
     to_predict = as.matrix(testdat)
   }
-  to_predict = to_predict[apply(to_predict, 1, function(x) var(x) > 0), ]
+  to_predict = to_predict[apply(to_predict, 1, function(x) var(x) > 0), , drop = FALSE]
   features <- intersect(rownames(to_predict), rownames(W))
-  W <- W[match(features, rownames(W)), ]
-  to_predict <- to_predict[match(features, rownames(to_predict)), ]
+  W <- W[match(features, rownames(W)), , drop = FALSE]
+  to_predict <- to_predict[match(features, rownames(to_predict)), , drop = FALSE]
   W[is.na(W)] <- 0
   to_predict[is.na(to_predict)] <- 0
 
@@ -90,7 +90,8 @@
 #' @return A matrix representing the NMF prediction scores, with rows as samples/cells and columns as SE groups.
 #'
 #' @examples
-#'
+#' library(data.table)
+#' library(SpatialEcoTyper)
 #' bulkdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv",
 #'                   sep = "\t", header = TRUE, data.table = FALSE)
 #' rownames(bulkdata) = bulkdata[, 1]
@@ -109,14 +110,15 @@ NMFpredict <- function(W, testdat,
                        ncell.per.run = 500,
                        sum2one = TRUE,
                        ncores = 1){
+
   ## Prediction
   if(scale){
-    ngenes = colSums(testdat<1e-16)
+    ngenes = colSums(testdat>1e-16)
     cantpred = colnames(testdat)[ngenes<3]
     if(length(cantpred)>0){
-      warning(length(cantpred), " cells are omitted due to lack of model gene expression")
+      warning(length(cantpred), " cells are omitted due to a lack of genes.")
     }
-    testdat = testdat[, ngenes>=3]
+    testdat = testdat[, ngenes>=3, drop = FALSE]
     testdat = Seurat::ScaleData(testdat, verbose = FALSE)
   }
   if(ncol(testdat)>ncell.per.run){
@@ -124,7 +126,7 @@ NMFpredict <- function(W, testdat,
     ncells <- ceiling(ncol(testdat)/nfold)
     H <- mclapply(1:nfold, function(x){
       idx <- ((x-1)*ncells+1):min(ncol(testdat), x*ncells)
-      tmpdat2 <- testdat[, idx]
+      tmpdat2 <- testdat[, idx, drop = FALSE]
       .nmf.predict(W, tmpdat2, scale = FALSE, normalize = sum2one)
     }, mc.cores = ncores)
     H <- do.call(cbind, H)

@@ -15,7 +15,8 @@
 #' @return A matrix of SE abundances in bulk tumors.
 #'
 #' @examples
-#'
+#' library(SpatialEcoTyper)
+#' library(data.table)
 #' bulkdata <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv",
 #'                   sep = "\t", header = TRUE, data.table = FALSE)
 #' rownames(bulkdata) = bulkdata[, 1]
@@ -28,6 +29,7 @@
 #' @export
 #'
 #' @importFrom parallel mclapply
+#' @importFrom Seurat ScaleData
 #'
 DeconvoluteSE <- function(dat, scale = TRUE, W = NULL,
                           nsample.per.run = 500,
@@ -36,12 +38,11 @@ DeconvoluteSE <- function(dat, scale = TRUE, W = NULL,
     W <- readRDS(file.path(system.file("extdata", package = "SpatialEcoTyper"),
                            "Bulk_SE_Recovery_W.rds"))
   }
-  genes = unique(gsub("_.*", "", rownames(W)))
-  dat = dat[rownames(dat) %in% genes, ]
+  dat = dat[rownames(dat) %in% gsub("_.*", "", rownames(W)), ]
+
   if(all(dat>=0) & max(dat)>80){
     dat = log2(dat+1)
   }
-  dat = dat[rownames(dat) %in% gsub("_.*", "", rownames(W)), ]
   if(scale) dat = ScaleData(dat, verbose = FALSE)
   # if(min(dat)>=0){
   #   ngenes = colSums(dat<1e-16)

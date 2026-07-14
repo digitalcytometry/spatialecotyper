@@ -13,6 +13,7 @@
 #' Marker genes not present in the dataset are automatically excluded. If no
 #' markers from a given gene set are detected, NA values are returned for that set.
 #'
+#'
 #' @return A list containing:
 #' \describe{
 #'   \item{AvgExp}{A scaled numeric matrix of average expression values,
@@ -53,7 +54,7 @@ AverageMarkerExpression = function(obj, group.by = "SE", genesets = NULL){
                                 "SE_consensus_markers.rds"))
     row_title = "SE consensus markers"
   }else{
-    row_title = "Custome gene sets"
+    row_title = "Custom gene sets"
   }
   pseudobulk = AverageExpression(obj, group.by = group.by, layer = "data")[[1]]
   pseudobulk = pseudobulk[rowSums(pseudobulk>0)>0, ]
@@ -77,6 +78,6 @@ AverageMarkerExpression = function(obj, group.by = "SE", genesets = NULL){
                   colors = pals::magma(7)[-c(4,6)],
                   column_title = "Spatial ecotypes", column_title_side = "bottom",
                   row_title = row_title,
-                  show_row_names = TRUE, show_column_names = TRUE, )
+                  show_row_names = TRUE, show_column_names = TRUE)
   return(list(AvgExp = avgexprs, p = p))
 }

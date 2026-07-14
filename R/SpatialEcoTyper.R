@@ -36,7 +36,7 @@
 #'   \item{metadata}{Updated metadata with a new column (`SE`) containing spatial ecotype labels.}
 #' }
 #'
-#' @import Seurat
+#' @import Seurat tidyr dplyr
 #' @importFrom parallel detectCores
 #'
 #' @examples
@@ -120,7 +120,7 @@ SpatialEcoTyper <- function(normdata, metadata,
 
   ### Get spatial meta cells for each cell type
   message(Sys.time(), " Construct spatial meta cells for each cell type")
-  if(max(normdata)>50) normdata <- log1p(normdata+1)
+  if(max(normdata)>50) normdata <- log1p(normdata)
   ncem <- GetSpatialMetacells(normdata, metadata,
                               spotCoord = ncmeta,
                               k = k, radius = radius,

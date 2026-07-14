@@ -3,9 +3,10 @@
 #' @param obj A Seurat object or a data frame (with cell names as row names).
 #' @param by A feature name for plotting, e.g. cell type, region, gene expression.
 #' @param X A character specifying the spatial coordinate of x-axis.
-#' @param Y A character specifying the the spatial coordinate of y-axis.
+#' @param Y A character specifying the spatial coordinate of y-axis.
 #' @param jitter A boolean specifying whether add jitters to the cells.
 #' @param slot The slot in Seurat object to pull feature from.
+#' @param coord.fix A boolean specifying whether to fix the aspect ratio of coordinate system
 #' @param highlight.cells A vector specifying the cells for highlighting.
 #' @param control.cells A vector specifying the control cells as background. If not specified,
 #' all the non-highlighting cells will be considered as control.cells.
@@ -49,14 +50,13 @@ SpatialView <- function(obj, by,
                         coord.fix = FALSE,
                         highlight.cells = NULL,
                         control.cells = NULL,
-                        ncol = 3,
                         bg.downsample = 2000,
                         bg.color = "gray80",
                         bg.size = 0.5,
                         bg.alpha = 0.7){
   data <- obj
   if("Seurat" %in% class(obj)){
-    data <- FetchData(obj, na.omit(c(X, Y, by, colnames(obj@meta.data))), slot = slot)
+    data <- FetchData(obj, c(X, Y, by), slot = slot)
   }
 
   if(jitter){

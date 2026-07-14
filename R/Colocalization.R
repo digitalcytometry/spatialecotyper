@@ -114,7 +114,7 @@
 #' If \code{test = TRUE}, a list containing:
 #' \describe{
 #'   \item{ColocIndex}{A matrix of Z-scored colocalization indices between all cell states}
-#'   \item{Pval}{A vector of P-values assessing co-association significance}
+#'   \item{Pval}{A vector of P-values assessing co-association significance.}
 #' }
 #'
 #' If \code{test = FALSE}, returns only the Z-score matrix of colocalization indices.
@@ -174,11 +174,12 @@ Colocalization <- function(scmeta, coords = c("X", "Y"),
                          by = list(State = unlist(lapply(Permutes, rownames))), sd)
   rownames(PermuteSD) <- PermuteSD$State
   PermuteSD <- as.matrix(PermuteSD[, -1])
-  PermuteSD[PermuteSD == 0] <- median(PermuteSD)
+  PermuteSD[PermuteSD == 0] <- 1
 
   # ---- Z-score ----
   Zscores <- (Obs - PermuteAvg) / PermuteSD
   Zscores[is.na(Zscores)] = 0
+
   if (test) {
     Pval <- CoassociationTest(Zscores, nperm = nperm)
     return(list(ColocIndex = Zscores, Pval = Pval))

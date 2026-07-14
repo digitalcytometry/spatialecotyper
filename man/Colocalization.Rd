@@ -53,7 +53,7 @@ Default is 16.}
 If \code{test = TRUE}, a list containing:
 \describe{
   \item{ColocIndex}{A matrix of Z-scored colocalization indices between all cell states}
-  \item{Pval}{A vector of P-values assessing co-association significance}
+  \item{Pval}{A vector of P-values assessing co-association significance.}
 }
 
 If \code{test = FALSE}, returns only the Z-score matrix of colocalization indices.

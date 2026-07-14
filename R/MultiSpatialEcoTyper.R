@@ -18,7 +18,7 @@
 #' @param nmf_ranks Integer or a vector specifying the number of clusters (10 by default).
 #' When an integer vector is supplied, the function will test all supplied numbers and
 #' select the optimal number, which takes time.
-#' @param nrun.per.rank An integer specifying the the number of runs per rank for NMF (default: 30).
+#' @param nrun.per.rank An integer specifying the number of runs per rank for NMF (default: 30).
 #' @param min.coph Numeric specifying the minimum cophenetic coefficient required for a rank to be optimal.
 #' @param radius Numeric specifying the radius (in the same units as spatial coordinates)
 #' for defining spatial neighborhoods around each cell. Default is 50.
@@ -48,7 +48,7 @@
 #'
 #' @examples
 #' # See https://digitalcytometry.github.io/spatialecotyper/docs/articles/Integration.html
-#'
+#' @import Seurat tidyr dplyr
 #' @export
 #'
 MultiSpatialEcoTyper <- function(data_list,
@@ -116,7 +116,8 @@ MultiSpatialEcoTyper <- function(data_list,
                           metadata = metadata_list[[ss]],
                           outprefix = paste0(outdir, "/", ss),
                           radius = radius,
-                          resolution = subresolution,
+                          nfeatures = nfeatures,
+                          min.features = min.features,
                           min.cts.per.region = min.cts.per.region,
                           minibatch = minibatch,
                           ncores = ncores,

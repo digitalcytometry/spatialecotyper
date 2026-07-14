@@ -118,8 +118,8 @@ HeatmapView <- function(mat,
                         legend_width = 0.3,
                         legend_side = "right",
                         ...){
-  mat[mat>max(breaks)] = max(breaks)
-  mat[mat<min(breaks)] = min(breaks)
+  mat[which(mat>max(breaks))] = max(breaks)
+  mat[which(mat<min(breaks))] = min(breaks)
   colPal = circlize::colorRamp2(breaks, colors)
 
   if(!(is.null(top_ann)|class(top_ann)=="HeatmapAnnotation")){
@@ -217,6 +217,7 @@ heatmap_annotation <- function(df, palettes = NULL,
 #' Unlike simpler implementations, this function correctly handles cases where
 #' the same annotation label appears in multiple disjoint segments (e.g., after
 #' clustering or reordering).
+#' @param ht HeatmapList-class from ComplexHeatmap
 #'
 #' @param rows A vector of row annotation labels. Length must match the number
 #' of rows in the heatmap.

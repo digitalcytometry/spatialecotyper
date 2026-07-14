@@ -1,29 +1,52 @@
 #' Compute co-association of cell states across samples
 #'
 #' This function computes pairwise co-association (Pearson correlation)
-#' between cell states (defined as combinations of SE and cell type)
-#' across samples. It evaluates co-association under multiple data
-#' transformations (with/without non-SE states and missing value handling)
-#' and returns an averaged correlation matrix.
+#' between cell states (defined as combinations of spatial ecotype (SE) and
+#' cell type) across samples. Co-association is evaluated under multiple
+#' abundance calculation schemes that differ in the inclusion of NonSE cells
+#' and the treatment of absent cell states, and the resulting correlation
+#' matrices are averaged to obtain a robust co-association matrix.
 #'
 #' @param scmeta A data.frame containing single-cell metadata.
 #' @param Sample Character. Column name in \code{scmeta} specifying sample IDs.
 #' @param SE Character. Column name in \code{scmeta} specifying spatial ecotype labels.
 #' @param CellType Character. Column name in \code{scmeta} specifying cell type annotations.
-#' @param NonSE Character. Label used to denote non-SE cells (default: "NonSE").
+#' @param NonSE Character. Label used to denote non-SE cells (default: \code{"NonSE"}).
+#' @param nperm Integer. Number of permutations used for significance testing
+#'   when \code{test = TRUE}. Default is 1000.
+#' @param test Logical. If \code{TRUE} (default), performs permutation testing
+#'   using \code{CoassociationTest()} and returns both the co-association matrix
+#'   and the corresponding p-value matrix. If \code{FALSE}, only the
+#'   co-association matrix is returned.
 #'
-#' @return A symmetric matrix of Pearson correlation coefficients between
-#' cell states, averaged across multiple normalization strategies.
+#' @return
+#' If \code{test = TRUE}, a list with the following components:
+#' \describe{
+#'   \item{CoassociationIndex}{A symmetric matrix of averaged Pearson
+#'   correlation coefficients between cell states.}
+#'   \item{Pval}{A matrix of permutation-based p-values for the
+#'   co-association scores.}
+#' }
+#'
+#' If \code{test = FALSE}, a symmetric matrix of averaged Pearson correlation
+#' coefficients between cell states.
 #'
 #' @details
 #' Cell states are defined as concatenations of SE and cell type labels.
-#' The function computes abundances of SE-associated cell state under four schemes:
-#' (1) including all SE and NonSE states, (2) excluding NonSE states,
-#' (3) same as in (1), but treating zero abundance as missing values (NA), and
-#' (4) same as in (2), but treating zero abundance as NA. Pairwise Pearson correlations
-#' between cell states were then calculated across all scRNA-seq samples for each abundance
-#' matrix, using the cor function in R with pairwise complete observations. The final co-association
-#' values were obtained by averaging the correlations across the four schemes.
+#' For each sample and cell type, the relative abundance of each cell state
+#' is calculated under four schemes:
+#' \enumerate{
+#'   \item Including both SE and NonSE cell states, with absent states represented as \code{NA}.
+#'   \item Excluding NonSE cell states, with absent states represented as \code{NA}.
+#'   \item Including both SE and NonSE cell states, with absent states filled with zero.
+#'   \item Excluding NonSE cell states, with absent states filled with zero.
+#' }
+#'
+#' Pairwise Pearson correlations between cell states are then computed across
+#' samples for each abundance matrix using
+#' \code{cor(method = "pearson", use = "pairwise.complete.obs")}. The final
+#' co-association matrix is obtained by averaging the correlation coefficients
+#' across the four schemes while ignoring missing values.
 #'
 #' @importFrom dplyr count group_by mutate filter
 #' @importFrom tidyr pivot_wider

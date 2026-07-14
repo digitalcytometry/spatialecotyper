@@ -36,7 +36,7 @@ represents the Y spatial coordinate (default is "Y").}
 \value{
 A list containing two elements:
 \describe{
-  \item{expdat}{A filtered matrix of gene expression data, converted to a sparse matrix}
+  \item{expdat}{A filtered (sparse) matrix of gene expression data}
   \item{metadata}{A filtered data frame of metadata, aligned with the filtered gene expression data, including reformatted spatial coordinates.}
 }
 }

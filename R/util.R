@@ -39,20 +39,16 @@ mostFrequent <- function(x){ # compute the most frequent category
 #' @export
 #'
 rankSparse <- function(sparseMat){
-  if(is.matrix(sparseMat)){
-    sparseMat <- apply(sparseMat, 2, rank) / nrow(sparseMat)
-  }else{
-    non_zero_indices <- which(sparseMat != 0, arr.ind = TRUE)
-    non_zero_values <- sparseMat@x
+  if(!is(sparseMat, "sparseMatrix")) sparseMat <- as(sparseMat, "sparseMatrix")
+  sparseMat = drop0(sparseMat)
+  non_zero_indices <- which(sparseMat != 0, arr.ind = TRUE)
+  non_zero_values <- sparseMat@x
 
-    # Step 2: Rank non-zero elements within each column
-    sparseMat@x <- ave(non_zero_values, non_zero_indices[, "col"], FUN = rank)
-    sparseMat = sparseMat / nrow(sparseMat)
-  }
+  # Step 2: Rank non-zero elements within each column
+  sparseMat@x <- ave(non_zero_values, non_zero_indices[, "col"], FUN = rank)
+  sparseMat = sparseMat / nrow(sparseMat)
   return(sparseMat)
 }
-
-
 
 #' Generate a List of Colors
 #'

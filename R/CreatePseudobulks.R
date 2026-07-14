@@ -22,6 +22,7 @@
 #' }
 #' @examples
 #' library(SpatialEcoTyper)
+#' library(data.table)
 #' counts <- fread("https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=scRNAseq_demo_counts.tsv",
 #'                 sep = "\t", header = TRUE, data.table = FALSE)
 #' rownames(counts) = counts[, 1]
@@ -49,7 +50,7 @@ CreatePseudobulks <- function(data = NULL, groups, counts = NULL, n_mixtures = 1
   colnames(fracs) <- sort(unique(groups))
   rownames(fracs) <- paste0("Pseudobulk", 1:n_mixtures)
   fracs[fracs<0] <- 0
-  fracs <- fracs[rowSums(fracs>0)>2, ]
+  fracs <- fracs[rowSums(fracs>0)>2, , drop = FALSE]
   fracs <- fracs / rowSums(fracs)
   ncells <- round(fracs*1000)
 
@@ -59,7 +60,7 @@ CreatePseudobulks <- function(data = NULL, groups, counts = NULL, n_mixtures = 1
     cells <- unlist(lapply(ses, function(s){
       sample(names(groups)[groups==s], x[s], replace = TRUE)
     }))
-    rowMeans(data[, cells])
+    rowMeans(data[, cells, drop = FALSE])
   })
   pseudobulk <- Seurat::NormalizeData(pseudobulk, verbose = FALSE)
   return(list(Fracs = fracs, Mixtures = pseudobulk))

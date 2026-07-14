@@ -16,16 +16,24 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # Overview
 
-In this tutorial, we will illustrate how to perform de novo discovery of spatial ecotypes from a single-cell spatial transcriptomics dataset using [SpatialEcoTyper](../reference/SpatialEcoTyper.html).
+In this tutorial, we will illustrate how to perform de novo discovery of spatial ecotypes from a single-cell spatial transcriptomics (ST) dataset using [SpatialEcoTyper](../reference/SpatialEcoTyper.html).
 
-We will be analyzing single-cell spatial transcriptomics data from a melanoma sample (raw data available in [Vizgen's MERSCOPE FFPE Human Immuno-oncology](https://vizgen.com/data-release-program/)). This demo data comprises the spatial expression of 500 genes across 27,907 cells, which are categorized into ten distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells (DC), fibroblasts, endothelial cells, and melanoma cells. For this tutorial, melanoma cells are excluded to reduce computational time; in practice, any cell types can be included.
+# Input requirement
 
-All cells in this demo data are grouped into four spatial regions: tumor, inner margin, outer margin, and stroma. The tumor (tumor and inner margin) and stroma regions (stroma. and outer margin) are defined based on the density of cancer cells, as described in the [CytoSPACE paper](https://www.nature.com/articles/s41587-023-01697-9). The inner and outer margins are defined as regions extending 250 μm inside and outside the tumor boundaries, respectively. Furthermore, we quantified each cell’s distance to the tumor–stroma interface by calculating the shortest Euclidean distance to the nearest tumor region (for stromal cells) or stromal region (for tumor cells). A positive distance indicates cells located within the tumor region, while a negative distance indicates cells located within the stroma.
+All single-cell-scale ST datasets can be analyzed with [SpatialEcoTyper](../reference/SpatialEcoTyper.html) to discover spatial ecotypes (SEs). In our study ([Zhang et al., Nature](https://www.nature.com/articles/s41586-026-10452-4)), we applied SpatialEcoTyper to both MERSCOPE and Xenium datasets and identified highly consistent pan-cancer spatial ecotypes across the two platforms.
 
-[SpatialEcoTyper](../reference/SpatialEcoTyper.html) requires two input data objects:
+Single-cell ST gene expression profiles are inherently affected by transcript spillover. In our study, we addressed this issue by constructing a whitelist of genes expressed in each cell type using a pan-cancer scRNA-seq atlas and removing transcripts that were not included in the corresponding cell-type whitelist. Alternatively, computational methods such as [SPLIT](https://github.com/bdsc-tds/SPLIT) have been developed to decontaminate single-cell ST data by correcting transcript spillover. We recommend applying either a whitelist-based filtering strategy or a dedicated decontamination method before running [SpatialEcoTyper](../reference/SpatialEcoTyper.html), as improving data quality can substantially enhance the robustness and biological interpretability of the discovered spatial ecotypes.
+
+The [SpatialEcoTyper](../reference/SpatialEcoTyper.html) requires two input data objects:
 
 * __Gene expression matrix__: a numeric matrix with genes as rows and cells as columns.
 * __Metadata__: a data frame containing at least three columns: "X" (x-coordinate), "Y" (y-coordinate), and "CellType" (cell type annotation). Row names must match the column names (cell IDs) in the expression matrix.
+
+# Example data
+
+We will be analyzing single-cell spatial transcriptomics data from a melanoma sample (raw data available in [Vizgen's MERSCOPE FFPE Human Immuno-oncology](https://vizgen.com/data-release-program/)). This demo data comprises the spatial expression of 500 genes across 27,907 cells, which are categorized into ten distinct cell types: B cells, CD4 T cells, CD8 T cells, NK cells, plasma cells, macrophages, dendritic cells (DC), fibroblasts, endothelial cells, and melanoma cells. For this tutorial, melanoma cells are excluded to reduce computational time; in practice, any cell types can be included.
+
+All cells in this demo data are grouped into tumor (tumor and inner margin) and stroma regions (stroma and outer margin) based on the density of cancer cells, as described in the [CytoSPACE paper](https://www.nature.com/articles/s41587-023-01697-9). The inner and outer margins are defined as regions extending 250 μm inside and outside the tumor boundaries, respectively. Furthermore, we quantified each cell’s distance to the tumor–stroma interface by calculating the shortest Euclidean distance to the nearest tumor region (for stromal cells) or stromal region (for tumor cells). A positive distance indicates cells located within the tumor region, while a negative distance indicates cells located within the stroma.
 
 __First load required packages for this vignette__
 
@@ -62,7 +70,7 @@ head(scmeta[, c("X", "Y", "CellType")])
 ## Discover spatial ecotypes using the SpatialEcoTyper
 se_results <- SpatialEcoTyper(normdata, scmeta, 
                               outprefix = "Melanoma1_subset",
-                              radius = 50, ncores = 2)
+                              nfeatures = 300, radius = 50, ncores = 2)
 ```
 
 
@@ -167,7 +175,7 @@ Before start, please check key arguments [here](../reference/SpatialEcoTyper.htm
 
 __Choosing the radius parameter__: The optimal spatial neighborhood `radius` depends on the biological question. Larger radii capture broader regional patterns, whereas smaller radii resolve more localized cellular niches. In our analysis, we used a radius of 50 µm, which typically includes ~10–80 neighboring cells and provides a practical balance between granularity and robustness.
 
-__Choosing the number of variable features__: The `nfeatures` argument should be selected according to the underlying data platform. For Vizgen MERSCOPE V1 (500-gene panel), we used 200 highly variable features, whereas for Xenium Prime data, we used 300 variable features. As single-cell spatial transcriptomics technologies continue to evolve, the number of detectable genes per cell has steadily increased. For example, the latest 10x Aera platform captures over 1,000 genes per cell on average. For such high-complexity datasets, we recommend using up to 1,000 highly variable genes for downstream analysis to better capture biological variability.
+__Choosing the number of variable features__: The `nfeatures` argument should be selected according to the underlying data platform. For Vizgen MERSCOPE V1 (500-gene panel) and Xenium Prime data, we used 200/300 highly variable features. As single-cell spatial transcriptomics technologies continue to evolve, the number of detectable genes per cell has steadily increased. For example, the 10x Atera captures over 1,000 genes per cell on average. For such high-complexity datasets, we recommend using up to 1,000 highly variable genes for downstream analysis to better capture biological variability.
 
 __Limiting the number of cell types per spatial neighborhood__: The `min.cts.per.region` argument allows users to filter spatial regions based on cellular diversity by requiring a minimum number of distinct cell types per region (default: ≥ 2). This helps ensure that downstream analyses focus on biologically informative neighborhoods with sufficient cellular heterogeneity.
 
@@ -177,7 +185,7 @@ __Limiting analysis to spatial neighborhoods containing specific cell types__: T
 ```{r snf, eval = TRUE}
 se_results <- SpatialEcoTyper(normdata, scmeta,
                               outprefix = "Melanoma1_subset",
-                              radius = 50, ncores = 2)
+                              nfeatures = 300, radius = 50, ncores = 2)
 ```
 
 <details><summary><strong>Optimizing memory usage</strong></summary>
@@ -333,7 +341,7 @@ Once candidate markers are identified, their expression can be visualized across
 
 The example below identifies SE-specific markers in CD4 T cells and visualizes their relative expression across SEs using a heatmap.
 
-```{r deghmap}
+```{r deghmap, fig.height=10}
 library(tidyr)
 # Identify significant DEGs
 sigDegs = degs %>% filter(CellType=="CD4T") %>% filter(logFC>0 & padj<0.05)

@@ -86,7 +86,7 @@ The SE recovery output contains five columns: cell ID (CID), cell type (CellType
 
 <details><summary><strong>Using custom models</strong></summary>
 
-To use custom model, users should first develop a model following the tutorial [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](TrainRecoveryModels.html). The resulting model can be used for SE recovery. An example model is available at [SE_Recovery_W_list.rds](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SE_Recovery_W_list.rds).
+To use custom model, users should first develop a model following the tutorial [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](TrainRecoveryModel.html). The resulting model can be used for SE recovery. An example model is available at [SE_Recovery_W_list.rds](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SE_Recovery_W_list.rds).
 
 Download a custom model
 ```{r downloadWs, eval=FALSE}
@@ -108,7 +108,7 @@ sepreds <- RecoverSE(normdata, celltypes = scmeta$CellType, Ws = Ws)
 
 After prediction, we recommend retaining only assignments corresponding to SE-specific cell states identified in [Tutorial 4](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html). Cells not assigned to these SE-specific states should be grouped as "NonSE," as they cannot be robustly mapped to the corresponding SE. 
 
-The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore). By default, assignments with PredScore ≥ 0.6 are retained as high-confidence results. For custom models, users are encouraged to determine the optimal threshold based on leave-one-sample-out cross-validation performance.
+The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore). By default, assignments with PredScore ≥ 0.6 are retained as high-confidence results. For custom models, users are encouraged to determine the optimal threshold based on leave-one-sample-out cross-validation.
 
 </details>
 
@@ -119,11 +119,28 @@ __Combine SE recovery results into metadata__
 scmeta$SE = sepreds$SE[match(rownames(scmeta), rownames(sepreds))]
 ```
 
+# Visualization of SE recovery results in the tissue
+
+To visualize the spatial SE landscape, we recommend computing SE abundances within spatial neighborhoods and displaying the continuum of SE levels across the tissue, rather than directly plotting SE assignments. Direct visualization of SE assignments may bias interpretation due to variation in cell density and the presence of a large number of non-SE cells, including cells with low detection of SE marker genes and cells belonging to cell states that are not specific to any individual SE.
+
+```{r spatialmap, eval=TRUE}
+# Compute SE abundances by SNs
+seabunds = ComputeSEAbundanceBySN(scmeta)
+colors = rev(RColorBrewer::brewer.pal(11, "Spectral"))
+plist = lapply(colnames(seabunds)[-(1:3)], function(se){
+  p = SpatialView(seabunds, by = se, X = "X", Y = "Y", pt.size = 0.5) + 
+    coord_fixed() + scale_color_gradientn(colors = colors) + 
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+    labs(title = se)
+  p
+})
+p = patchwork::wrap_plots(plist, nrow = 3)
+plot(p)
+```
+
 # Validation: spatial colocalization of SE cell states
 
-After recovering SE-specific cell states from single-cell ST data, users can validate the SEs by testing whether cell states belonging to the same SE are more spatially colocalized than expected by random chance using the [Colocalization](../reference/Colocalization.html) function. The spatial coordinates (column X and Y), cell type (CellType) and cell state annotations (State) are required for the analysis.
-
-**Note**: By default (`test = TRUE`), the function evaluates the significance of cell state co-localization within each SE and returns a vector of p-values. This analysis requires cell state names to follow the format “SE1_CD4T”, where an underscore separates the SE label from the cell type, enabling extraction of SE groupings from the cell state names.
+After recovering SE-specific cell states from single-cell ST data, users can validate the SEs by testing whether cell states belonging to the same SE are more spatially colocalized than expected by random chance using the [Colocalization](../reference/Colocalization.html) function. The spatial coordinates (column X and Y), SE and cell type (CellType) are required for the analysis. The function also evaluates the significance of cell state colocalization within each SE and returns a vector of p-values.
 
 ```{r coloc, eval=TRUE}
 # Verify the four columns required for the analysis.
@@ -138,15 +155,31 @@ head(coloc_res$ColocIndex[, 1:5]) ## Matrix of colocalization indices between al
 coloc_res$Pval ## Vector of p-values for colocalization significance
 ```
 
+The [ColocalizationMetaAnalysis](../reference/ColocalizationMetaAnalysis.html) function can be used to perform meta-analysis of cell-state colocalization results across samples. It applies Stouffer’s method to combine colocalization indices across ST samples and to aggregate SE-specific z-scores, generating an integrated colocalization index matrix and a meta P value for each SE.
+
+```{r metacoloc, eval=TRUE}
+# Generate a second colocalization result for demonstration of integrative analysis
+coloc_res2 = Colocalization(scmeta, nperm = 100, ncores = 8)
+coloc_res_list = list(Sample1 = coloc_res, Sample2 = coloc_res2)
+# Combine colocalization results from multiple samples using meta-analysis
+meta_coloc_res = ColocalizationMetaAnalysis(coloc_res_list)
+
+# Integrated matrix of cell-state colocalization indices
+head(meta_coloc_res$MetaColocIndex[, 1:5])
+
+# Meta-analysis P values
+meta_coloc_res$MetaPval
+```
+
+
 You can visualize the results using the [CooccurrenceHeatmapView](../reference/CooccurrenceHeatmapView.html) function.
 ```{r visualcoloc}
-p = CooccurrenceHeatmapView(coloc_res$ColocIndex, coloc_res$Pval)
+p = CooccurrenceHeatmapView(meta_coloc_res$MetaColocIndex, meta_coloc_res$MetaPval)
 p = ComplexHeatmap::draw(p)
-ses = gsub("_.*", "", rownames(coloc_res$ColocIndex))
+ses = gsub("_.*", "", rownames(meta_coloc_res$MetaColocIndex))
 drawRectangleAnnotation(p, ses, ses)
 ```
 
-Here, in this small demo data, we can see strong colocalization of cell states within most SEs, whereas SE9 shows a weaker pattern, although it approaches statistical significance (P < 0.1). In contrast, the NonSE group, serving as a negative control, does not exhibit spatial colocalization.
 
 # Validation: spatial autocorrelation
 
@@ -182,7 +215,7 @@ plot(res$p)
 res$AvgExp
 ```
 
-The [AverageMarkerExpression](../reference/AverageMarkerExpression.html) function can also be used to visualize the average expression of user-defined gene sets by specifying the `markers` parameter as a list of gene lists.
+The [AverageMarkerExpression](../reference/AverageMarkerExpression.html) function can also be used to visualize the average expression of user-defined gene sets by specifying the `genesets` parameter as a list of gene lists.
 
 ```{r othermarkers}
 genesets = list(set1 = c("FOS", "EGR1", "DUSP1", "JUNB", "JUN", "FOSB"),

@@ -107,7 +107,7 @@ ComputeNormalizedMoranI <- function(scmeta, coords = c("X", "Y"),
   # ---- Z-score normalization ----
   mu <- colMeans(Bgs)
   sigma <- apply(Bgs, 2, sd)
-  sigma[sigma == 0] <- median(sigma)
+  sigma[sigma == 0] <- 1
 
   zscore <- (Obs - mu) / sigma
 

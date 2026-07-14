@@ -56,7 +56,6 @@ ComputeMetrics <- function(scmeta, SE = "SE",
     colnames(Recalls) <- ses
     Recalls[is.na(Recalls)] = 0
     Recalls <- Recalls / rowSums(Recalls)
-    Recalls[is.na(Recalls)] = 0
 
     Precision <- metas %>% group_by(.data[[Pred]]) %>% count(.data[[SE]]) %>%
       mutate(Fracs = n / sum(n)) %>%
@@ -69,7 +68,6 @@ ComputeMetrics <- function(scmeta, SE = "SE",
     colnames(Precision) <- ses
     Precision[is.na(Precision)] <- 0
     Precision = Precision / rowSums(Precision)
-    Precision[is.na(Precision)] <- 0
 
     # ---- Metric selection ----
     if (metric == "recall") {
@@ -77,10 +75,11 @@ ComputeMetrics <- function(scmeta, SE = "SE",
     } else if (metric == "precision") {
       out <- Precision
     } else {
+      Recalls[is.na(Recalls)] = 0
+      Precision[is.na(Precision)] <- 0
       beta <- ifelse(metric == "F2", 2, 1)
       out <- (1 + beta^2) * Precision * Recalls /
         (beta^2 * Precision + Recalls)
-      out[is.na(out)] <- 0
     }
     return(out)
   })
