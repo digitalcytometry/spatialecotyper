@@ -290,30 +290,30 @@ p-values.</p>
 <span>                           test <span class="op">=</span> <span class="cn">TRUE</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Matrix of colocalization indices between all cell states</span></span></code></pre></div>
 <pre><code><span><span class="co">##                        NonSE_B NonSE_CD4T NonSE_CD8T   NonSE_DC</span></span>
-<span><span class="co">## NonSE_B            3.265136403 -0.1774107 -2.2682281 -2.7868274</span></span>
-<span><span class="co">## NonSE_CD4T        -0.003317375  1.1586776 -0.3802599 -2.8652307</span></span>
-<span><span class="co">## NonSE_CD8T        -2.092051997 -0.4346717  1.9194732 -3.1468917</span></span>
-<span><span class="co">## NonSE_DC          -2.629236308 -2.4138352 -2.9739437 -1.3257280</span></span>
-<span><span class="co">## NonSE_Endothelial -2.157207724  2.2962563 -0.4921598  0.7111869</span></span>
-<span><span class="co">## NonSE_Fibroblast  -9.095637338  4.0506290 -2.6503315  4.2681754</span></span>
+<span><span class="co">## NonSE_B            3.970389238 -0.1624605 -2.1162423 -2.4298632</span></span>
+<span><span class="co">## NonSE_CD4T         0.009812473  1.5134314 -0.3255878 -2.8581591</span></span>
+<span><span class="co">## NonSE_CD8T        -2.006907107 -0.3918131  1.6930296 -2.7574830</span></span>
+<span><span class="co">## NonSE_DC          -2.332089080 -2.3978338 -2.4922694 -1.0597699</span></span>
+<span><span class="co">## NonSE_Endothelial -2.241489706  2.1510424 -0.4820897  0.7969341</span></span>
+<span><span class="co">## NonSE_Fibroblast  -8.066893359  3.8398388 -2.8359897  3.3939711</span></span>
 <span><span class="co">##                   NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B                  -2.1996055</span></span>
-<span><span class="co">## NonSE_CD4T                2.2479095</span></span>
-<span><span class="co">## NonSE_CD8T               -0.7860502</span></span>
-<span><span class="co">## NonSE_DC                  1.1468466</span></span>
-<span><span class="co">## NonSE_Endothelial         1.1798595</span></span>
-<span><span class="co">## NonSE_Fibroblast          3.6536554</span></span></code></pre>
+<span><span class="co">## NonSE_B                  -2.2557678</span></span>
+<span><span class="co">## NonSE_CD4T                2.1074706</span></span>
+<span><span class="co">## NonSE_CD8T               -0.6819464</span></span>
+<span><span class="co">## NonSE_DC                  1.2322100</span></span>
+<span><span class="co">## NonSE_Endothelial         1.2050178</span></span>
+<span><span class="co">## NonSE_Fibroblast          3.7865150</span></span></code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span> <span class="co">## Vector of p-values for colocalization significance</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 1.830725e-01 9.422777e-07 8.075153e-03 1.253369e-03 1.780443e-13 2.013595e-02 </span></span>
+<span><span class="co">## 1.401091e-01 8.529161e-07 1.226892e-02 1.852659e-03 2.166610e-13 3.087928e-02 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 4.661994e-04 1.104305e-04 1.103762e-05 5.397374e-02 </span></span>
+<span><span class="co">## 9.030704e-04 1.145476e-04 1.681407e-05 6.295019e-02 </span></span>
 <span><span class="co">## attr(,"Zscore")</span></span>
 <span><span class="co">##    NonSE      SE1      SE2      SE3      SE4      SE5      SE6      SE7 </span></span>
-<span><span class="co">## 1.331354 4.903325 2.648911 3.226448 7.364326 2.323805 3.499461 3.866451 </span></span>
+<span><span class="co">## 1.475385 4.922853 2.504314 3.112889 7.338092 2.158625 3.319103 3.857511 </span></span>
 <span><span class="co">##      SE8      SE9 </span></span>
-<span><span class="co">## 4.395779 1.927047</span></span></code></pre>
+<span><span class="co">## 4.303474 1.859543</span></span></code></pre>
 <p>The <a href="../reference/ColocalizationMetaAnalysis.html">ColocalizationMetaAnalysis</a>
 function can be used to perform meta-analysis of cell-state
 colocalization results across samples. It applies Stouffer’s method to
@@ -330,32 +330,35 @@ matrix and a meta P value for each SE.</p>
 <span><span class="co"># Integrated matrix of cell-state colocalization indices</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                        NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC</span></span>
-<span><span class="co">## NonSE_B            4.202128644 -0.2414997 -3.1864587 -3.922139</span></span>
-<span><span class="co">## NonSE_CD4T         0.001980834  1.9162945 -0.7114995 -4.147639</span></span>
-<span><span class="co">## NonSE_CD8T        -2.961477010 -0.7719172  2.5248112 -4.072189</span></span>
-<span><span class="co">## NonSE_DC          -3.701821294 -3.5283477 -3.8689562 -1.958927</span></span>
-<span><span class="co">## NonSE_Endothelial -2.990428031  3.2635293 -0.5377002  1.185728</span></span>
-<span><span class="co">## NonSE_Fibroblast  -7.071067312  5.6899418 -3.8619013  5.870893</span></span>
+<span><span class="co">## NonSE_B            5.233744069 -0.2474707 -3.3606688 -3.572136</span></span>
+<span><span class="co">## NonSE_CD4T         0.006112496  2.0296757 -0.5586481 -4.115024</span></span>
+<span><span class="co">## NonSE_CD8T        -3.152517682 -0.6551338  2.4956098 -3.888006</span></span>
+<span><span class="co">## NonSE_DC          -3.422278100 -3.4963289 -3.5821056 -1.732949</span></span>
+<span><span class="co">## NonSE_Endothelial -2.991042985  3.1264029 -0.6024698  1.156264</span></span>
+<span><span class="co">## NonSE_Fibroblast  -7.071067312  5.4299692 -3.7697673  5.351498</span></span>
 <span><span class="co">##                   NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B                  -3.0182767</span></span>
-<span><span class="co">## NonSE_CD4T                3.2005924</span></span>
-<span><span class="co">## NonSE_CD8T               -0.8910858</span></span>
-<span><span class="co">## NonSE_DC                  1.7882288</span></span>
-<span><span class="co">## NonSE_Endothelial         1.7449904</span></span>
-<span><span class="co">## NonSE_Fibroblast          5.5444970</span></span></code></pre>
+<span><span class="co">## NonSE_B                  -3.0245007</span></span>
+<span><span class="co">## NonSE_CD4T                3.0136000</span></span>
+<span><span class="co">## NonSE_CD8T               -0.9020229</span></span>
+<span><span class="co">## NonSE_DC                  1.7705968</span></span>
+<span><span class="co">## NonSE_Endothelial         1.6029810</span></span>
+<span><span class="co">## NonSE_Fibroblast          5.5801747</span></span></code></pre>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Meta-analysis P values</span></span>
 <span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaPval</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 3.967504e-02 7.505801e-10 2.223083e-05 2.077098e-05 5.589288e-20 1.492053e-03 </span></span>
+<span><span class="co">## 3.520380e-02 7.560580e-10 2.940250e-06 2.124253e-05 1.391236e-20 2.273957e-03 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 2.331223e-06 1.768900e-08 5.351536e-09 4.865494e-03</span></span></code></pre>
+<span><span class="co">## 5.797137e-06 1.613424e-08 6.224519e-09 6.287200e-03</span></span></code></pre>
 <p>You can visualize the results using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a></span><span class="op">(</span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaColocIndex</span>, <span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaPval</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co">## Exclude NonSE from the visualization</span></span>
+<span><span class="va">idx</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"NonSE"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaColocIndex</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a></span><span class="op">(</span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaColocIndex</span><span class="op">[</span><span class="op">!</span><span class="va">idx</span>, <span class="op">!</span><span class="va">idx</span><span class="op">]</span>,</span>
+<span>                            <span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaPval</span><span class="op">)</span></span>
 <span><span class="va">p</span> <span class="op">=</span> <span class="fu">ComplexHeatmap</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ComplexHeatmap/man/draw-dispatch.html" class="external-link">draw</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span>
-<span><span class="va">ses</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"_.*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaColocIndex</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ses</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"_.*"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaColocIndex</span><span class="op">)</span><span class="op">[</span><span class="op">!</span><span class="va">idx</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/drawRectangleAnnotation.html">drawRectangleAnnotation</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">ses</span>, <span class="va">ses</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Recovery_scST_files/figure-html/visualcoloc-1.png" width="700"></p>
 </div>

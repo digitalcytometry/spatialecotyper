@@ -174,9 +174,12 @@ meta_coloc_res$MetaPval
 
 You can visualize the results using the [CooccurrenceHeatmapView](../reference/CooccurrenceHeatmapView.html) function.
 ```{r visualcoloc}
-p = CooccurrenceHeatmapView(meta_coloc_res$MetaColocIndex, meta_coloc_res$MetaPval)
+## Exclude NonSE from the visualization
+idx = grepl("NonSE", rownames(meta_coloc_res$MetaColocIndex))
+p = CooccurrenceHeatmapView(meta_coloc_res$MetaColocIndex[!idx, !idx],
+                            meta_coloc_res$MetaPval)
 p = ComplexHeatmap::draw(p)
-ses = gsub("_.*", "", rownames(meta_coloc_res$MetaColocIndex))
+ses = gsub("_.*", "", rownames(meta_coloc_res$MetaColocIndex)[!idx])
 drawRectangleAnnotation(p, ses, ses)
 ```
 

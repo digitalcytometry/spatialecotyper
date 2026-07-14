@@ -75,13 +75,13 @@ sefracs <- DeconvoluteSE(bulkdata, W = new_model)
 ## Compare SE abundances across sample groups
 
 For demonstration purposes, here we compare the SE abundances between primary and metastatic melanoma samples.
-```{r visualse}
+```{r visualse, fig.width=4}
 sefracs = as.data.frame(sefracs)
 sefracs$Group = NA
 sefracs$Group[grepl("01$", rownames(sefracs))] = "Primary"
 sefracs$Group[grepl("06$", rownames(sefracs))] = "Metastatic"
 
-ggplot(sefracs, aes(Group, SE1)) + 
+ggplot(sefracs[!is.na(sefracs$Group), ], aes(Group, SE1)) + 
   geom_boxplot(width = 0.5, outlier.shape = NA) + 
   ggpubr::stat_compare_means(comparisons = list(c("Primary", "Metastatic"))) +
   geom_jitter(width = 0.1, size = 0.2) + 
