@@ -122,10 +122,16 @@ NMFpredict <- function(W, testdat,
     testdat = Seurat::ScaleData(testdat, verbose = FALSE)
   }
   if(ncol(testdat)>ncell.per.run){
-    nfold <- round(ncol(testdat)/ncell.per.run)
-    ncells <- ceiling(ncol(testdat)/nfold)
+    # Split cells into as-equal-as-possible contiguous chunks (sizes differ by at most 1).
+    nfold <- ceiling(ncol(testdat)/ncell.per.run)
+    base_size <- ncol(testdat) %/% nfold
+    remainder <- ncol(testdat) %% nfold
+    fold_sizes <- rep(base_size, nfold)
+    if(remainder>0) fold_sizes[seq_len(remainder)] <- fold_sizes[seq_len(remainder)] + 1
+    fold_ends <- cumsum(fold_sizes)
+    fold_starts <- fold_ends - fold_sizes + 1
     H <- mclapply(1:nfold, function(x){
-      idx <- ((x-1)*ncells+1):min(ncol(testdat), x*ncells)
+      idx <- fold_starts[x]:fold_ends[x]
       tmpdat2 <- testdat[, idx, drop = FALSE]
       .nmf.predict(W, tmpdat2, scale = FALSE, normalize = sum2one)
     }, mc.cores = ncores)

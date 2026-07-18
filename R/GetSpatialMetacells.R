@@ -162,7 +162,6 @@ GetKnnWeights <- function(scmeta, spotmeta,
   weights <- drop0(weights)
   ## Unweight
   weights@x <- rep(1, length(weights@x))
-  ## Remove spots with fewer than two cells
   weights <- weights[, Matrix::colSums(weights)>=min.cells.per.region]
   if(ncol(weights)<5) return(NULL)
   ## Normalize weights
