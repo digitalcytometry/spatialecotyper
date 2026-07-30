@@ -8,9 +8,9 @@ RecoverSE(
   dat,
   celltypes,
   scale = TRUE,
-  ncell.per.run = 500,
+  ncell.per.run = 1000,
   Ws = NULL,
-  min.score = 0.6,
+  min.score = 0,
   ncores = 8
 )
 }
@@ -43,7 +43,7 @@ InitSE (raw prediction), SE (processed prediction), and PredScore (prediction pr
 InitSE records the raw prediction where each cell is assigned to one of the 11 initial SEs discovered from MERSCOPE data.
 Cells were assigned to "NonSE" if  1) they are initially assigned to SEs without SE-specific cell states,
 2) they are initially assigned to cell states that are not specific to any SEs or are not conserved across cancers or
-3) their prediction score is below the minimum probability threshold (min.score, 0.6 by default).
+3) their prediction score is below the minimum probability threshold (min.score=0.6 was used).
 }
 \description{
 This function can recover SEs from scRNA-seq data or single-cell spatial data

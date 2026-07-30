@@ -14,9 +14,11 @@
 #' @param Y Character string specifying the column name in \code{metadata} containing the Y spatial coordinates.
 #' @param CellType Character string specifying the column name in \code{metadata} containing the cell type annotations.
 #' @param spotCoord A data frame containing the spatial coordinates (\code{X} and \code{Y}) of each spatial neighborhood,
-#' with neighborhood identifiers as row names.
+#' with neighborhood identifiers as row names. If NULL, a regular grid of spatial neighborhoods
+#' is generated automatically, spaced `grid.size` apart.
 #' @param k Integer specifying the number of nearest spatial neighbors for constructing metacells.
 #' @param radius Numeric value specifying the radius (in units of spatial coordinates) within which neighboring cells are considered.
+#' @param grid.size numeric, spacing between adjacent SN centers when `spotCoord` is auto-generated.
 #' @param min.cells.per.region Integer specifying the minimum number of cells required in each spatial neighborhood to compute metacells.
 #' @param ncores Integer specifying the number of CPU cores to use for parallel processing (default: 4).
 #'
@@ -53,6 +55,7 @@ GetSpatialMetacells <- function(normdata,
                                 CellType = "CellType",
                                 spotCoord = NULL,
                                 k = 20, radius = 50,
+                                grid.size = 50,
                                 min.cells.per.region = 1,
                                 ncores = 4){
 
@@ -65,6 +68,9 @@ GetSpatialMetacells <- function(normdata,
   metadata$CellType <- metadata[, CellType]
   metadata$X <- metadata[, X]
   metadata$Y <- metadata[, Y]
+  if(!all(colnames(normdata) %in% rownames(metadata))){
+    stop("All column names of `normdata` must have a matching row name in `metadata`.")
+  }
   metadata <- metadata[match(colnames(normdata), rownames(metadata)), ]
 
   if(!(is.matrix(normdata) | is(normdata, "sparseMatrix"))){
@@ -72,14 +78,18 @@ GetSpatialMetacells <- function(normdata,
   }
 
   if(is.null(spotCoord)){
-    binsize = round(radius*1.4)
     spotCoord = metadata
-    spotCoord$SpotID <- paste0("X", round(spotCoord[, X] / binsize),
-                              "_Y", round(spotCoord[, Y] / binsize))
+    spotCoord$SpotID <- paste0("X", round(spotCoord[, X] / grid.size),
+                              "_Y", round(spotCoord[, Y] / grid.size))
     spotCoord <- spotCoord %>% group_by(SpotID) %>%
       summarize(X = median(X), Y = median(Y)) %>% as.data.frame
     rownames(spotCoord) = spotCoord$SpotID
   }else{
+    if(!all(c(X, Y) %in% colnames(spotCoord))){
+      missing_cols = setdiff(c(X, Y), colnames(spotCoord))
+      stop("Required spotCoord columns missing: ", paste0(missing_cols, collapse = ", "),
+           ". `spotCoord` must include the columns named by `X` and `Y`.")
+    }
     spotCoord$X <- spotCoord[, X]
     spotCoord$Y <- spotCoord[, Y]
   }
@@ -88,7 +98,7 @@ GetSpatialMetacells <- function(normdata,
   celltypes = names(celltypes)[celltypes>k]
   metacell_list <- mclapply(celltypes, function(ct){
     tmpmeta <- metadata[metadata$CellType==ct, ]
-    tmpgcm <- normdata[, metadata$CellType==ct]
+    tmpgcm <- normdata[, metadata$CellType==ct, drop = FALSE]
     weights <- GetKnnWeights(scmeta = tmpmeta, spotCoord,
                              k = k, radius = radius,
                              min.cells.per.region = min.cells.per.region)
@@ -113,9 +123,6 @@ GetKnnWeights <- function(scmeta, spotmeta,
                           k = 20, radius = 50,
                           X = "X", Y = "Y",
                           min.cells.per.region = 1){
-  require("Matrix")
-  require("RANN")
-  require("dplyr")
   locs <- as.data.frame(scmeta[, c(X, Y)])
   colnames(locs) <- c("X", "Y")
   spot_locs = as.data.frame(spotmeta[, c(X, Y)])
@@ -125,7 +132,7 @@ GetKnnWeights <- function(scmeta, spotmeta,
   ## sparse distance matrix
   if(k>nrow(locs)) k <- nrow(locs)-1
   knn <- RANN::nn2(data = as.matrix(locs), query = as.matrix(spot_locs), k = k)
-  weights <- as(matrix(0, nrow = nrow(locs), ncol = nrow(spot_locs)), "sparseMatrix")
+  weights <- Matrix::Matrix(0, nrow = nrow(locs), ncol = nrow(spot_locs), sparse = TRUE)
   rownames(weights) <- rownames(locs)
   colnames(weights) <- rownames(spot_locs)
 
@@ -162,7 +169,7 @@ GetKnnWeights <- function(scmeta, spotmeta,
   weights <- drop0(weights)
   ## Unweight
   weights@x <- rep(1, length(weights@x))
-  weights <- weights[, Matrix::colSums(weights)>=min.cells.per.region]
+  weights <- weights[, Matrix::colSums(weights)>=min.cells.per.region, drop = FALSE]
   if(ncol(weights)<5) return(NULL)
   ## Normalize weights
   weights <- Matrix::t(Matrix::t(weights) / Matrix::colSums(weights))

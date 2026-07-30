@@ -103,19 +103,18 @@ they sum to 1 for each sample.</p></dd>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">bulkdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv"</span>,</span></span>
 <span class="r-in"><span>                  sep <span class="op">=</span> <span class="st">"\t"</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, data.table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>URL 'https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv': Timeout of 60 seconds was reached</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in download.file(file, tmpFile, method = method, mode = "wb", quiet = !showProgress):</span> download from 'https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv' failed</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">bulkdata</span><span class="op">)</span> <span class="op">=</span> <span class="va">bulkdata</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bulkdata' not found</span>
 <span class="r-in"><span><span class="va">bulkdata</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">bulkdata</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'as.matrix': object 'bulkdata' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Predict SE abundances in bulk tumors</span></span></span>
 <span class="r-in"><span><span class="va">se_abundances</span> <span class="op">&lt;-</span> <span class="fu">DeconvoluteSE</span><span class="op">(</span>dat <span class="op">=</span> <span class="va">bulkdata</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'bulkdata' not found</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">se_abundances</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                      NonSE        SE1        SE2        SE3        SE4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA.3N.A9WB.06 0.19380234 0.05372667 0.16735600 0.12581663 0.07216666</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA.3N.A9WC.06 0.05293689 0.13901340 0.08427617 0.08372047 0.04243859</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA.3N.A9WD.06 0.27200075 0.17114795 0.06288761 0.05641549 0.10166721</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA.BF.A1PU.01 0.16899510 0.13618971 0.06501306 0.09269615 0.17313296</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA.BF.A1PV.01 0.12078283 0.06921834 0.05970319 0.16813008 0.11059648</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TCGA.BF.A1PX.01 0.21398415 0.04019509 0.08906215 0.04499893 0.08561680</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'x' in selecting a method for function 'head': object 'se_abundances' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

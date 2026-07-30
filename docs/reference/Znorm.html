@@ -90,26 +90,26 @@ If provided, weighted univariance normalization will be performed.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Centering and scaling data matrix</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">znorm_data</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          HumanMelanomaPatient1__cell_3655 HumanMelanomaPatient1__cell_3657</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                           -0.3542511                        3.0673518</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                           -0.3542504                        3.0670998</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> TNFRSF17                       -0.1114269                       -0.1114269</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ICAM3                          -0.4726938                       -0.4726938</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                             3.2406352                       -0.2911087</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.2421502                       -0.2421502</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1322335                       -0.1322335</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                             3.2404122                       -0.2911077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.2119762                       -0.2119762</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1322338                       -0.1322338</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          HumanMelanomaPatient1__cell_3658 HumanMelanomaPatient1__cell_3660</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                            2.2468524                       -0.3542511</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                            2.2466611                       -0.3542504</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> TNFRSF17                       -0.1114269                       -0.1114269</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ICAM3                          -0.4726938                       -0.4726938</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                            -0.2911087                       -0.2911087</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.2421502                       -0.2421502</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1322335                       -0.1322335</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                            -0.2911077                       -0.2911077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.2119762                       -0.2119762</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1322338                       -0.1322338</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          HumanMelanomaPatient1__cell_3661</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                           -0.3542511</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                           -0.3542504</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> TNFRSF17                       -0.1114269</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ICAM3                          -0.4726938</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                            -0.2911087</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.2421502</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1322335</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                            -0.2911077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.2119762</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1322338</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Weighted Z-score normalization</span></span></span>
 <span class="r-in"><span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=Melanoma1_subset_scmeta.tsv"</span>,</span></span>
@@ -118,26 +118,26 @@ If provided, weighted univariance normalization will be performed.</p></dd>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">wtdznorm_data</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 x 5 Matrix of class "dgeMatrix"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          HumanMelanomaPatient1__cell_3655 HumanMelanomaPatient1__cell_3657</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                           -0.3030397                        2.7017739</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                           -0.3030389                        2.7015322</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> TNFRSF17                       -0.0982258                       -0.0982258</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ICAM3                          -0.4115313                       -0.4115313</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                             2.8162990                       -0.2517507</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.2150584                       -0.2150584</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1161900                       -0.1161900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                             2.8160957                       -0.2517499</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.1879627                       -0.1879627</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1161902                       -0.1161902</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          HumanMelanomaPatient1__cell_3658 HumanMelanomaPatient1__cell_3660</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                            1.9812205                       -0.3030397</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                            1.9810370                       -0.3030389</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> TNFRSF17                       -0.0982258                       -0.0982258</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ICAM3                          -0.4115313                       -0.4115313</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                            -0.2517507                       -0.2517507</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.2150584                       -0.2150584</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1161900                       -0.1161900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                            -0.2517499                       -0.2517499</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.1879627                       -0.1879627</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1161902                       -0.1161902</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          HumanMelanomaPatient1__cell_3661</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                           -0.3030397</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PDK4                           -0.3030389</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> TNFRSF17                       -0.0982258</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ICAM3                          -0.4115313</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                            -0.2517507</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.2150584</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1161900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> FAP                            -0.2517499</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> GZMB                           -0.1879627</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TSC2                           -0.1161902</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

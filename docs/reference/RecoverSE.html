@@ -56,9 +56,9 @@ by assigning each single cell to an SE or NonSE.</p>
 <span>  <span class="va">dat</span>,</span>
 <span>  <span class="va">celltypes</span>,</span>
 <span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  ncell.per.run <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  ncell.per.run <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  Ws <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  min.score <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>  min.score <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  ncores <span class="op">=</span> <span class="fl">8</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -110,7 +110,7 @@ InitSE (raw prediction), SE (processed prediction), and PredScore (prediction pr
 InitSE records the raw prediction where each cell is assigned to one of the 11 initial SEs discovered from MERSCOPE data.
 Cells were assigned to "NonSE" if  1) they are initially assigned to SEs without SE-specific cell states,
 2) they are initially assigned to cell states that are not specific to any SEs or are not conserved across cancers or
-3) their prediction score is below the minimum probability threshold (min.score, 0.6 by default).</p>
+3) their prediction score is below the minimum probability threshold (min.score=0.6 was used).</p>
     </div>
 
     <div class="section level2">

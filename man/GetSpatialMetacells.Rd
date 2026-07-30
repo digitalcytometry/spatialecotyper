@@ -13,6 +13,7 @@ GetSpatialMetacells(
   spotCoord = NULL,
   k = 20,
   radius = 50,
+  grid.size = 50,
   min.cells.per.region = 1,
   ncores = 4
 )
@@ -32,11 +33,14 @@ annotations. The row names of the \code{metadata} must match the column names of
 \item{CellType}{Character string specifying the column name in \code{metadata} containing the cell type annotations.}
 
 \item{spotCoord}{A data frame containing the spatial coordinates (\code{X} and \code{Y}) of each spatial neighborhood,
-with neighborhood identifiers as row names.}
+with neighborhood identifiers as row names. If NULL, a regular grid of spatial neighborhoods
+is generated automatically, spaced `grid.size` apart.}
 
 \item{k}{Integer specifying the number of nearest spatial neighbors for constructing metacells.}
 
 \item{radius}{Numeric value specifying the radius (in units of spatial coordinates) within which neighboring cells are considered.}
+
+\item{grid.size}{numeric, spacing between adjacent SN centers when `spotCoord` is auto-generated.}
 
 \item{min.cells.per.region}{Integer specifying the minimum number of cells required in each spatial neighborhood to compute metacells.}
 

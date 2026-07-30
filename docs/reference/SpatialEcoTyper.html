@@ -229,31 +229,31 @@ will be included.</p></dd>
 <span class="r-in"><span><span class="va">se_results</span> <span class="op">&lt;-</span> <span class="fu">SpatialEcoTyper</span><span class="op">(</span><span class="va">normdata</span>, <span class="va">scmeta</span>,</span></span>
 <span class="r-in"><span>                              outprefix <span class="op">=</span> <span class="st">"Melanoma1_subset"</span>,</span></span>
 <span class="r-in"><span>                              radius <span class="op">=</span> <span class="fl">50</span>, ncores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:21:04.992157 Remove 88 genes expressed in fewer than 5 cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:21:14.151744 Construct spatial meta cells for each cell type</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:07.860032 Remove 88 genes expressed in fewer than 5 cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:15.97958 Construct spatial meta cells for each cell type</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Total spatial neighborhoods: 2315; total spatial meta cells: 9853</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:21:14.817739 PCA for each cell type</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:21:16.653678 Construct cell-type-specific similarity network</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:16.36093 PCA for each cell type</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:17.835318 Construct cell-type-specific similarity network</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Removing 182 spatial neighborhoods with fewer than 2 distinct cell types.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:21:17.532896 Similarity network fusion</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:21:17.5345 Normalize networks ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:21:17.622674 Calculate the local transition matrix ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:21:29.438971 Perform the diffusion ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:21:29.440073 Iteration: 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:21:33.657449 Iteration: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:21:47.147303 Iteration: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:22:06.256114 Iteration: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:22:24.034095 Iteration: 5</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:22:46.68849 Iteration: 6</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:23:06.01322 Iteration: 7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:23:25.275175 Iteration: 8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:23:44.180848 Iteration: 9</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-13 14:24:01.22569 Iteration: 10</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:24:24.016227 Create Seurat object and perform clustering analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:18.638131 Similarity network fusion</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:18.639063 Normalize networks ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:18.722163 Calculate the local transition matrix ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:29.053902 Perform the diffusion ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:52:29.054863 Iteration: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:52:33.935718 Iteration: 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:52:47.334079 Iteration: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:53:06.422078 Iteration: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:53:22.809843 Iteration: 5</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:53:37.976594 Iteration: 6</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:53:53.155452 Iteration: 7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:54:09.466486 Iteration: 8</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:54:26.66555 Iteration: 9</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:54:42.698228 Iteration: 10</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:55:04.290275 Create Seurat object and perform clustering analysis</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> This message will be shown once per session</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-13 14:24:33.903032 The Seurat object is saved into Melanoma1_subset_SpatialEcoTyper_results.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:55:12.573909 The Seurat object is saved into Melanoma1_subset_SpatialEcoTyper_results.rds</span>
 <span class="r-in"><span><span class="co"># Extract the Seurat object and updated single-cell metadata</span></span></span>
 <span class="r-in"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="va">se_results</span><span class="op">$</span><span class="va">obj</span> <span class="co"># A Seurat object</span></span></span>
 <span class="r-in"><span><span class="va">obj</span></span></span>
@@ -265,19 +265,19 @@ will be included.</p></dd>
 <span class="r-in"><span><span class="va">scmeta</span> <span class="op">&lt;-</span> <span class="va">se_results</span><span class="op">$</span><span class="va">metadata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">SE</span><span class="op">)</span> <span class="co"># Updated single-cell meta data, with SE annotation added</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                         X         Y   CellType CellTypeName</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3655 1894.706 -6367.766 Fibroblast  Fibroblasts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3657 1942.480 -6369.602 Fibroblast  Fibroblasts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3658 1963.007 -6374.026 Fibroblast  Fibroblasts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3660 1981.600 -6372.266 Fibroblast  Fibroblasts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3663 1921.683 -6383.309 Fibroblast  Fibroblasts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3665 1968.926 -6385.541 Fibroblast  Fibroblasts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                  Region Dist2Interface     SE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3655 Stroma      -883.1752 NewSE1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3657 Stroma      -894.8463 NewSE1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3658 Stroma      -904.1115 NewSE1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3660 Stroma      -907.8909 NewSE1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3663 Stroma      -903.6559 NewSE1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_3665 Stroma      -916.7790 NewSE1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4663 4492.823 -6441.832 Fibroblast  Fibroblasts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4704 4491.854 -6467.574 Fibroblast  Fibroblasts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4738 4529.162 -6504.117 Fibroblast  Fibroblasts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4774 4533.228 -6529.591 Fibroblast  Fibroblasts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4803 4340.813 -6562.381 Fibroblast  Fibroblasts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4806 4401.938 -6567.152 Fibroblast  Fibroblasts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                        Region Dist2Interface     SE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4663 Outer margin     -126.86599 NewSE1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4704 Outer margin     -139.32807 NewSE1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4738 Outer margin     -186.13295 NewSE1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4774 Outer margin     -199.69317 NewSE1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4803 Outer margin      -95.54956 NewSE1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> HumanMelanomaPatient1__cell_4806 Outer margin     -124.01602 NewSE1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

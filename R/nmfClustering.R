@@ -85,15 +85,11 @@ nmfClustering <- function(mat, ranks = 10,
 
   ## Post analysis
   cophs = data.frame(K = ranks, Cophenetic = unlist(lapply(estim.list, cophcor)))
-  bestK = cophs$K[which(cophs$Cophenetic>min.coph)]
-  if(length(bestK)<1){
-    bestK = ranks[which.max(cophs$Cophenetic)]
-  }else{
-    bestK = max(bestK)
-  }
+  bestK = SelectBestRank(cophs$Cophenetic, cophs$K, threshold = min.coph)
+
   p <- ggplot(cophs, aes(x = K, y = Cophenetic)) +
     geom_point() + geom_line() +
-    # geom_vline(xintercept = bestK, color = "red", linetype = "dashed") +
+    geom_vline(xintercept = bestK, color = "red", linetype = "dashed") +
     theme(aspect.ratio = 1) +
     labs(x = "Number of communities", y = "Cophenetic coefficient") +
     theme_bw(base_size = 14)

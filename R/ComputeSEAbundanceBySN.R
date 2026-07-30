@@ -98,10 +98,10 @@ aggregateByWeights <- function(cell2se, weights,
 #' @importFrom dplyr group_by summarize
 #' @export
 ComputeSEAbundanceBySN <- function(df, spot_coords = NULL,
-                                     radius = 50, grid.size = 50,
-                                     k = min(200, nrow(df)),
-                                     X = "X", Y = "Y", SE = "SE",
-                                     min.cells = 5) {
+                                   radius = 50, grid.size = 50,
+                                   k = min(200, nrow(df)),
+                                   X = "X", Y = "Y", SE = "SE",
+                                   min.cells = 5) {
 
   # one-hot cell x SE indicator matrix
   se_levels <- sort(unique(df[[SE]]))
@@ -137,7 +137,6 @@ ComputeSEAbundanceBySN <- function(df, spot_coords = NULL,
                                c("X", "Y")], seabunds)
   seabunds
 }
-
 
 #' Smooth spot-level SE abundances across k-nearest-neighbor spots
 #'

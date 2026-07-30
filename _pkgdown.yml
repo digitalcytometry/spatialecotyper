@@ -101,6 +101,7 @@ reference:
   desc:  Clustering via NMF.
   contents:
   - nmfClustering
+  - SelectBestRank
 
 - title: Visualization
   contents:
@@ -129,4 +130,7 @@ news:
   releases:
   - text: "Version 1.0.4"
     href:
+
+analytics:
+  google: G-966LG5KTLH
 

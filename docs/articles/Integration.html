@@ -457,12 +457,12 @@ step.</p>
 <span><span class="co">## HumanMelanomaPatient1__cell_3661   SKCM 1742.939 -6374.851 Fibroblast Stroma</span></span>
 <span><span class="co">## HumanMelanomaPatient1__cell_3663   SKCM 1921.683 -6383.309 Fibroblast Stroma</span></span>
 <span><span class="co">##                                           InitSE     SE</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3655 SKCM..InitSE104 NewSE1</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3655 SKCM..InitSE104 NewSE2</span></span>
 <span><span class="co">## HumanMelanomaPatient1__cell_3657  SKCM..InitSE56 NewSE5</span></span>
 <span><span class="co">## HumanMelanomaPatient1__cell_3658  SKCM..InitSE56 NewSE5</span></span>
 <span><span class="co">## HumanMelanomaPatient1__cell_3660  SKCM..InitSE56 NewSE5</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3661 SKCM..InitSE149 NewSE1</span></span>
-<span><span class="co">## HumanMelanomaPatient1__cell_3663 SKCM..InitSE104 NewSE1</span></span></code></pre>
+<span><span class="co">## HumanMelanomaPatient1__cell_3661 SKCM..InitSE149 NewSE2</span></span>
+<span><span class="co">## HumanMelanomaPatient1__cell_3663 SKCM..InitSE104 NewSE2</span></span></code></pre>
 <p>For instance, if you want to identify 10 SEs, you can specific
 <code>ranks = 10</code> to identify 10 clusters.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
@@ -644,36 +644,36 @@ each SE.</p>
 <span><span class="va">degs2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/presto/man/wilcoxauc.html" class="external-link">wilcoxauc</a></span><span class="op">(</span><span class="va">tmpdata2</span>, <span class="va">tmpmeta2</span><span class="op">$</span><span class="va">SE</span><span class="op">)</span> <span class="co"># DE analysis</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">degs1</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##    feature  group    avgExpr        logFC statistic       auc         pval</span></span>
-<span><span class="co">## 1     PDK4 NewSE1 0.48574491  0.092083955   7899698 0.5119967 1.364733e-03</span></span>
-<span><span class="co">## 2 TNFRSF17 NewSE1 0.00000000  0.000000000   7714180 0.4999728 9.967990e-01</span></span>
-<span><span class="co">## 3    ICAM3 NewSE1 0.00000000  0.000000000   7714180 0.4999728 9.967990e-01</span></span>
-<span><span class="co">## 4      FAP NewSE1 0.84409686  0.151075956   8024811 0.5201055 2.377714e-05</span></span>
-<span><span class="co">## 5     GZMB NewSE1 0.06565430 -0.019517209   7677965 0.4976256 1.599855e-01</span></span>
-<span><span class="co">## 6     TSC2 NewSE1 0.03930162 -0.009729453   7689585 0.4983788 2.236933e-01</span></span>
-<span><span class="co">##           padj    pct_in   pct_out</span></span>
-<span><span class="co">## 1 0.0042647921 13.097478 10.780093</span></span>
-<span><span class="co">## 2 0.9967989683  0.000000  0.000000</span></span>
-<span><span class="co">## 3 0.9967989683  0.000000  0.000000</span></span>
-<span><span class="co">## 4 0.0000843161 22.882951 19.218185</span></span>
-<span><span class="co">## 5 0.3845805110  1.806549  2.273119</span></span>
-<span><span class="co">## 6 0.5202170696  1.091457  1.412089</span></span></code></pre>
+<pre><code><span><span class="co">##    feature  group    avgExpr      logFC statistic       auc         pval</span></span>
+<span><span class="co">## 1     PDK4 NewSE1 0.24286141 -0.2399623   6301429 0.4677991 9.698244e-16</span></span>
+<span><span class="co">## 2 TNFRSF17 NewSE1 0.00000000  0.0000000   6734852 0.4999751 9.972609e-01</span></span>
+<span><span class="co">## 3    ICAM3 NewSE1 0.00000000  0.0000000   6734852 0.4999751 9.972609e-01</span></span>
+<span><span class="co">## 4      FAP NewSE1 0.63264464 -0.1439648   6483540 0.4813184 2.434285e-04</span></span>
+<span><span class="co">## 5     GZMB NewSE1 0.00000000  0.0000000   6734852 0.4999751 9.972609e-01</span></span>
+<span><span class="co">## 6     TSC2 NewSE1 0.02943358 -0.0220910   6693095 0.4968752 2.842820e-02</span></span>
+<span><span class="co">##           padj     pct_in   pct_out</span></span>
+<span><span class="co">## 1 4.754041e-15  6.7294118 13.109323</span></span>
+<span><span class="co">## 2 9.972609e-01  0.0000000  0.000000</span></span>
+<span><span class="co">## 3 9.972609e-01  0.0000000  0.000000</span></span>
+<span><span class="co">## 4 6.724544e-04 18.0235294 21.154756</span></span>
+<span><span class="co">## 5 9.972609e-01  0.0000000  0.000000</span></span>
+<span><span class="co">## 6 6.900049e-02  0.8470588  1.467108</span></span></code></pre>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">degs2</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   feature  group   avgExpr      logFC statistic       auc         pval</span></span>
-<span><span class="co">## 1    PDK4 NewSE1 1.1155180  0.4886977  25523561 0.5584334 3.836022e-56</span></span>
-<span><span class="co">## 2   CCL26 NewSE1 0.0000000  0.0000000  22851646 0.4999742 9.961951e-01</span></span>
-<span><span class="co">## 3  CX3CL1 NewSE1 0.1202783 -0.1747148  21754293 0.4759650 6.798938e-24</span></span>
-<span><span class="co">## 4 PGLYRP1 NewSE1 0.0000000  0.0000000  22851646 0.4999742 9.961951e-01</span></span>
-<span><span class="co">## 5     CD4 NewSE1 0.0000000  0.0000000  22851646 0.4999742 9.961951e-01</span></span>
-<span><span class="co">## 6   SNAI2 NewSE1 0.8803556 -0.5017203  19926686 0.4359786 2.794141e-46</span></span>
-<span><span class="co">##           padj    pct_in   pct_out</span></span>
-<span><span class="co">## 1 3.618888e-55 27.282579 16.458047</span></span>
-<span><span class="co">## 2 9.961951e-01  0.000000  0.000000</span></span>
-<span><span class="co">## 3 3.655343e-23  3.224059  8.043285</span></span>
-<span><span class="co">## 4 9.961951e-01  0.000000  0.000000</span></span>
-<span><span class="co">## 5 9.961951e-01  0.000000  0.000000</span></span>
-<span><span class="co">## 6 2.290280e-45 23.354105 34.571590</span></span></code></pre>
+<pre><code><span><span class="co">##   feature  group   avgExpr       logFC statistic       auc         pval</span></span>
+<span><span class="co">## 1    PDK4 NewSE1 0.6226176 -0.13301181  13285285 0.4827949 3.101362e-04</span></span>
+<span><span class="co">## 2   CCL26 NewSE1 0.0000000  0.00000000  13758101 0.4999774 9.974130e-01</span></span>
+<span><span class="co">## 3  CX3CL1 NewSE1 0.1853524 -0.07921112  13473175 0.4896230 7.336221e-04</span></span>
+<span><span class="co">## 4 PGLYRP1 NewSE1 0.0000000  0.00000000  13758101 0.4999774 9.974130e-01</span></span>
+<span><span class="co">## 5     CD4 NewSE1 0.0000000  0.00000000  13758101 0.4999774 9.974130e-01</span></span>
+<span><span class="co">## 6   SNAI2 NewSE1 0.9926653 -0.31252226  12663638 0.4602039 5.620928e-12</span></span>
+<span><span class="co">##           padj   pct_in   pct_out</span></span>
+<span><span class="co">## 1 1.062110e-03 15.91376 19.361461</span></span>
+<span><span class="co">## 2 9.974130e-01  0.00000  0.000000</span></span>
+<span><span class="co">## 3 2.429212e-03  5.13347  7.185332</span></span>
+<span><span class="co">## 4 9.974130e-01  0.00000  0.000000</span></span>
+<span><span class="co">## 5 9.974130e-01  0.00000  0.000000</span></span>
+<span><span class="co">## 6 3.557549e-11 25.71869 32.861390</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="identifying-conserved-markers-across-samples">Identifying conserved markers across samples<a class="anchor" aria-label="anchor" href="#identifying-conserved-markers-across-samples"></a>
@@ -690,20 +690,13 @@ analyses.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">lfcs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">lfcs</span><span class="op">$</span><span class="va">feature</span></span>
 <span><span class="va">lfcs</span> <span class="op">&lt;-</span> <span class="va">lfcs</span><span class="op">[</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">lfcs</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##              NewSE1       NewSE2      NewSE3      NewSE4      NewSE5     NewSE6</span></span>
-<span><span class="co">## ACKR3    0.84084343 -0.330411721 -0.05266930  0.49300904  0.21706024 -0.6875528</span></span>
-<span><span class="co">## ACTA2   -0.12414526 -0.004982032 -0.03618349 -0.99876009  1.93345482  0.1739961</span></span>
-<span><span class="co">## ADAMTS4 -0.59400756 -0.304613266 -0.29170500  0.03816032  0.03154192  0.6995093</span></span>
-<span><span class="co">## AKT1    -0.56720182 -0.325724711 -0.22263010 -0.32939729  0.11644233  1.0446516</span></span>
-<span><span class="co">## AKT2     0.05539333 -0.127636519 -0.07529157  0.07918351 -0.01741083  0.1122756</span></span>
-<span><span class="co">## AKT3     0.06020394 -0.296868787 -0.21311860 -0.09969229  0.47080083  0.1633901</span></span>
-<span><span class="co">##               NewSE7</span></span>
-<span><span class="co">## ACKR3   -0.502695726</span></span>
-<span><span class="co">## ACTA2    0.072077121</span></span>
-<span><span class="co">## ADAMTS4  0.613670049</span></span>
-<span><span class="co">## AKT1     0.424136899</span></span>
-<span><span class="co">## AKT2     0.004026276</span></span>
-<span><span class="co">## AKT3    -0.046847486</span></span></code></pre>
+<pre><code><span><span class="co">##              NewSE1      NewSE2      NewSE3     NewSE4       NewSE5      NewSE6</span></span>
+<span><span class="co">## ACKR3   -0.25028877  0.77418910 -0.46195220 -0.7006545  0.191534317  0.45717986</span></span>
+<span><span class="co">## ACTA2    0.08487385 -0.19249712 -0.01572144  0.1941104  1.900249696 -1.01005664</span></span>
+<span><span class="co">## ADAMTS4 -0.35764681 -0.59613756  0.54783181  0.7323973  0.022145259  0.05153237</span></span>
+<span><span class="co">## AKT1    -0.33609608 -0.56085719  0.29848995  1.0638037  0.074420004 -0.28189860</span></span>
+<span><span class="co">## AKT2    -0.15315022  0.04447354 -0.02540782  0.1213621 -0.007849821  0.12291130</span></span>
+<span><span class="co">## AKT3    -0.30375822  0.01492870 -0.09429925  0.1726810  0.455753341 -0.14279254</span></span></code></pre>
 <p>To identify markers that are specific to each SE-associated cell
 state, we calculate the difference between the maximum log2FC for each
 gene and the second-highest log2FC:</p>
@@ -722,25 +715,22 @@ gene and the second-highest log2FC:</p>
 <span><span class="va">top5</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">markers</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">]</span> <span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">top5</span></span></code></pre></div>
 <pre><code><span><span class="co">## $NewSE1</span></span>
-<span><span class="co">## [1] "PLA2G2A" "FBLN1"   "FOS"     "ELN"     "DUSP1"  </span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $NewSE2</span></span>
 <span><span class="co">## [1] "COL11A1" "COL1A1"  "CSF1"    "COL5A1"  "CXCL2"  </span></span>
 <span><span class="co">## </span></span>
+<span><span class="co">## $NewSE2</span></span>
+<span><span class="co">## [1] "PLA2G2A" "FOS"     "FBLN1"   "DUSP1"   "PDGFRA" </span></span>
+<span><span class="co">## </span></span>
 <span><span class="co">## $NewSE3</span></span>
-<span><span class="co">## [1] "CXCR4" "XBP1"  "PTPRC" "PDPN"  "PDK1" </span></span>
+<span><span class="co">## [1] "CXCL9"   "HLA-DRA" "FN1"     "ICAM1"   "SOD2"   </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $NewSE4</span></span>
-<span><span class="co">## [1] "VEGFA"  "TGFBR3" "TCF7L2" "CREBBP" "AXIN2" </span></span>
+<span><span class="co">## [1] "MMP11"  "TGFBI"  "PKM"    "BST2"   "BCL2L1"</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $NewSE5</span></span>
-<span><span class="co">## [1] "ACTA2"  "COL4A1" "MYH11"  "CAV1"   "ITGA1" </span></span>
+<span><span class="co">## [1] "ACTA2"  "COL4A1" "MYH11"  "TNC"    "CAV1"  </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $NewSE6</span></span>
-<span><span class="co">## [1] "MMP11"  "TGFBI"  "PKM"    "BCL2L1" "CTNNB1"</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $NewSE7</span></span>
-<span><span class="co">## [1] "BST2"    "CXCL9"   "HLA-DRA" "TAPBP"   "FN1"</span></span></code></pre>
+<span><span class="co">## [1] "VEGFA"  "TGFBR3" "TCF7L2" "CREBBP" "GPX3"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="visualizing-top-se-cell-state-markers">Visualizing top SE cell state markers<a class="anchor" aria-label="anchor" href="#visualizing-top-se-cell-state-markers"></a>
@@ -769,7 +759,7 @@ that might be causing problems.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">## Running under: macOS 26.5.1</span></span>
+<span><span class="co">## Running under: macOS 26.5.2</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>

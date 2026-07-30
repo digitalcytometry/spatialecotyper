@@ -147,6 +147,12 @@ Colocalization <- function(scmeta, coords = c("X", "Y"),
     missing_cols <- setdiff(required, colnames(scmeta))
     stop("Missing required columns in scmeta: ", paste(missing_cols, collapse = ", "), ".")
   }
+  ## Remove a cell type if all cells are assigned to a single SE.
+  cts = unique(scmeta[, c(CellType, SE)])
+  cts = table(cts[, CellType])
+  cts = names(cts)[cts==1]
+  if(length(cts)>0) message("Eliminate cell types with all cells assigned to a single SE: ", paste0(cts, collapse = ", "))
+
   scmeta$CellState = paste0(scmeta[[SE]], "_", scmeta[[CellType]])
 
   if (is.null(rownames(scmeta))) {

@@ -149,8 +149,10 @@ head(scmeta[, c("X", "Y", "SE", "CellType")])
 ## For quick test run, 100 permutations were performed to compute the colocalization scores.
 coloc_res = Colocalization(scmeta, coords = c("X", "Y"), 
                            SE = "SE", CellType = "CellType",
-                           radius = 50, nperm = 100, 
-                           test = TRUE, ncores = 8)
+                           radius = 50, 
+                           nperm = 100, ## 1000 or higher is recommended.
+                           test = TRUE, 
+                           ncores = 8)
 head(coloc_res$ColocIndex[, 1:5]) ## Matrix of colocalization indices between all cell states
 coloc_res$Pval ## Vector of p-values for colocalization significance
 ```
@@ -174,7 +176,15 @@ meta_coloc_res$MetaPval
 
 You can visualize the results using the [CooccurrenceHeatmapView](../reference/CooccurrenceHeatmapView.html) function.
 ```{r visualcoloc}
-## Exclude NonSE from the visualization
+## Visualization of single-sample result
+idx = grepl("NonSE", rownames(coloc_res$ColocIndex))
+p = CooccurrenceHeatmapView(coloc_res$ColocIndex[!idx, !idx],
+                            coloc_res$Pval)
+p = ComplexHeatmap::draw(p)
+ses = gsub("_.*", "", rownames(coloc_res$ColocIndex)[!idx])
+drawRectangleAnnotation(p, ses, ses)
+
+## Visualization of integrated result
 idx = grepl("NonSE", rownames(meta_coloc_res$MetaColocIndex))
 p = CooccurrenceHeatmapView(meta_coloc_res$MetaColocIndex[!idx, !idx],
                             meta_coloc_res$MetaPval)
