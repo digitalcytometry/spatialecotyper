@@ -83,6 +83,12 @@ ComputeNormalizedMoranI <- function(scmeta, coords = c("X", "Y"),
   if(is.null(rownames(scmeta))){
     rownames(scmeta) <- paste0("Cell", seq_len(nrow(scmeta)))
   }
+  ## Remove a cell type if all cells are assigned to a single SE.
+  cts = unique(scmeta[, c(CellType, SE)])
+  cts = table(cts[, CellType])
+  cts = names(cts)[cts==1]
+  if(length(cts)>0) message("Eliminate cell types with all cells assigned to a single SE: ", paste0(cts, collapse = ", "))
+
   coords_df <- as.data.frame(scmeta[, coords, drop = FALSE])
 
   # ---- KNN graph ----
