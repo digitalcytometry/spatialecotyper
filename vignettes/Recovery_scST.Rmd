@@ -144,12 +144,13 @@ After recovering SE-specific cell states from single-cell ST data, users can val
 
 ```{r coloc, eval=TRUE}
 # Verify the four columns required for the analysis.
-head(scmeta[, c("X", "Y", "SE", "CellType")])
+scmeta$CellState = paste0(scmeta$SE, "_", scmeta$CellType)
+head(scmeta[, c("X", "Y", "CellType", "CellState")])
 
 ## For quick test run, 100 permutations were performed to compute the colocalization scores.
 coloc_res = Colocalization(scmeta, coords = c("X", "Y"), 
-                           SE = "SE", CellType = "CellType",
-                           radius = 50, 
+                           CellType = "CellType",
+                           CellState = "CellState", 
                            nperm = 100, ## 1000 or higher is recommended.
                            test = TRUE, 
                            ncores = 8)

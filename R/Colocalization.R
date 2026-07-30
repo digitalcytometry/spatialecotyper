@@ -91,7 +91,8 @@
 #' represents a cell. Row names should correspond to unique cell IDs.
 #' @param coords Character vector specifying column names in \code{scmeta} for spatial
 #' coordinates (e.g., \code{c("X", "Y")}).
-#' @param SE Character. Column name in \code{scmeta} specifying spatial ecotype labels.
+#' @param CellState Character. Column name in \code{scmeta} specifying cell state
+#' annotations (e.g., "SE1_CD4T").
 #' @param CellType Character. Column name in \code{scmeta} specifying cell type annotations.
 #' Permutations are performed within each cell type to preserve cell-type composition.
 #' @param radius Numeric. Maximum Euclidean distance threshold (in the same units
@@ -104,9 +105,9 @@
 #' Default is 10.
 #' @param nperm Integer. Number of permutations used to generate the null distribution.
 #' Default is 1000.
-#' @param test Logical. Whether to compute statistical significance (P-values).
-#' If TRUE, both Z-scores and P-values are returned; otherwise only Z-scores are returned.
-#' Default is TRUE.
+#' @param test Logical. Whether to compute P-values for cell state co-localization
+#' within each spatial ecotype (SE). The SE assignment of each cell state is inferred
+#' from its name, which must follow the format `SE_State` (e.g., `SE1_CD4T`).
 #' @param ncores Integer. Number of cores to use for parallel computation of permutations.
 #' Default is 16.
 #'
@@ -138,17 +139,17 @@
 #' @export
 
 Colocalization <- function(scmeta, coords = c("X", "Y"),
-                           SE = "SE", CellType = "CellType",
+                           CellState = "CellState", CellType = "CellType",
                            radius = 50, k = 200, min.cell = 10,
                            nperm = 1000, test = TRUE, ncores = 16){
 
-  required <- c(coords, SE, CellType)
+  required <- c(coords, CellState, CellType)
   if(!all(required %in% colnames(scmeta))){
     missing_cols <- setdiff(required, colnames(scmeta))
     stop("Missing required columns in scmeta: ", paste(missing_cols, collapse = ", "), ".")
   }
   ## Remove a cell type if all cells are assigned to a single SE.
-  cts = unique(scmeta[, c(CellType, SE)])
+  cts = unique(scmeta[, c(CellType, CellState)])
   cts = table(cts[, CellType])
   cts = names(cts)[cts==1]
   if(length(cts)>0){
@@ -158,7 +159,7 @@ Colocalization <- function(scmeta, coords = c("X", "Y"),
     scmeta = scmeta[!idx, ]
   }
 
-  scmeta$CellState = paste0(scmeta[[SE]], "_", scmeta[[CellType]])
+  scmeta$CellState = scmeta[[CellState]]
 
   if (is.null(rownames(scmeta))) {
     rownames(scmeta) <- paste0("Cell", seq_len(nrow(scmeta)))

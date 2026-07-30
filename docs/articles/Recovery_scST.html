@@ -274,48 +274,56 @@ of cell state colocalization within each SE and returns a vector of
 p-values.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Verify the four columns required for the analysis.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="st">"SE"</span>, <span class="st">"CellType"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                            X         Y    SE   CellType</span></span>
-<span><span class="co">## HumanColonCancerPatient2__cell_1085 5057.912 -1721.871   SE9 Macrophage</span></span>
-<span><span class="co">## HumanColonCancerPatient2__cell_1205 5035.339 -1783.352 NonSE Macrophage</span></span>
-<span><span class="co">## HumanColonCancerPatient2__cell_1312 5012.093 -1908.390   SE9 Macrophage</span></span>
-<span><span class="co">## HumanColonCancerPatient2__cell_1625 5073.743 -1861.740   SE6 Macrophage</span></span>
-<span><span class="co">## HumanColonCancerPatient2__cell_1629 5030.235 -1867.441   SE7 Macrophage</span></span>
-<span><span class="co">## HumanColonCancerPatient2__cell_1639 5020.448 -1882.751   SE9 Macrophage</span></span></code></pre>
+<span><span class="va">scmeta</span><span class="op">$</span><span class="va">CellState</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">$</span><span class="va">SE</span>, <span class="st">"_"</span>, <span class="va">scmeta</span><span class="op">$</span><span class="va">CellType</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">scmeta</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="st">"CellType"</span>, <span class="st">"CellState"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##                                            X         Y   CellType</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1085 5057.912 -1721.871 Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1205 5035.339 -1783.352 Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1312 5012.093 -1908.390 Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1625 5073.743 -1861.740 Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1629 5030.235 -1867.441 Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1639 5020.448 -1882.751 Macrophage</span></span>
+<span><span class="co">##                                            CellState</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1085   SE9_Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1205 NonSE_Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1312   SE9_Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1625   SE6_Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1629   SE7_Macrophage</span></span>
+<span><span class="co">## HumanColonCancerPatient2__cell_1639   SE9_Macrophage</span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## For quick test run, 100 permutations were performed to compute the colocalization scores.</span></span>
 <span><span class="va">coloc_res</span> <span class="op">=</span> <span class="fu"><a href="../reference/Colocalization.html">Colocalization</a></span><span class="op">(</span><span class="va">scmeta</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span><span class="op">)</span>, </span>
-<span>                           SE <span class="op">=</span> <span class="st">"SE"</span>, CellType <span class="op">=</span> <span class="st">"CellType"</span>,</span>
-<span>                           radius <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                           CellType <span class="op">=</span> <span class="st">"CellType"</span>,</span>
+<span>                           CellState <span class="op">=</span> <span class="st">"CellState"</span>, </span>
 <span>                           nperm <span class="op">=</span> <span class="fl">100</span>, <span class="co">## 1000 or higher is recommended.</span></span>
 <span>                           test <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                           ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Matrix of colocalization indices between all cell states</span></span></code></pre></div>
-<pre><code><span><span class="co">##                        NonSE_B NonSE_CD4T  NonSE_CD8T   NonSE_DC</span></span>
-<span><span class="co">## NonSE_B             3.34650540 -0.2707164  -3.3502960 -2.7004132</span></span>
-<span><span class="co">## NonSE_CD4T         -0.01287549  2.4311625  -0.8906792 -2.4219334</span></span>
-<span><span class="co">## NonSE_CD8T         -3.13047262 -0.9903922   0.9924283 -2.1475396</span></span>
-<span><span class="co">## NonSE_DC           -2.70951074 -1.9805514  -1.7645476 -0.9794100</span></span>
-<span><span class="co">## NonSE_Endothelial  -1.89724493  1.9774770  -2.1187192  0.9487738</span></span>
-<span><span class="co">## NonSE_Fibroblast  -15.73885563 -2.1847363 -11.3861232  5.1847945</span></span>
+<pre><code><span><span class="co">##                       NonSE_B NonSE_CD4T  NonSE_CD8T  NonSE_DC</span></span>
+<span><span class="co">## NonSE_B             3.5357690 -0.3461065  -2.9449435 -2.722332</span></span>
+<span><span class="co">## NonSE_CD4T         -0.1154154  2.6900657  -0.9080578 -2.340889</span></span>
+<span><span class="co">## NonSE_CD8T         -2.7959631 -1.1275078   1.0467316 -2.289518</span></span>
+<span><span class="co">## NonSE_DC           -2.6631219 -2.0043363  -1.8858252 -1.510015</span></span>
+<span><span class="co">## NonSE_Endothelial  -2.0697733  2.2536112  -2.0176024  1.037851</span></span>
+<span><span class="co">## NonSE_Fibroblast  -14.7564658 -1.7528026 -11.2626831  5.320646</span></span>
 <span><span class="co">##                   NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B                   -2.023285</span></span>
-<span><span class="co">## NonSE_CD4T                 2.219099</span></span>
-<span><span class="co">## NonSE_CD8T                -1.793770</span></span>
-<span><span class="co">## NonSE_DC                   1.190721</span></span>
-<span><span class="co">## NonSE_Endothelial          4.142804</span></span>
-<span><span class="co">## NonSE_Fibroblast          10.712091</span></span></code></pre>
+<span><span class="co">## NonSE_B                   -2.197725</span></span>
+<span><span class="co">## NonSE_CD4T                 2.310458</span></span>
+<span><span class="co">## NonSE_CD8T                -1.776670</span></span>
+<span><span class="co">## NonSE_DC                   1.353129</span></span>
+<span><span class="co">## NonSE_Endothelial          3.785008</span></span>
+<span><span class="co">## NonSE_Fibroblast          11.007910</span></span></code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span> <span class="co">## Vector of p-values for colocalization significance</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 3.016923e-01 3.936888e-06 2.308056e-02 4.946580e-03 1.421065e-12 2.451790e-02 </span></span>
+<span><span class="co">## 2.516621e-01 2.453852e-06 4.506617e-02 6.097215e-03 1.885753e-12 2.205467e-02 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 3.279394e-03 6.543934e-05 6.385358e-05 9.773195e-02 </span></span>
+<span><span class="co">## 2.574582e-03 5.907252e-05 6.056832e-05 1.175217e-01 </span></span>
 <span><span class="co">## attr(,"Zscore")</span></span>
 <span><span class="co">##    NonSE      SE1      SE2      SE3      SE4      SE5      SE6      SE7 </span></span>
-<span><span class="co">## 1.032811 4.614687 2.272098 2.810492 7.081983 2.248915 2.940258 3.992286 </span></span>
+<span><span class="co">## 1.146322 4.711927 2.004036 2.742507 7.042681 2.289425 3.014435 4.016485 </span></span>
 <span><span class="co">##      SE8      SE9 </span></span>
-<span><span class="co">## 3.998098 1.655950</span></span></code></pre>
+<span><span class="co">## 4.010586 1.565261</span></span></code></pre>
 <p>The <a href="../reference/ColocalizationMetaAnalysis.html">ColocalizationMetaAnalysis</a>
 function can be used to perform meta-analysis of cell-state
 colocalization results across samples. It applies Stouffer’s method to
@@ -331,20 +339,20 @@ matrix and a meta P value for each SE.</p>
 <span></span>
 <span><span class="co"># Integrated matrix of cell-state colocalization indices</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                       NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B            5.07247839 -0.2903617  -4.432384 -3.711020         -2.932193</span></span>
-<span><span class="co">## NonSE_CD4T         0.08293172  3.3141932  -1.189924 -3.184232          3.355418</span></span>
-<span><span class="co">## NonSE_CD8T        -4.14518968 -1.3311298   1.452172 -2.971578         -2.535319</span></span>
-<span><span class="co">## NonSE_DC          -3.66863721 -2.6905039  -2.429048 -1.394476          1.527815</span></span>
-<span><span class="co">## NonSE_Endothelial -2.81857717  2.9869371  -3.005599  1.220219          5.954284</span></span>
-<span><span class="co">## NonSE_Fibroblast  -7.07106731 -3.0606581  -7.071067  7.071067          7.071067</span></span></code></pre>
+<pre><code><span><span class="co">##                      NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC NonSE_Endothelial</span></span>
+<span><span class="co">## NonSE_B            4.6327361 -0.5469483  -4.122838 -4.042305         -2.946965</span></span>
+<span><span class="co">## NonSE_CD4T        -0.2161776  3.4335894  -1.207489 -3.095045          3.461339</span></span>
+<span><span class="co">## NonSE_CD8T        -3.8745361 -1.4576834   1.394502 -3.116616         -2.541385</span></span>
+<span><span class="co">## NonSE_DC          -3.9159820 -2.6032568  -2.602717 -1.863266          1.906699</span></span>
+<span><span class="co">## NonSE_Endothelial -2.8134889  3.2780163  -2.852088  1.481936          6.064004</span></span>
+<span><span class="co">## NonSE_Fibroblast  -7.0710673 -2.4350388  -7.071067  7.071067          7.071067</span></span></code></pre>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Meta-analysis P values</span></span>
 <span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaPval</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 1.498594e-01 5.233469e-09 5.755518e-05 1.622291e-04 7.552769e-19 2.082041e-03 </span></span>
+<span><span class="co">## 1.231533e-01 3.769972e-09 1.149743e-04 2.011331e-04 4.791326e-19 1.178192e-03 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 6.789380e-05 6.966751e-09 4.958579e-08 1.616658e-02</span></span></code></pre>
+<span><span class="co">## 4.874548e-05 5.897096e-09 5.863796e-08 1.697712e-02</span></span></code></pre>
 <p>You can visualize the results using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">

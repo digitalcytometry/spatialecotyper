@@ -7,7 +7,7 @@
 Colocalization(
   scmeta,
   coords = c("X", "Y"),
-  SE = "SE",
+  CellState = "CellState",
   CellType = "CellType",
   radius = 50,
   k = 200,
@@ -24,7 +24,8 @@ represents a cell. Row names should correspond to unique cell IDs.}
 \item{coords}{Character vector specifying column names in \code{scmeta} for spatial
 coordinates (e.g., \code{c("X", "Y")}).}
 
-\item{SE}{Character. Column name in \code{scmeta} specifying spatial ecotype labels.}
+\item{CellState}{Character. Column name in \code{scmeta} specifying cell state
+annotations (e.g., "SE1_CD4T").}
 
 \item{CellType}{Character. Column name in \code{scmeta} specifying cell type annotations.
 Permutations are performed within each cell type to preserve cell-type composition.}
@@ -42,9 +43,9 @@ Default is 10.}
 \item{nperm}{Integer. Number of permutations used to generate the null distribution.
 Default is 1000.}
 
-\item{test}{Logical. Whether to compute statistical significance (P-values).
-If TRUE, both Z-scores and P-values are returned; otherwise only Z-scores are returned.
-Default is TRUE.}
+\item{test}{Logical. Whether to compute P-values for cell state co-localization
+within each spatial ecotype (SE). The SE assignment of each cell state is inferred
+from its name, which must follow the format `SE_State` (e.g., `SE1_CD4T`).}
 
 \item{ncores}{Integer. Number of cores to use for parallel computation of permutations.
 Default is 16.}
