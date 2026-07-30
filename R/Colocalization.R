@@ -151,7 +151,12 @@ Colocalization <- function(scmeta, coords = c("X", "Y"),
   cts = unique(scmeta[, c(CellType, SE)])
   cts = table(cts[, CellType])
   cts = names(cts)[cts==1]
-  if(length(cts)>0) message("Eliminate cell types with all cells assigned to a single SE: ", paste0(cts, collapse = ", "))
+  if(length(cts)>0){
+    message("Eliminate cell types with all cells assigned to a single SE: ",
+            paste0(cts, collapse = ", "))
+    idx = as.vector(scmeta[, CellType]) %in% cts
+    scmeta = scmeta[!idx, ]
+  }
 
   scmeta$CellState = paste0(scmeta[[SE]], "_", scmeta[[CellType]])
 
