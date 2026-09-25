@@ -16,8 +16,9 @@
 #' @param ncores Integer. Number of cores for parallel computation.
 #' @param scale Boolean specifying whether to perform univariance normalization
 #' for training and validation data (default: TRUE).
+#' @param nfeature Integer specifying the top variable features for training the models (default: 300).
+#' @param nfeature.per.se Integer specifying the maximal number of features to select for each SE (default: 50).
 #' @param verbose Boolean specifying whether to print the log messages.
-#' @param ... Additional arguments passed to \code{NMFGenerateWList}.
 #'
 #' @return The input `scmeta` data.frame with an added column `cvPred`
 #' containing predicted SE labels for each cell.
@@ -44,8 +45,9 @@ LoocvPredict = function(scdata, scmeta,
                         repeats = 30,
                         ncores = 4,
                         scale = TRUE,
-                        verbose = TRUE,
-                        ...){
+                        nfeature = 300,
+                        nfeature.per.se = 50,
+                        verbose = TRUE){
   seeds = sample(1:10000, repeats)
 
   preds = parallel::mclapply(1:repeats, function(ii){
@@ -62,19 +64,20 @@ LoocvPredict = function(scdata, scmeta,
 
     preds = lapply(unique(scmeta$Split), function(ss){
       message(Sys.time(), " Training on ", ss)
-      trainMeta = scmeta[scmeta$Split==ss, ]
-      trainDat = scdata[, scmeta$Split==ss]
-      testMeta = scmeta[scmeta$Split!=ss, ]
-      testDat = scdata[, scmeta$Split!=ss]
+      trainMeta = scmeta[scmeta$Split!=ss, ]
+      trainDat = scdata[, scmeta$Split!=ss]
+      testMeta = scmeta[scmeta$Split==ss, ]
+      testDat = scdata[, scmeta$Split==ss]
       if(verbose){
         Ws = NMFGenerateWList(trainDat, trainMeta,
                               CellType = CellType,
                               SE = SE, scale = scale,
                               Sample = "Split",
-                              seed = seeds[ii], ...)
+                              seed = seeds[ii],
+                              nfeature = nfeature,
+                              nfeature.per.se = nfeature.per.se)
         preds = RecoverSE(dat = testDat,
                           celltypes = testMeta[, CellType],
-                          ncell.per.run = 5000,
                           Ws = Ws, min.score = 0,
                           scale = scale)
       }else{
@@ -82,10 +85,11 @@ LoocvPredict = function(scdata, scmeta,
                                                CellType = CellType,
                                                SE = SE, scale = scale,
                                                Sample = "Split",
-                                               seed = seeds[ii], ...))
+                                               seed = seeds[ii],
+                                               nfeature = nfeature,
+                                               nfeature.per.se = nfeature.per.se))
         preds = suppressMessages(RecoverSE(dat = testDat,
                                            celltypes = testMeta[, CellType],
-                                           ncell.per.run = 5000,
                                            Ws = Ws, min.score = 0,
                                            scale = scale))
       }
