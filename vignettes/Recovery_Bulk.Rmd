@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # Overview
 
-In this tutorial, we will demonstrate how to infer spatial ecotype (SE) abundances from bulk gene expression profiles, including bulk RNA-seq and Visium spatial transcriptomics. 
+This tutorial provides a step-by-step workflow for applying the SpatialEcoTyper framework and a pre-trained deconvolution model to infer the abundances of spatial ecotypes from bulk transcriptomic data, including bulk RNA-seq and Visium spatial transcriptomics data.
 
 __First load required packages for this vignette__
 
@@ -26,10 +26,9 @@ library(ggplot2)
 library(dplyr)
 ```
 
-
 # Inferring SE levels from bulk RNA-seq data
 
-We will start with the SE deconvolution from bulk RNA-seq. We will use bulk RNA-seq data from TCGA melanoma (SKCM) samples for demonstration. The gene expression matrix is available at [SKCM_RNASeqV2.geneExp.tsv](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv), which is a Transcripts Per Million (TPM) matrix obtained from the [PanCanAtlas](https://gdc.cancer.gov/about-data/publications/pancanatlas).
+We will use bulk RNA-seq data from TCGA melanoma (SKCM) samples for demonstration. The gene expression matrix is available at [SKCM_RNASeqV2.geneExp.tsv](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SKCM_RNASeqV2.geneExp.tsv), which is a Transcripts Per Million (TPM) matrix obtained from the [PanCanAtlas](https://gdc.cancer.gov/about-data/publications/pancanatlas).
 
 ## Loading bulk expression of TCGA melanoma samples
 
@@ -45,32 +44,31 @@ bulkdata <- bulkdata[, -1] ## Drop the first column
 head(bulkdata[, 1:5]) ## TPM matrix
 ```
 
+## Loading pre-trained model
+
+Users must provide a pre-trained Non-Negative Matrix Factorization (NMF) model through the `W` argument as a numeric matrix.
+
+For standard analyses using the nine spatial ecotypes defined in [our study](https://www.nature.com/articles/s41586-026-10452-4), the pre-trained model file (`SE_deconvolution_model.rds`) can be downloaded from [Spatial EcoTyper web platform](https://spatialecotyper.stanford.edu/download.php). Alternatively, you can upload your bulk expression data directly to the [web platform](https://spatialecotyper.stanford.edu/) to run the deconvolution.
+
+If you have identified new spatial ecotypes, you can train a custom deconvolution model (to derive a custom W matrix) using your own dataset, following [Tutorial 7: NMF Model Development for Spatial Ecotype Deconvolution from Bulk Gene Expression Data](TrainDeconvModel.html).
+
+```{r loadmodel}
+# Note: Load the downloaded file into R using readRDS() to extract the W matrix before passing it to the function
+nmf_model = readRDS("SE_deconvolution_model.rds")
+```
+
+
 ## SE deconvolution
 
-The [DeconvoluteSE](../reference/DeconvoluteSE.html) function infers SE abundances in bulk tissue samples. Users can either use the default model, which estimates the abundances of predefined SEs, or apply a custom model to infer the abundance of newly defined SEs from bulk gene expression data. Before prediction, [DeconvoluteSE](../reference/DeconvoluteSE.html) automatically applies a log₂ transformation (if the maximum value exceeds 80) and standardizes the data so that each gene has a mean of 0 and a unit variance. To ensure reliable standardization, we recommend a minimum of 20 samples. For smaller datasets, we recommend to combine them with a larger dataset for normalization prior to running [DeconvoluteSE](../reference/DeconvoluteSE.html).
+The [DeconvoluteSE](../reference/DeconvoluteSE.html) function infers SE abundances in bulk tissue samples. By default, the predicted abundances of SEs and NonSE components for each sample are normalized to sum to 1. To disable this normalization, set `sum2one = FALSE`.
 
-The default model is trained on pseudobulk gene expression data and predicts the abundances of nine predefined SEs along with a NonSE group, which includes cancer cells and cells not associated with any SEs. The predicted SE and NonSE abundances for each sample sum to 1, making them comparable across samples.
-
-### Using default model
-
-```{r DeconvoluteSE1}
-sefracs <- DeconvoluteSE(bulkdata, scale = TRUE)
-head(sefracs)
-```
-**Note**: If your data are already standardized to have zero mean and unit variance per gene, set `scale = FALSE`.
-
-### Using custom model
-
-After identifying SEs using [SpatialEcoTyper](../reference/SpatialEcoTyper.html) or [MultiSpatialEcoTyper](../reference/MultiSpatialEcoTyper.html), users can develop a Non-Negative Matrix Factorization (NMF) model to deconvolve SEs from bulk tissue samples, following the [Tutorial 7](TrainDeconvModel.html).
+Before prediction, [DeconvoluteSE](../reference/DeconvoluteSE.html) automatically preprocesses the input data. If the maximum expression value exceeds 80, the function applies a log₂ transformation. It then standardizes each gene to have a mean of 0 and a standard deviation of 1. This standardization can be disabled by setting `scale = FALSE`. For reliable standardization, we recommend using at least 20 samples. For smaller datasets, we recommend combining the samples with a larger reference dataset during normalization and then applying [`DeconvoluteSE`](../reference/DeconvoluteSE.html) to the normalized data.
 
 __Deconvolution__
 
-Users can train an NMF model for SE deconvolution following the tutorial above. After that, the new model can be used for SE deconvolution by specifying the `W` parameter:
-```{r DeconvoluteSE2, eval=FALSE}
-# Do not run; replace new_model
-sefracs <- DeconvoluteSE(bulkdata, W = new_model)
+```{r DeconvoluteSE2}
+sefracs <- DeconvoluteSE(bulkdata, W = nmf_model)
 ```
-
 
 ## Compare SE abundances across sample groups
 
@@ -87,7 +85,6 @@ ggplot(sefracs[!is.na(sefracs$Group), ], aes(Group, SE1)) +
   geom_jitter(width = 0.1, size = 0.2) + 
   theme_classic(base_size = 14)
 ```
-
 
 # Inferring SE levels from Visium data
 
@@ -118,7 +115,7 @@ head(meta)
 The process of SE deconvolution for Visium data is the same as for bulk RNA-seq data described above, using the [DeconvoluteSE](../reference/DeconvoluteSE.html) function.
 
 ```{r DeconvoluteSE3}
-sefracs <- DeconvoluteSE(visiumdat, scale = TRUE)
+sefracs <- DeconvoluteSE(visiumdat, W = nmf_model, scale = TRUE)
 head(sefracs)
 ```
 

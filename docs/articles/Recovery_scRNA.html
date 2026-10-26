@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -218,22 +218,25 @@ and the cell type annotations are available in <a href="https://spatialecotyper.
 be used to assign single cells into SEs. Users can either use default
 model to recover predefined SEs or use custom model to recover newly
 defined SEs.</p>
-<p><strong>Note</strong>: Cell type annotation (<code>celltypes</code>
+<p><strong>Note</strong>: cell type annotation (<code>celltypes</code>
 argument) is required for SE recovery using <a href="../reference/RecoverSE.html">RecoverSE</a>.</p>
-<details open><summary><strong>Using default models</strong>
-</summary><p>The default NMF models were trained on discovery MERSCOPE data,
-encompassing five cancer types: melanoma, and four carcinomas. These
-models are tailored to nine distinct cell types: B cells, CD4+ T cells,
-CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells,
-fibroblasts, and endothelial cells. Each model facilitates the recovery
-of SEs from single-cell datasets, allowing for cell-type-specific SE
-analysis.</p>
-<p>For SE recovery, the cells in the query data should be grouped into
-one of “B”, “CD4T”, “CD8T”, “NK”, “Plasma”, “Macrophage”, “DC”,
-“Fibroblast”, and “Endothelial”, case sensitive. All the other cell
-types will be considered non-SE compartments.</p>
+<details open><summary><strong>Using default model</strong>
+</summary><p>The default NMF model was trained on discovery MERSCOPE data,
+encompassing five cancer types: melanoma, and four carcinomas. The model
+is tailored to nine distinct cell types: B cells, CD4+ T cells, CD8+ T
+cells, NK cells, plasma cells, macrophages, dendritic cells,
+fibroblasts, and endothelial cells. Therefore, cells in the query data
+should be grouped into one of “B”, “CD4T”, “CD8T”, “NK”, “Plasma”,
+“Macrophage”, “DC”, “Fibroblast”, and “Endothelial”, case sensitive. All
+the other cell types will be considered non-SE compartments. The SE
+recovery output contains five columns: cell ID (CID), cell type
+(CellType), initial SE assignment (InitSE), final SE assignment (SE),
+and prediction score (PredScore). Assignments with PredScore ≥ 0.6
+should be retained as high-confidence results. For custom model, users
+are encouraged to determine the optimal threshold based on
+leave-one-sample-out cross-validation performance.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">ctann</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">ctann</span>, min.score <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sepreds</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                   CID   CellType InitSE    SE PredScore</span></span>
 <span><span class="co">## AAACCTGCACATGACT-1 AAACCTGCACATGACT-1 Macrophage   SE10   SE8 0.9958701</span></span>
@@ -247,54 +250,28 @@ types will be considered non-SE compartments.</p>
 <span><span class="co">### InitSE: Initial SE assignment</span></span>
 <span><span class="co">### SE: Final SE assignment (retaining only SE-specific cell states)</span></span>
 <span><span class="co">### PredScore: Prediction confidence score (default threshold ≥ 0.6 for high-confidence assignments)</span></span></code></pre></div>
-</details><details><summary><strong>Using custom models</strong>
-</summary><p>To use custom models, users should first develop recovery models
+</details><details><summary><strong>Using custom model</strong>
+</summary><p>To use custom model, users should first develop recovery model
 following the tutorial <a href="TrainRecoveryModel.html">NMF Model
 Development for Spatial Ecotype Recovery from Single-Cell and Spatial
-Transcriptomics Data</a>. The resulting models can be used for SE
-recovery. An example model is available at <a href="https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SE_Recovery_W_list.rds" class="external-link">SE_Recovery_W_list.rds</a>.</p>
-<p>Download the example models</p>
+Transcriptomics Data</a>. The resulting model can be used for SE
+recovery.</p>
+<p>Load the custom model</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">url</span> <span class="op">&lt;-</span> <span class="st">"https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SE_Recovery_W_list.rds"</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span><span class="va">url</span>, destfile <span class="op">=</span> <span class="st">"SE_Recovery_W_list.rds"</span>, mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span></code></pre></div>
-<p>Load the custom models</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Ws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"SE_Recovery_W_list.rds"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">Ws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"path/to/SE_recovery_model.rds"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">Ws</span><span class="op">)</span> <span class="co">## named list of W matrices</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "CD4T"        "CD8T"        "DC"          "Endothelial" "Fibroblast" </span></span>
-<span><span class="co">## [6] "Macrophage"  "NK"          "Plasma"</span></span></code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Ws</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="co">## feature by SE matrix</span></span></code></pre></div>
-<pre><code><span><span class="co">##                  SE01      SE02      SE03      SE04      SE05      SE06</span></span>
-<span><span class="co">## CD226__pos  0.4145936 0.2555579 0.3323735 0.3241147 0.2263783 0.3279133</span></span>
-<span><span class="co">## CDKN1B__pos 0.5729663 0.4552065 0.5120732 0.4627805 0.4453117 0.5156023</span></span>
-<span><span class="co">## CXCR4__pos  0.5865790 0.2771225 0.4093821 0.3607076 0.3589891 0.3937211</span></span>
-<span><span class="co">## DUSP1__pos  0.4233067 0.3462390 0.2269798 0.1616814 0.3265539 0.2562118</span></span>
-<span><span class="co">## KLF2__pos   0.5889618 0.2314586 0.3867504 0.2295206 0.2998234 0.5173246</span></span>
-<span><span class="co">## ICAM2__pos  0.4593230 0.2611751 0.4427930 0.3143084 0.3679498 0.4532637</span></span>
-<span><span class="co">##                  SE07      SE08      SE09      SE10      SE11</span></span>
-<span><span class="co">## CD226__pos  0.2189382 0.3417897 0.2563481 0.2360192 0.2815938</span></span>
-<span><span class="co">## CDKN1B__pos 0.4414750 0.4747166 0.4414508 0.3922732 0.3821411</span></span>
-<span><span class="co">## CXCR4__pos  0.3751669 0.4456410 0.3023204 0.2629156 0.2729461</span></span>
-<span><span class="co">## DUSP1__pos  0.3682236 0.2211759 0.1713413 0.1699067 0.1121763</span></span>
-<span><span class="co">## KLF2__pos   0.3570251 0.4327206 0.1732251 0.2086729 0.2118797</span></span>
-<span><span class="co">## ICAM2__pos  0.2660441 0.5494585 0.2878338 0.3711269 0.2575091</span></span></code></pre>
-<p>Using custom models for SE recovery by specifying the <code>Ws</code>
+<p>Using custom model for SE recovery by specifying the <code>Ws</code>
 argument.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">ctann</span>, Ws <span class="op">=</span> <span class="va">Ws</span>, min.score <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">ctann</span>, </span>
+<span>                     Ws <span class="op">=</span> <span class="va">Ws</span>, min.score <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="co">## A minimum prediction score (min.score) is required to assign a cell to an SE. It can be determined based on training data; 0.5 or above is recommended.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sepreds</span><span class="op">)</span></span></code></pre></div>
 <p>After prediction, we recommend retaining only assignments
 corresponding to SE-specific cell states identified in <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html">Tutorial
 4</a>. Cells not assigned to these SE-specific states should be grouped
 as “NonSE,” as they cannot be robustly mapped to the corresponding
 SE.</p>
-<p>The SE recovery output contains five columns: cell ID (CID), cell
-type (CellType), initial SE assignment (InitSE), final SE assignment
-(SE), and prediction score (PredScore). By default, assignments with
-PredScore ≥ 0.6 are retained as high-confidence results. For custom
-models, users are encouraged to determine the optimal threshold based on
-leave-one-sample-out cross-validation performance.</p>
 </details>
 </div>
 <div class="section level2">
@@ -315,36 +292,36 @@ groupings from the cell state names.</p>
 <p>scRNA-seq data from multiple samples are required for the
 co-association analysis. For demonstration here, we randomly partition
 the cells into 10 samples.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sepreds</span><span class="op">$</span><span class="va">Sample</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sepreds</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">result</span> <span class="op">=</span> <span class="fu"><a href="../reference/Coassociation.html">Coassociation</a></span><span class="op">(</span><span class="va">sepreds</span>, Sample <span class="op">=</span> <span class="st">"Sample"</span>, SE <span class="op">=</span> <span class="st">"SE"</span>, </span>
 <span>                       CellType <span class="op">=</span> <span class="st">"CellType"</span>, nperm <span class="op">=</span> <span class="fl">10</span>, test <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">CoassociationIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                      NonSE_B   NonSE_CD4T   NonSE_CD8T NonSE_Epithelial</span></span>
-<span><span class="co">## NonSE_B           1.00000000  0.215549248  0.011809976                0</span></span>
-<span><span class="co">## NonSE_CD4T        0.21554925  1.000000000  0.001827496                0</span></span>
-<span><span class="co">## NonSE_CD8T        0.01180998  0.001827496  1.000000000                0</span></span>
-<span><span class="co">## NonSE_Epithelial  0.00000000  0.000000000  0.000000000                0</span></span>
-<span><span class="co">## NonSE_Fibroblast  0.59045264 -0.551404825 -0.714433696                0</span></span>
-<span><span class="co">## NonSE_Macrophage -0.26413191 -0.300327313 -0.017274472                0</span></span>
+<pre><code><span><span class="co">##                     NonSE_B NonSE_CD4T  NonSE_CD8T NonSE_Epithelial</span></span>
+<span><span class="co">## NonSE_B           1.0000000  0.3602682 -0.65464650                0</span></span>
+<span><span class="co">## NonSE_CD4T        0.3602682  1.0000000 -0.32959553                0</span></span>
+<span><span class="co">## NonSE_CD8T       -0.6546465 -0.3295955  1.00000000                0</span></span>
+<span><span class="co">## NonSE_Epithelial  0.0000000  0.0000000  0.00000000                0</span></span>
+<span><span class="co">## NonSE_Fibroblast  0.2976043  0.3814147 -0.06894542                0</span></span>
+<span><span class="co">## NonSE_Macrophage -0.1866630 -0.4344231  0.34276192                0</span></span>
 <span><span class="co">##                  NonSE_Fibroblast</span></span>
-<span><span class="co">## NonSE_B                 0.5904526</span></span>
-<span><span class="co">## NonSE_CD4T             -0.5514048</span></span>
-<span><span class="co">## NonSE_CD8T             -0.7144337</span></span>
-<span><span class="co">## NonSE_Epithelial        0.0000000</span></span>
-<span><span class="co">## NonSE_Fibroblast        1.0000000</span></span>
-<span><span class="co">## NonSE_Macrophage       -0.5395175</span></span></code></pre>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<span><span class="co">## NonSE_B                0.29760427</span></span>
+<span><span class="co">## NonSE_CD4T             0.38141469</span></span>
+<span><span class="co">## NonSE_CD8T            -0.06894542</span></span>
+<span><span class="co">## NonSE_Epithelial       0.00000000</span></span>
+<span><span class="co">## NonSE_Fibroblast       1.00000000</span></span>
+<span><span class="co">## NonSE_Macrophage      -0.45071011</span></span></code></pre>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span><span class="op">$</span><span class="va">Pval</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 0.1607103685 0.0105038952 0.0126580676 0.0003535697 0.0039325818 0.0002537493 </span></span>
+<span><span class="co">## 0.0101113020 0.0025226006 0.0219442277 0.0008433595 0.0112660875 0.0030455264 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 0.0805293967 0.0084769137 0.0001124626 0.1468899151 </span></span>
+<span><span class="co">## 0.0464709477 0.0019557140 0.0072093034 0.1648902739 </span></span>
 <span><span class="co">## attr(,"Zscore")</span></span>
 <span><span class="co">##    NonSE      SE1      SE2      SE3      SE4      SE5      SE6      SE7 </span></span>
-<span><span class="co">## 1.402686 2.558784 2.493247 3.572515 2.883520 3.658446 1.747623 2.632459 </span></span>
+<span><span class="co">## 2.572000 3.020617 2.291332 3.338157 2.534335 2.963105 1.991090 3.096876 </span></span>
 <span><span class="co">##      SE8      SE9 </span></span>
-<span><span class="co">## 3.862000 1.450605</span></span></code></pre>
+<span><span class="co">## 2.687018 1.388811</span></span></code></pre>
 <p>The results can be visualized on a heatmap using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function, as described in the <a href="Recovery_scST.html">Tutorial
 5</a>.</p>
@@ -355,7 +332,7 @@ function, as described in the <a href="Recovery_scST.html">Tutorial
 <p>Users can also validate the SEs by visualizing the average expression
 of SE consensus markers across recovered SEs using the <a href="../reference/AverageMarkerExpression.html">AverageMarkerExpression</a>
 function.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## The function is built on Seurat functions, so first create a Seurat object.</span></span>
 <span><span class="va">obj</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.github.io/seurat-object/reference/CreateSeuratObject.html" class="external-link">CreateSeuratObject</a></span><span class="op">(</span><span class="va">scdata</span>, meta.data <span class="op">=</span> <span class="va">sepreds</span><span class="op">)</span></span>
 <span><span class="va">obj</span> <span class="op">=</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/NormalizeData.html" class="external-link">NormalizeData</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
@@ -363,34 +340,34 @@ function.</p>
 <span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/AverageMarkerExpression.html">AverageMarkerExpression</a></span><span class="op">(</span><span class="va">obj</span>, group.by <span class="op">=</span> <span class="st">"SE"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Recovery_scRNA_files/figure-html/visualconsensus-1.png" width="700"></p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Underlying data</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">AvgExp</span></span></code></pre></div>
-<pre><code><span><span class="co">##            SE1        SE2        SE3        SE4        SE5         SE6</span></span>
-<span><span class="co">## SE1  1.7546835 -0.4334617 -1.2545470 -0.8725742 -0.1568228  0.94080822</span></span>
-<span><span class="co">## SE2 -1.4282104  1.5281881 -0.5365232 -1.2655275  0.4745366  0.88440543</span></span>
-<span><span class="co">## SE3 -0.8419582 -0.5595347  1.1688409 -1.4218185  0.9582974 -0.69908220</span></span>
-<span><span class="co">## SE4 -0.3799467 -0.5299690 -0.5609332  2.5696091 -0.3206378  0.26530143</span></span>
-<span><span class="co">## SE5 -1.2586471  0.6739359  0.4822086 -1.7830064  1.0139286  0.21338701</span></span>
-<span><span class="co">## SE6  1.2871159 -1.0601397 -1.0976172  0.2711248 -0.1616962 -0.15286978</span></span>
-<span><span class="co">## SE7  0.2603257 -0.3120466  0.3212512 -2.4258511  0.3935881 -0.33132755</span></span>
-<span><span class="co">## SE8 -1.7418692  1.0160774 -0.6591556 -1.2187193  0.1362500  0.56361366</span></span>
-<span><span class="co">## SE9 -1.6996535  0.6858409  0.3376640 -0.9211467  0.8729545 -0.07826363</span></span>
-<span><span class="co">##            SE7          SE8        SE9</span></span>
-<span><span class="co">## SE1  0.5566872  0.452098413 -0.9868718</span></span>
-<span><span class="co">## SE2 -0.5616488  0.493123945  0.4116559</span></span>
-<span><span class="co">## SE3  0.0112145 -0.090702379  1.4747433</span></span>
-<span><span class="co">## SE4 -0.4210648 -0.073395757 -0.5489633</span></span>
-<span><span class="co">## SE5 -0.4616314 -0.004130407  1.1239552</span></span>
-<span><span class="co">## SE6  1.4892588  0.580842283 -1.1560190</span></span>
-<span><span class="co">## SE7  0.9743633  0.505225794  0.6144712</span></span>
-<span><span class="co">## SE8  0.1551052  1.123809660  0.6248882</span></span>
-<span><span class="co">## SE9 -0.8056572  0.108515497  1.4997460</span></span></code></pre>
+<pre><code><span><span class="co">##            SE1        SE2         SE3        SE4         SE5         SE6</span></span>
+<span><span class="co">## SE1  1.7226210 -0.4808165 -1.37812573 -0.7932777 -0.12119184  0.89883571</span></span>
+<span><span class="co">## SE2 -1.4235863  1.5681755 -0.87334402 -1.0696721  0.44526793  0.83310459</span></span>
+<span><span class="co">## SE3 -0.9306379 -0.5253121  1.28899508 -1.3508876  1.02461713 -0.73094717</span></span>
+<span><span class="co">## SE4 -0.3669122 -0.5223084 -0.67161097  2.5314673 -0.26216553  0.37672915</span></span>
+<span><span class="co">## SE5 -1.4190490  0.7253804  0.40100985 -1.6623573  1.04279924  0.21922679</span></span>
+<span><span class="co">## SE6  1.2032238 -1.2089301 -1.11642464  0.2684502 -0.20245895 -0.06927059</span></span>
+<span><span class="co">## SE7  0.2735315 -0.3599430  0.29691730 -2.3988709  0.39381762 -0.36290540</span></span>
+<span><span class="co">## SE8 -1.7136966  0.9917886 -0.98188362 -0.9680352  0.05523798  0.61423295</span></span>
+<span><span class="co">## SE9 -1.7816063  0.7895189 -0.03543357 -0.7629782  0.89279834  0.03679885</span></span>
+<span><span class="co">##             SE7         SE8        SE9</span></span>
+<span><span class="co">## SE1  0.54574629  0.53621566 -0.9300069</span></span>
+<span><span class="co">## SE2 -0.46650719  0.56639614  0.4201654</span></span>
+<span><span class="co">## SE3 -0.05793118 -0.05255440  1.3346582</span></span>
+<span><span class="co">## SE4 -0.45121319 -0.07413200 -0.5598542</span></span>
+<span><span class="co">## SE5 -0.44783144  0.04643455  1.0943869</span></span>
+<span><span class="co">## SE6  1.52062350  0.61973372 -1.0149469</span></span>
+<span><span class="co">## SE7  0.99065113  0.53876443  0.6280373</span></span>
+<span><span class="co">## SE8  0.24681625  1.19097921  0.5645604</span></span>
+<span><span class="co">## SE9 -0.79763092  0.19321472  1.4653182</span></span></code></pre>
 <p>The <a href="../reference/AverageMarkerExpression.html">AverageMarkerExpression</a>
 function can also be used to visualize average expression of other gene
 lists by specifying the <code>genesets</code> parameter, which should be
 a list of gene sets.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genesets</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>set1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FOS"</span>, <span class="st">"EGR1"</span>, <span class="st">"DUSP1"</span>, <span class="st">"JUNB"</span>, <span class="st">"JUN"</span>, <span class="st">"FOSB"</span><span class="op">)</span>,</span>
 <span>                set2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPP1"</span>, <span class="st">"CCL2"</span>, <span class="st">"MMP9"</span><span class="op">)</span>,</span>
 <span>                set3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CXCL12"</span>, <span class="st">"TGFBR2"</span>, <span class="st">"PDK4"</span>, <span class="st">"HLA-DMA"</span><span class="op">)</span>,</span>
@@ -410,11 +387,11 @@ a list of gene sets.</p>
 <p>The session info allows users to replicate the exact environment and
 identify potential discrepancies in package versions or configurations
 that might be causing problems.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">## Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">## Running under: macOS 26.5.2</span></span>
+<span><span class="co">## Running under: macOS 26.6.1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib </span></span>
@@ -431,7 +408,7 @@ that might be causing problems.</p>
 <span><span class="co">## [8] base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] SpatialEcoTyper_1.0.4 pals_1.9              NMF_0.28             </span></span>
+<span><span class="co">##  [1] SpatialEcoTyper_1.0.5 pals_1.9              NMF_0.28             </span></span>
 <span><span class="co">##  [4] Biobase_2.64.0        BiocGenerics_0.50.0   cluster_2.1.6        </span></span>
 <span><span class="co">##  [7] rngtools_1.5.2        registry_0.5-1        RANN_2.6.2           </span></span>
 <span><span class="co">## [10] Matrix_1.7-0          data.table_1.18.4     Seurat_5.1.0         </span></span>

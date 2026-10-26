@@ -75,6 +75,6 @@ metacells <- GetSpatialMetacells(normdata = normdata,
                                  X = "X", Y = "Y",
                                  CellType = "CellType",
                                  spotCoord = snmeta)
-head(metacells)
+head(metacells[, 1:10])
 
 }

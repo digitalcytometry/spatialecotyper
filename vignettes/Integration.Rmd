@@ -228,7 +228,7 @@ nmf_res <- nmfClustering(integrated, ranks = 10, nrun.per.rank = 30,
 ses <- predict(nmf_res)
 
 ## Add the newly defined SEs into the meta data
-finalmeta$SE = paste0("SE", ses[finalmeta$InitSE])
+finalmeta$SE = paste0("NewSE", ses[finalmeta$InitSE])
 head(finalmeta)
 ```
 
@@ -254,7 +254,7 @@ Once the optimal rank is determined, you can use it to generate the final SE ann
 ses <- predict(nmf_res$NMFfits[[paste0("K.", nmf_res$bestK)]])
 
 ## Add the newly defined SEs into the meta data
-finalmeta$SE = paste0("SE", ses[finalmeta$InitSE])
+finalmeta$SE = paste0("NewSE", ses[finalmeta$InitSE])
 head(finalmeta)
 ```
 

@@ -115,16 +115,15 @@ table(ctann)
 
 The [RecoverSE](../reference/RecoverSE.html) function will be used to assign single cells into SEs. Users can either use default model to recover predefined SEs or use custom model to recover newly defined SEs.
 
-**Note**: Cell type annotation (`celltypes` argument) is required for SE recovery using [RecoverSE](../reference/RecoverSE.html).
+**Note**: cell type annotation (`celltypes` argument) is required for SE recovery using [RecoverSE](../reference/RecoverSE.html).
 
-<details open><summary><strong>Using default models</strong></summary>
+<details open><summary><strong>Using default model</strong></summary>
 
-The default NMF models were trained on discovery MERSCOPE data, encompassing five cancer types: melanoma, and four carcinomas. These models are tailored to nine distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells, fibroblasts, and endothelial cells. Each model facilitates the recovery of SEs from single-cell datasets, allowing for cell-type-specific SE analysis.
-
-For SE recovery, the cells in the query data should be grouped into one of "B", "CD4T", "CD8T", "NK", "Plasma", "Macrophage", "DC", "Fibroblast", and "Endothelial", case sensitive. All the other cell types will be considered non-SE compartments. 
+The default NMF model was trained on discovery MERSCOPE data, encompassing five cancer types: melanoma, and four carcinomas. The model is tailored to nine distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells, fibroblasts, and endothelial cells. Therefore, cells in the query data should be grouped into one of "B", "CD4T", "CD8T", "NK", "Plasma", "Macrophage", "DC", "Fibroblast", and "Endothelial", case sensitive. All the other cell types will be considered non-SE compartments. 
+The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore). Assignments with PredScore ≥ 0.6 should be retained as high-confidence results. For custom model, users are encouraged to determine the optimal threshold based on leave-one-sample-out cross-validation performance.
 
 ```{r scrna_recov}
-sepreds <- RecoverSE(normdata, celltypes = ctann)
+sepreds <- RecoverSE(normdata, celltypes = ctann, min.score = 0.6)
 head(sepreds)
 # Results: 
 ### InitSE: Initial SE assignment
@@ -134,32 +133,25 @@ head(sepreds)
 
 </details>
 
-<details><summary><strong>Using custom models</strong></summary>
+<details><summary><strong>Using custom model</strong></summary>
 
-To use custom models, users should first develop recovery models following the tutorial [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](TrainRecoveryModel.html). The resulting models can be used for SE recovery. An example model is available at [SE_Recovery_W_list.rds](https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SE_Recovery_W_list.rds).
+To use custom model, users should first develop recovery model following the tutorial [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](TrainRecoveryModel.html). The resulting model can be used for SE recovery.
 
-Download the example models
-```{r downloadWs, eval=TRUE}
-url <- "https://spatialecotyper.stanford.edu/inc/inc.public.vignettes.php?file=SE_Recovery_W_list.rds"
-download.file(url, destfile = "SE_Recovery_W_list.rds", mode = "wb")
-```
-
-Load the custom models
-```{r viewWs}
-Ws <- readRDS("SE_Recovery_W_list.rds")
+Load the custom model
+```{r viewWs, eval=FALSE}
+Ws <- readRDS("path/to/SE_recovery_model.rds")
 names(Ws) ## named list of W matrices
-head(Ws[[1]]) ## feature by SE matrix
 ```
 
-Using custom models for SE recovery by specifying the `Ws` argument.
+Using custom model for SE recovery by specifying the `Ws` argument.
 ```{r scrna_recov2, eval=FALSE}
-sepreds <- RecoverSE(normdata, celltypes = ctann, Ws = Ws, min.score = 0.6)
+sepreds <- RecoverSE(normdata, celltypes = ctann, 
+                     Ws = Ws, min.score = 0.5)
+## A minimum prediction score (min.score) is required to assign a cell to an SE. It can be determined based on training data; 0.5 or above is recommended.
 head(sepreds)
 ```
 
 After prediction, we recommend retaining only assignments corresponding to SE-specific cell states identified in [Tutorial 4](https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html). Cells not assigned to these SE-specific states should be grouped as "NonSE," as they cannot be robustly mapped to the corresponding SE. 
-
-The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore). By default, assignments with PredScore ≥ 0.6 are retained as high-confidence results. For custom models, users are encouraged to determine the optimal threshold based on leave-one-sample-out cross-validation performance.
 
 </details>
 

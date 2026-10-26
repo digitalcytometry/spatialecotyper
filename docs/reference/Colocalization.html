@@ -13,7 +13,7 @@ labels within each cell type."><meta property="og:image" content="https://digita
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@ labels within each cell type.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">Colocalization</span><span class="op">(</span></span>
 <span>  <span class="va">scmeta</span>,</span>
 <span>  coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span><span class="op">)</span>,</span>
-<span>  SE <span class="op">=</span> <span class="st">"SE"</span>,</span>
+<span>  CellState <span class="op">=</span> <span class="st">"CellState"</span>,</span>
 <span>  CellType <span class="op">=</span> <span class="st">"CellType"</span>,</span>
 <span>  radius <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">200</span>,</span>
@@ -86,8 +86,9 @@ represents a cell. Row names should correspond to unique cell IDs.</p></dd>
 coordinates (e.g., <code>c("X", "Y")</code>).</p></dd>
 
 
-<dt id="arg-se">SE<a class="anchor" aria-label="anchor" href="#arg-se"></a></dt>
-<dd><p>Character. Column name in <code>scmeta</code> specifying spatial ecotype labels.</p></dd>
+<dt id="arg-cellstate">CellState<a class="anchor" aria-label="anchor" href="#arg-cellstate"></a></dt>
+<dd><p>Character. Column name in <code>scmeta</code> specifying cell state
+annotations (e.g., "SE1_CD4T").</p></dd>
 
 
 <dt id="arg-celltype">CellType<a class="anchor" aria-label="anchor" href="#arg-celltype"></a></dt>
@@ -117,9 +118,9 @@ Default is 1000.</p></dd>
 
 
 <dt id="arg-test">test<a class="anchor" aria-label="anchor" href="#arg-test"></a></dt>
-<dd><p>Logical. Whether to compute statistical significance (P-values).
-If TRUE, both Z-scores and P-values are returned; otherwise only Z-scores are returned.
-Default is TRUE.</p></dd>
+<dd><p>Logical. Whether to compute P-values for cell state co-localization
+within each spatial ecotype (SE). The SE assignment of each cell state is inferred
+from its name, which must follow the format `SE_State` (e.g., `SE1_CD4T`).</p></dd>
 
 
 <dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>

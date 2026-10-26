@@ -13,8 +13,9 @@ LoocvPredict(
   repeats = 30,
   ncores = 4,
   scale = TRUE,
-  verbose = TRUE,
-  ...
+  nfeature = 300,
+  nfeature.per.se = 50,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -38,9 +39,11 @@ into training and test sets within each cell type.}
 \item{scale}{Boolean specifying whether to perform univariance normalization
 for training and validation data (default: TRUE).}
 
-\item{verbose}{Boolean specifying whether to print the log messages.}
+\item{nfeature}{Integer specifying the top variable features for training the models (default: 300).}
 
-\item{...}{Additional arguments passed to \code{NMFGenerateWList}.}
+\item{nfeature.per.se}{Integer specifying the maximal number of features to select for each SE (default: 50).}
+
+\item{verbose}{Boolean specifying whether to print the log messages.}
 }
 \value{
 The input `scmeta` data.frame with an added column `cvPred`

@@ -11,7 +11,7 @@ repeated cross-validation and parallel execution."><meta property="og:image" con
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,8 +64,9 @@ repeated cross-validation and parallel execution.</p>
 <span>  repeats <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  ncores <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  nfeature <span class="op">=</span> <span class="fl">300</span>,</span>
+<span>  nfeature.per.se <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -109,12 +110,16 @@ into training and test sets within each cell type.</p></dd>
 for training and validation data (default: TRUE).</p></dd>
 
 
+<dt id="arg-nfeature">nfeature<a class="anchor" aria-label="anchor" href="#arg-nfeature"></a></dt>
+<dd><p>Integer specifying the top variable features for training the models (default: 300).</p></dd>
+
+
+<dt id="arg-nfeature-per-se">nfeature.per.se<a class="anchor" aria-label="anchor" href="#arg-nfeature-per-se"></a></dt>
+<dd><p>Integer specifying the maximal number of features to select for each SE (default: 50).</p></dd>
+
+
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Boolean specifying whether to print the log messages.</p></dd>
-
-
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to <code>NMFGenerateWList</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

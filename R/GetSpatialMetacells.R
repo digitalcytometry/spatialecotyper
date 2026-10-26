@@ -44,7 +44,7 @@
 #'                                  X = "X", Y = "Y",
 #'                                  CellType = "CellType",
 #'                                  spotCoord = snmeta)
-#' head(metacells)
+#' head(metacells[, 1:10])
 #'
 #' @importFrom parallel mclapply
 #' @export

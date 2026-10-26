@@ -1,3 +1,8 @@
+# SpatialEcoTyper 1.0.5
+
+  * Restrict the use of deconvolution model
+  * Fix some issues in LoocvPredict
+
 # SpatialEcoTyper 1.0.4
 
   * Add function and tutorial for visualizing SE recovery results

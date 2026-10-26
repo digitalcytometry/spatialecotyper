@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -229,31 +229,31 @@ will be included.</p></dd>
 <span class="r-in"><span><span class="va">se_results</span> <span class="op">&lt;-</span> <span class="fu">SpatialEcoTyper</span><span class="op">(</span><span class="va">normdata</span>, <span class="va">scmeta</span>,</span></span>
 <span class="r-in"><span>                              outprefix <span class="op">=</span> <span class="st">"Melanoma1_subset"</span>,</span></span>
 <span class="r-in"><span>                              radius <span class="op">=</span> <span class="fl">50</span>, ncores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:07.860032 Remove 88 genes expressed in fewer than 5 cells</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:15.97958 Construct spatial meta cells for each cell type</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:37:16.089346 Remove 88 genes expressed in fewer than 5 cells</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:37:24.652639 Construct spatial meta cells for each cell type</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Total spatial neighborhoods: 2315; total spatial meta cells: 9853</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:16.36093 PCA for each cell type</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:17.835318 Construct cell-type-specific similarity network</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:37:25.03681 PCA for each cell type</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:37:26.6579 Construct cell-type-specific similarity network</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Removing 182 spatial neighborhoods with fewer than 2 distinct cell types.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:18.638131 Similarity network fusion</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:18.639063 Normalize networks ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:18.722163 Calculate the local transition matrix ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:52:29.053902 Perform the diffusion ...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:52:29.054863 Iteration: 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:52:33.935718 Iteration: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:52:47.334079 Iteration: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:53:06.422078 Iteration: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:53:22.809843 Iteration: 5</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:53:37.976594 Iteration: 6</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:53:53.155452 Iteration: 7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:54:09.466486 Iteration: 8</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:54:26.66555 Iteration: 9</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-07-29 23:54:42.698228 Iteration: 10</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:55:04.290275 Create Seurat object and perform clustering analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:37:27.455001 Similarity network fusion</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:37:27.456367 Normalize networks ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:37:27.537613 Calculate the local transition matrix ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:37:36.767017 Perform the diffusion ...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:37:36.7677 Iteration: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:37:38.912481 Iteration: 2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:37:50.438857 Iteration: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:38:06.342132 Iteration: 4</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:38:20.314794 Iteration: 5</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:38:34.467269 Iteration: 6</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:38:48.630037 Iteration: 7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:39:02.86038 Iteration: 8</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:39:16.886047 Iteration: 9</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 	2026-10-26 09:39:31.892232 Iteration: 10</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:39:51.009883 Create Seurat object and perform clustering analysis</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> To use Python UMAP via reticulate, set umap.method to 'umap-learn' and metric to 'correlation'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> This message will be shown once per session</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-07-29 23:55:12.573909 The Seurat object is saved into Melanoma1_subset_SpatialEcoTyper_results.rds</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2026-10-26 09:39:59.186596 The Seurat object is saved into Melanoma1_subset_SpatialEcoTyper_results.rds</span>
 <span class="r-in"><span><span class="co"># Extract the Seurat object and updated single-cell metadata</span></span></span>
 <span class="r-in"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="va">se_results</span><span class="op">$</span><span class="va">obj</span> <span class="co"># A Seurat object</span></span></span>
 <span class="r-in"><span><span class="va">obj</span></span></span>

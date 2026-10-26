@@ -10,7 +10,7 @@ RecoverSE(
   scale = TRUE,
   ncell.per.run = 1000,
   Ws = NULL,
-  min.score = 0,
+  min.score = 0.6,
   ncores = 8
 )
 }
@@ -29,8 +29,8 @@ cell types including B, CD4T, CD8T, NK, Plasma, Macrophage, DC, Fibroblast, Endo
 prediction run to avoid memory issues.}
 
 \item{Ws}{A list of cell-type-specific W matrices used to recover SE-specific
-cell states. Each element in the list should be named after the corresponding
-cell type and contain a W matrix from an NMF model.}
+cell states. Each element in the list should be named by the corresponding
+cell type and contain a W matrix. They can be generated using `NMFGenerateWList` function.}
 
 \item{min.score}{A numeric threshold (0-1) specifying the minimum prediction
 score for SE classification; cells with lower scores are assigned to NonSE.}

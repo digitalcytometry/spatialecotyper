@@ -13,8 +13,8 @@
 #' @param ncell.per.run Integer specifying the maximum number of cells per NMF
 #' prediction run to avoid memory issues.
 #' @param Ws A list of cell-type-specific W matrices used to recover SE-specific
-#' cell states. Each element in the list should be named after the corresponding
-#' cell type and contain a W matrix from an NMF model.
+#' cell states. Each element in the list should be named by the corresponding
+#' cell type and contain a W matrix. They can be generated using `NMFGenerateWList` function.
 #' @param min.score A numeric threshold (0-1) specifying the minimum prediction
 #' score for SE classification; cells with lower scores are assigned to NonSE.
 #' @param ncores Integer specifying the number of CPU cores to use for parallel processing (default: 8).
@@ -40,16 +40,13 @@ RecoverSE <- function(dat, celltypes,
                       scale = TRUE,
                       ncell.per.run = 1000,
                       Ws = NULL,
-                      min.score = 0,
+                      min.score = 0.6,
                       ncores = 8){
   ## deprecated: .return.raw.prediction = FALSE
   flag = ifelse(is.null(Ws), "default", "custom")
   ## Load NMF models
   if(is.null(Ws)){
-    Wfiles <- list.files(system.file("extdata", package = "SpatialEcoTyper"),
-                         "MERSCOPE_W_v1.*.rds", full.names = TRUE)
-    Ws <- lapply(Wfiles, readRDS)
-    names(Ws) <- gsub(".*v1_|.rds", "", Wfiles)
+    Ws = readRDS(paste0(system.file("extdata", package = "SpatialEcoTyper"), "/SE_recovery_model.rds"))
   }
   if(!scale) warning("Data should be normalized to unit variance per gene before prediction, or set scale = TRUE to enable normalization.")
   if(is.null(colnames(dat))) stop("The gene expression matrix must have column names corresponding to cell barcodes.")
@@ -105,6 +102,7 @@ RecoverSE <- function(dat, celltypes,
                          SE = colnames(resDF)[apply(resDF, 1, which.max)],
                          PredScore = apply(resDF, 1, max))
   assignRes$SE[assignRes$PredScore<min.score] <- "NonSE"
+  assignRes$InitSE[assignRes$PredScore==0] <- "NonSE"
   assignRes$SE[assignRes$PredScore==0] <- "NonSE"
   assignRes = assignRes[match(colnames(dat), assignRes$CID), ]
   if(flag=="default"){

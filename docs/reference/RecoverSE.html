@@ -9,7 +9,7 @@ by assigning each single cell to an SE or NonSE."><meta property="og:image" cont
 
     <a class="navbar-brand me-2" href="../index.html">SpatialEcoTyper</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,8 +90,8 @@ prediction run to avoid memory issues.</p></dd>
 
 <dt id="arg-ws">Ws<a class="anchor" aria-label="anchor" href="#arg-ws"></a></dt>
 <dd><p>A list of cell-type-specific W matrices used to recover SE-specific
-cell states. Each element in the list should be named after the corresponding
-cell type and contain a W matrix from an NMF model.</p></dd>
+cell states. Each element in the list should be named by the corresponding
+cell type and contain a W matrix. They can be generated using `NMFGenerateWList` function.</p></dd>
 
 
 <dt id="arg-min-score">min.score<a class="anchor" aria-label="anchor" href="#arg-min-score"></a></dt>
