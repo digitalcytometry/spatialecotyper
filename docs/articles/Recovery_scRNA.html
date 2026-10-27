@@ -215,28 +215,27 @@ and the cell type annotations are available in <a href="https://spatialecotyper.
 <h2 id="se-recovery">SE recovery<a class="anchor" aria-label="anchor" href="#se-recovery"></a>
 </h2>
 <p>The <a href="../reference/RecoverSE.html">RecoverSE</a> function will
-be used to assign single cells into SEs. Users can either use default
-model to recover predefined SEs or use custom model to recover newly
-defined SEs.</p>
-<p><strong>Note</strong>: cell type annotation (<code>celltypes</code>
-argument) is required for SE recovery using <a href="../reference/RecoverSE.html">RecoverSE</a>.</p>
-<details open><summary><strong>Using default model</strong>
-</summary><p>The default NMF model was trained on discovery MERSCOPE data,
-encompassing five cancer types: melanoma, and four carcinomas. The model
-is tailored to nine distinct cell types: B cells, CD4+ T cells, CD8+ T
-cells, NK cells, plasma cells, macrophages, dendritic cells,
-fibroblasts, and endothelial cells. Therefore, cells in the query data
-should be grouped into one of “B”, “CD4T”, “CD8T”, “NK”, “Plasma”,
-“Macrophage”, “DC”, “Fibroblast”, and “Endothelial”, case sensitive. All
-the other cell types will be considered non-SE compartments. The SE
-recovery output contains five columns: cell ID (CID), cell type
-(CellType), initial SE assignment (InitSE), final SE assignment (SE),
-and prediction score (PredScore). Assignments with PredScore ≥ 0.6
-should be retained as high-confidence results. For custom model, users
-are encouraged to determine the optimal threshold based on
-leave-one-sample-out cross-validation performance.</p>
+be used to assign single cells into SEs.</p>
+<details open><summary><strong>Using pan-cancer SE recovery model</strong>
+</summary><p>For recovery of the nine pan-cancer spatial ecotypes defined in <a href="https://www.nature.com/articles/s41586-026-10452-4" class="external-link">our study</a>,
+the pre-trained model file (<code>SE_recovery_model.rds</code>) can be
+downloaded from <a href="https://spatialecotyper.stanford.edu/download.php" class="external-link">Spatial
+EcoTyper web platform</a>. Alternatively, you can upload your
+single-cell expression data directly to the <a href="https://spatialecotyper.stanford.edu/" class="external-link">web platform</a> for the
+recovery.</p>
+<p>The model was trained on discovery MERSCOPE data, encompassing five
+cancer types: melanoma, and four carcinomas, and nine distinct cell
+types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells,
+macrophages, dendritic cells, fibroblasts, and endothelial cells.</p>
+<p>Therefore, cells in the query data should be grouped into one of “B”,
+“CD4T”, “CD8T”, “NK”, “Plasma”, “Macrophage”, “DC”, “Fibroblast”, and
+“Endothelial”, case sensitive. All the other cell types will be
+considered non-SE compartments.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">ctann</span>, min.score <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">model_Ws</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"SE_recovery_model.rds"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">ctann</span>, Ws <span class="op">=</span> <span class="va">model_Ws</span>, </span>
+<span>                     custom <span class="op">=</span> <span class="cn">FALSE</span>, min.score <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sepreds</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                   CID   CellType InitSE    SE PredScore</span></span>
 <span><span class="co">## AAACCTGCACATGACT-1 AAACCTGCACATGACT-1 Macrophage   SE10   SE8 0.9958701</span></span>
@@ -245,26 +244,25 @@ leave-one-sample-out cross-validation performance.</p>
 <span><span class="co">## AAACCTGTCCGATATG-1 AAACCTGTCCGATATG-1 Macrophage   SE10   SE8 0.9920874</span></span>
 <span><span class="co">## AAACCTGTCTAACGGT-1 AAACCTGTCTAACGGT-1          B   SE01   SE1 0.7673859</span></span>
 <span><span class="co">## AAACGGGCACTTAAGC-1 AAACGGGCACTTAAGC-1       CD8T   SE03 NonSE 0.7605514</span></span></code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Results: </span></span>
 <span><span class="co">### InitSE: Initial SE assignment</span></span>
 <span><span class="co">### SE: Final SE assignment (retaining only SE-specific cell states)</span></span>
 <span><span class="co">### PredScore: Prediction confidence score (default threshold ≥ 0.6 for high-confidence assignments)</span></span></code></pre></div>
+<p>The SE recovery output contains five columns: cell ID (CID), cell
+type (CellType), initial SE assignment (InitSE), final SE assignment
+(SE), and prediction score (PredScore).</p>
 </details><details><summary><strong>Using custom model</strong>
 </summary><p>To use custom model, users should first develop recovery model
 following the tutorial <a href="TrainRecoveryModel.html">NMF Model
 Development for Spatial Ecotype Recovery from Single-Cell and Spatial
 Transcriptomics Data</a>. The resulting model can be used for SE
 recovery.</p>
-<p>Load the custom model</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Ws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"path/to/SE_recovery_model.rds"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">Ws</span><span class="op">)</span> <span class="co">## named list of W matrices</span></span></code></pre></div>
-<p>Using custom model for SE recovery by specifying the <code>Ws</code>
-argument.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">ctann</span>, </span>
-<span>                     Ws <span class="op">=</span> <span class="va">Ws</span>, min.score <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">Ws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"path/to/SE_recovery_model.rds"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">ctann</span>, Ws <span class="op">=</span> <span class="va">Ws</span>, </span>
+<span>                     custom <span class="op">=</span> <span class="cn">TRUE</span>, min.score <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
 <span><span class="co">## A minimum prediction score (min.score) is required to assign a cell to an SE. It can be determined based on training data; 0.5 or above is recommended.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sepreds</span><span class="op">)</span></span></code></pre></div>
 <p>After prediction, we recommend retaining only assignments

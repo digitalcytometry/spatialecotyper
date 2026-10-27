@@ -113,17 +113,23 @@ table(ctann)
 
 # SE recovery
 
-The [RecoverSE](../reference/RecoverSE.html) function will be used to assign single cells into SEs. Users can either use default model to recover predefined SEs or use custom model to recover newly defined SEs.
+The [RecoverSE](../reference/RecoverSE.html) function will be used to assign single cells into SEs.
 
-**Note**: cell type annotation (`celltypes` argument) is required for SE recovery using [RecoverSE](../reference/RecoverSE.html).
+<details open><summary><strong>Using pan-cancer SE recovery model</strong></summary>
 
-<details open><summary><strong>Using default model</strong></summary>
+For recovery of the nine pan-cancer spatial ecotypes defined in [our study](https://www.nature.com/articles/s41586-026-10452-4), the pre-trained model file (`SE_recovery_model.rds`) can be downloaded from [Spatial EcoTyper web platform](https://spatialecotyper.stanford.edu/download.php). Alternatively, you can upload your single-cell expression data directly to the [web platform](https://spatialecotyper.stanford.edu/) for the recovery.
 
-The default NMF model was trained on discovery MERSCOPE data, encompassing five cancer types: melanoma, and four carcinomas. The model is tailored to nine distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells, fibroblasts, and endothelial cells. Therefore, cells in the query data should be grouped into one of "B", "CD4T", "CD8T", "NK", "Plasma", "Macrophage", "DC", "Fibroblast", and "Endothelial", case sensitive. All the other cell types will be considered non-SE compartments. 
-The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore). Assignments with PredScore ≥ 0.6 should be retained as high-confidence results. For custom model, users are encouraged to determine the optimal threshold based on leave-one-sample-out cross-validation performance.
+The model was trained on discovery MERSCOPE data, encompassing five cancer types: melanoma, and four carcinomas, and nine distinct cell types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic cells, fibroblasts, and endothelial cells.  
+
+Therefore, cells in the query data should be grouped into one of "B", "CD4T", "CD8T", "NK", "Plasma", "Macrophage", "DC", "Fibroblast", and "Endothelial", case sensitive. All the other cell types will be considered non-SE compartments.  
+
+```{r loadmodel}
+model_Ws = readRDS("SE_recovery_model.rds")
+```
 
 ```{r scrna_recov}
-sepreds <- RecoverSE(normdata, celltypes = ctann, min.score = 0.6)
+sepreds <- RecoverSE(normdata, celltypes = ctann, Ws = model_Ws, 
+                     custom = FALSE, min.score = 0.6)
 head(sepreds)
 # Results: 
 ### InitSE: Initial SE assignment
@@ -131,22 +137,19 @@ head(sepreds)
 ### PredScore: Prediction confidence score (default threshold ≥ 0.6 for high-confidence assignments)
 ```
 
+The SE recovery output contains five columns: cell ID (CID), cell type (CellType), initial SE assignment (InitSE), final SE assignment (SE), and prediction score (PredScore).
+
 </details>
 
 <details><summary><strong>Using custom model</strong></summary>
 
 To use custom model, users should first develop recovery model following the tutorial [NMF Model Development for Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics Data](TrainRecoveryModel.html). The resulting model can be used for SE recovery.
 
-Load the custom model
 ```{r viewWs, eval=FALSE}
 Ws <- readRDS("path/to/SE_recovery_model.rds")
-names(Ws) ## named list of W matrices
-```
 
-Using custom model for SE recovery by specifying the `Ws` argument.
-```{r scrna_recov2, eval=FALSE}
-sepreds <- RecoverSE(normdata, celltypes = ctann, 
-                     Ws = Ws, min.score = 0.5)
+sepreds <- RecoverSE(normdata, celltypes = ctann, Ws = Ws, 
+                     custom = TRUE, min.score = 0.5)
 ## A minimum prediction score (min.score) is required to assign a cell to an SE. It can be determined based on training data; 0.5 or above is recommended.
 head(sepreds)
 ```

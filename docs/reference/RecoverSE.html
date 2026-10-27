@@ -55,9 +55,10 @@ by assigning each single cell to an SE or NonSE.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RecoverSE</span><span class="op">(</span></span>
 <span>  <span class="va">dat</span>,</span>
 <span>  <span class="va">celltypes</span>,</span>
+<span>  <span class="va">Ws</span>,</span>
+<span>  custom <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ncell.per.run <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  Ws <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  min.score <span class="op">=</span> <span class="fl">0.6</span>,</span>
 <span>  ncores <span class="op">=</span> <span class="fl">8</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -78,6 +79,16 @@ cells included in the gene expression `dat`. If you're using the default model,
 cell types including B, CD4T, CD8T, NK, Plasma, Macrophage, DC, Fibroblast, Endothelial are expected.</p></dd>
 
 
+<dt id="arg-ws">Ws<a class="anchor" aria-label="anchor" href="#arg-ws"></a></dt>
+<dd><p>A list of cell-type-specific W matrices used to recover SE-specific
+cell states. Each element in the list should be named by the corresponding
+cell type and contain a W matrix. They can be generated using `NMFGenerateWList` function.</p></dd>
+
+
+<dt id="arg-custom">custom<a class="anchor" aria-label="anchor" href="#arg-custom"></a></dt>
+<dd><p>A boolean indicating whether the model is customized for new SEs instead of pan-cancer SEs reported in our study.</p></dd>
+
+
 <dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
 <dd><p>Logical indicating whether to perform unit-variance normalization
 (default: TRUE). Change it with caution.</p></dd>
@@ -86,12 +97,6 @@ cell types including B, CD4T, CD8T, NK, Plasma, Macrophage, DC, Fibroblast, Endo
 <dt id="arg-ncell-per-run">ncell.per.run<a class="anchor" aria-label="anchor" href="#arg-ncell-per-run"></a></dt>
 <dd><p>Integer specifying the maximum number of cells per NMF
 prediction run to avoid memory issues.</p></dd>
-
-
-<dt id="arg-ws">Ws<a class="anchor" aria-label="anchor" href="#arg-ws"></a></dt>
-<dd><p>A list of cell-type-specific W matrices used to recover SE-specific
-cell states. Each element in the list should be named by the corresponding
-cell type and contain a W matrix. They can be generated using `NMFGenerateWList` function.</p></dd>
 
 
 <dt id="arg-min-score">min.score<a class="anchor" aria-label="anchor" href="#arg-min-score"></a></dt>

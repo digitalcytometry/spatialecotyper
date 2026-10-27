@@ -165,23 +165,27 @@ applied at this step to perform this normalization.</p>
 <h2 id="se-recovery">SE recovery<a class="anchor" aria-label="anchor" href="#se-recovery"></a>
 </h2>
 <p>The <a href="../reference/RecoverSE.html">RecoverSE</a> function will
-be used to assign single cells into SEs. Users can either use default
-model to recover predefined SEs or use custom model to recover newly
-defined SEs.</p>
-<p><strong>Note</strong>: Cell type annotation (<code>celltypes</code>
-argument) is required.</p>
-<details open><summary><strong>Using default model</strong>
-</summary><p>The default NMF model was trained on MERSCOPE data across carcinomas
-and melanoma. The model supports the following cell types: B cells, CD4+
-T cells, CD8+ T cells, NK cells, plasma cells, macrophages, dendritic
-cells, fibroblasts, and endothelial cells.</p>
-<p>All cells in the query data should be grouped into one of “B”,
+be used to assign single cells into SEs.</p>
+<details open><summary><strong>Using pan-cancer SE recovery model</strong>
+</summary><p>For recovery of the nine pan-cancer spatial ecotypes defined in <a href="https://www.nature.com/articles/s41586-026-10452-4" class="external-link">our study</a>,
+the pre-trained model file (<code>SE_recovery_model.rds</code>) can be
+downloaded from <a href="https://spatialecotyper.stanford.edu/download.php" class="external-link">Spatial
+EcoTyper web platform</a>. Alternatively, you can upload your
+single-cell expression data directly to the <a href="https://spatialecotyper.stanford.edu/" class="external-link">web platform</a> for the
+recovery.</p>
+<p>The model was trained on discovery MERSCOPE data, encompassing five
+cancer types: melanoma, and four carcinomas, and nine distinct cell
+types: B cells, CD4+ T cells, CD8+ T cells, NK cells, plasma cells,
+macrophages, dendritic cells, fibroblasts, and endothelial cells.</p>
+<p>Therefore, cells in the query data should be grouped into one of “B”,
 “CD4T”, “CD8T”, “NK”, “Plasma”, “Macrophage”, “DC”, “Fibroblast”, and
-“Endothelial”, case sensitive. All the other cell types will be assigned
-to NonSE.</p>
+“Endothelial”, case sensitive. All the other cell types will be
+considered non-SE compartments.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">scmeta</span><span class="op">$</span><span class="va">CellType</span>,</span>
-<span>                     min.score <span class="op">=</span> <span class="fl">0.6</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">model_Ws</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"SE_recovery_model.rds"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">scmeta</span><span class="op">$</span><span class="va">CellType</span>, Ws <span class="op">=</span> <span class="va">model_Ws</span>, </span>
+<span>                     custom <span class="op">=</span> <span class="cn">FALSE</span>, min.score <span class="op">=</span> <span class="fl">0.6</span>, ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sepreds</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                                                     CID</span></span>
 <span><span class="co">## HumanColonCancerPatient2__cell_1085 HumanColonCancerPatient2__cell_1085</span></span>
@@ -205,26 +209,15 @@ type (CellType), initial SE assignment (InitSE), final SE assignment
 tutorial <a href="TrainRecoveryModel.html">NMF Model Development for
 Spatial Ecotype Recovery from Single-Cell and Spatial Transcriptomics
 Data</a>. The resulting model can be used for SE recovery.</p>
-<p>Load the custom model</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Ws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"SE_recovery_model.rds"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">Ws</span><span class="op">)</span> <span class="co">## named list of W matrices</span></span></code></pre></div>
-<p>Using custom model for SE recovery by specifying the <code>Ws</code>
-argument.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">scmeta</span><span class="op">$</span><span class="va">CellType</span>, </span>
-<span>                     Ws <span class="op">=</span> <span class="va">Ws</span>, min.score <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">Ws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"path/to/SE_recovery_model.rds"</span><span class="op">)</span></span>
+<span><span class="va">sepreds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RecoverSE.html">RecoverSE</a></span><span class="op">(</span><span class="va">normdata</span>, celltypes <span class="op">=</span> <span class="va">scmeta</span><span class="op">$</span><span class="va">CellType</span>, </span>
+<span>                     Ws <span class="op">=</span> <span class="va">Ws</span>, custom <span class="op">=</span> <span class="cn">TRUE</span>, min.score <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
 <p>After prediction, we recommend retaining only assignments
 corresponding to SE-specific cell states identified in <a href="https://digitalcytometry.github.io/spatialecotyper/articles/Discovery_SE_CellStates.html">Tutorial
 4</a>. Cells not assigned to these SE-specific states should be grouped
 as “NonSE,” as they cannot be robustly mapped to the corresponding
 SE.</p>
-<p>The SE recovery output contains five columns: cell ID (CID), cell
-type (CellType), initial SE assignment (InitSE), final SE assignment
-(SE), and prediction score (PredScore). By default, assignments with
-PredScore ≥ 0.6 are retained as high-confidence results. For custom
-model, users are encouraged to determine the optimal threshold based on
-leave-one-sample-out cross-validation.</p>
 </details><p><strong>Combine SE recovery results into metadata</strong></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add SE assignments into the metadata</span></span>
@@ -295,23 +288,23 @@ p-values.</p>
 <span>                           ncores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">coloc_res</span><span class="op">$</span><span class="va">ColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="co">## Matrix of colocalization indices between all cell states</span></span></code></pre></div>
 <pre><code><span><span class="co">##                      NonSE_B NonSE_CD4T NonSE_CD8T   NonSE_DC NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B            3.6902418 -0.3033009 -2.4134631 -2.8574630        -1.7497634</span></span>
-<span><span class="co">## NonSE_CD4T        -0.1125072  1.3498220 -0.5800811 -3.6643477         1.6207222</span></span>
-<span><span class="co">## NonSE_CD8T        -2.2823331 -0.6472979  1.4918949 -3.0690298        -0.3704438</span></span>
-<span><span class="co">## NonSE_DC          -2.7562821 -3.0885027 -2.7199291 -1.3358672         1.2485968</span></span>
-<span><span class="co">## NonSE_Endothelial -1.7859899  1.5848223 -0.1042028  0.7629806         0.7914723</span></span>
-<span><span class="co">## NonSE_Fibroblast  -9.7779075  3.8241956 -2.5369320  4.1321164         3.8236216</span></span></code></pre>
+<span><span class="co">## NonSE_B            3.0273914 -0.3871890 -2.4146753 -2.7740600        -1.7139008</span></span>
+<span><span class="co">## NonSE_CD4T        -0.2230683  1.4884956 -0.5378198 -3.1516158         1.8466398</span></span>
+<span><span class="co">## NonSE_CD8T        -2.1822585 -0.5866724  1.2915895 -3.4119072        -0.5020747</span></span>
+<span><span class="co">## NonSE_DC          -2.5797764 -2.6971647 -3.2207830 -1.1411956         1.3444704</span></span>
+<span><span class="co">## NonSE_Endothelial -1.6912665  1.7783736 -0.2552831  0.7904064         1.1589863</span></span>
+<span><span class="co">## NonSE_Fibroblast  -8.8121407  3.6152242 -2.1043831  3.9147400         3.7981699</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coloc_res</span><span class="op">$</span><span class="va">Pval</span> <span class="co">## Vector of p-values for colocalization significance</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 1.674078e-01 1.118863e-06 1.572602e-02 1.346883e-03 1.507723e-13 2.621428e-02 </span></span>
+<span><span class="co">## 1.433468e-01 8.368894e-07 1.385676e-02 1.068561e-03 1.498422e-13 1.887150e-02 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 5.973856e-04 6.046596e-05 1.601657e-05 6.191268e-02 </span></span>
+<span><span class="co">## 3.670351e-04 7.344488e-05 1.462465e-05 5.689382e-02 </span></span>
 <span><span class="co">## attr(,"Zscore")</span></span>
 <span><span class="co">##    NonSE      SE1      SE2      SE3      SE4      SE5      SE6      SE7 </span></span>
-<span><span class="co">## 1.380581 4.869491 2.415213 3.205798 7.386475 2.223023 3.432799 4.010985 </span></span>
+<span><span class="co">## 1.463441 4.926562 2.460955 3.271824 7.387298 2.348060 3.562718 3.964841 </span></span>
 <span><span class="co">##      SE8      SE9 </span></span>
-<span><span class="co">## 4.314222 1.866921</span></span></code></pre>
+<span><span class="co">## 4.334267 1.904126</span></span></code></pre>
 <p>The <a href="../reference/ColocalizationMetaAnalysis.html">ColocalizationMetaAnalysis</a>
 function can be used to perform meta-analysis of cell-state
 colocalization results across samples. It applies Stouffer’s method to
@@ -328,19 +321,19 @@ matrix and a meta P value for each SE.</p>
 <span><span class="co"># Integrated matrix of cell-state colocalization indices</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaColocIndex</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                      NonSE_B NonSE_CD4T NonSE_CD8T  NonSE_DC NonSE_Endothelial</span></span>
-<span><span class="co">## NonSE_B            5.0775407 -0.4373593 -3.4680968 -4.235794        -2.5697794</span></span>
-<span><span class="co">## NonSE_CD4T        -0.1687496  1.8547132 -0.6702149 -4.765295         2.5268425</span></span>
-<span><span class="co">## NonSE_CD8T        -3.2985738 -0.7351970  2.1259997 -4.199681        -0.5147073</span></span>
-<span><span class="co">## NonSE_DC          -4.0477020 -4.0364930 -3.8427575 -1.932173         2.0419661</span></span>
-<span><span class="co">## NonSE_Endothelial -2.5838566  2.4550154 -0.1461923  1.276185         1.0291071</span></span>
-<span><span class="co">## NonSE_Fibroblast  -7.0710673  5.3051098 -3.6105668  5.938075         5.7162379</span></span></code></pre>
+<span><span class="co">## NonSE_B            4.4622035 -0.3652733 -3.1267282 -4.017636        -2.3871742</span></span>
+<span><span class="co">## NonSE_CD4T        -0.1283318  1.8418853 -0.8880536 -4.478315         2.5915767</span></span>
+<span><span class="co">## NonSE_CD8T        -2.8516299 -0.9126206  1.9696086 -4.691937        -0.6623149</span></span>
+<span><span class="co">## NonSE_DC          -3.7810804 -3.7719211 -4.2842524 -1.601143         1.9710879</span></span>
+<span><span class="co">## NonSE_Endothelial -2.3630828  2.4818032 -0.3262626  1.268528         1.3948120</span></span>
+<span><span class="co">## NonSE_Fibroblast  -7.0710673  5.3684188 -3.2468506  5.626446         5.2800988</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Meta-analysis P values</span></span>
 <span><span class="va">meta_coloc_res</span><span class="op">$</span><span class="va">MetaPval</span></span></code></pre></div>
 <pre><code><span><span class="co">##        NonSE          SE1          SE2          SE3          SE4          SE5 </span></span>
-<span><span class="co">## 5.121650e-02 1.121797e-09 1.021607e-05 1.601559e-05 2.047987e-20 1.475126e-03 </span></span>
+<span><span class="co">## 4.386579e-02 7.013388e-10 1.156336e-05 9.443509e-06 3.080129e-20 8.225041e-04 </span></span>
 <span><span class="co">##          SE6          SE7          SE8          SE9 </span></span>
-<span><span class="co">## 5.176764e-06 6.319517e-09 4.421013e-09 6.937544e-03</span></span></code></pre>
+<span><span class="co">## 2.592443e-06 6.409643e-09 4.933816e-09 5.817645e-03</span></span></code></pre>
 <p>You can visualize the results using the <a href="../reference/CooccurrenceHeatmapView.html">CooccurrenceHeatmapView</a>
 function.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">

@@ -7,9 +7,10 @@
 RecoverSE(
   dat,
   celltypes,
+  Ws,
+  custom = FALSE,
   scale = TRUE,
   ncell.per.run = 1000,
-  Ws = NULL,
   min.score = 0.6,
   ncores = 8
 )
@@ -22,15 +23,17 @@ transcriptomics or scRNA-seq data.}
 cells included in the gene expression `dat`. If you're using the default model,
 cell types including B, CD4T, CD8T, NK, Plasma, Macrophage, DC, Fibroblast, Endothelial are expected.}
 
+\item{Ws}{A list of cell-type-specific W matrices used to recover SE-specific
+cell states. Each element in the list should be named by the corresponding
+cell type and contain a W matrix. They can be generated using `NMFGenerateWList` function.}
+
+\item{custom}{A boolean indicating whether the model is customized for new SEs instead of pan-cancer SEs reported in our study.}
+
 \item{scale}{Logical indicating whether to perform unit-variance normalization
 (default: TRUE). Change it with caution.}
 
 \item{ncell.per.run}{Integer specifying the maximum number of cells per NMF
 prediction run to avoid memory issues.}
-
-\item{Ws}{A list of cell-type-specific W matrices used to recover SE-specific
-cell states. Each element in the list should be named by the corresponding
-cell type and contain a W matrix. They can be generated using `NMFGenerateWList` function.}
 
 \item{min.score}{A numeric threshold (0-1) specifying the minimum prediction
 score for SE classification; cells with lower scores are assigned to NonSE.}
